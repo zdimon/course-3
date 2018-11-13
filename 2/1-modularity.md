@@ -3,17 +3,17 @@ Issues to import.
 
     mylib.py
 
-GLOBAL_DOMAIN = 'domain.com'
+    GLOBAL_DOMAIN = 'domain.com'
 
-def getDomain():
-    print 'My domain is %s' % GLOBAL_DOMAIN
-    
-class app():
-    typeApp = 'angular+python'
-    author = 'Dimitry'
-    def getBody(self):
-        html = '<body> this is %s application of %s</body>' % (self.typeApp, self.author)
-        return html  
+    def getDomain():
+        print 'My domain is %s' % GLOBAL_DOMAIN
+        
+    class app():
+        typeApp = 'angular+python'
+        author = 'Dimitry'
+        def getBody(self):
+            html = '<body> this is %s application of %s</body>' % (self.typeApp, self.author)
+            return html  
         
 
 myapp.py
