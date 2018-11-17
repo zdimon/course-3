@@ -1,0 +1,8 @@
+2018-11-15 14:23:54,750 requests.packages.urllib3.connectionpool  Starting new HTTPS connection (1): google.com
+2018-11-15 14:23:55,269 requests.packages.urllib3.connectionpool  "GET / HTTP/1.1" 301 220
+2018-11-15 14:23:55,271 requests.packages.urllib3.connectionpool  Starting new HTTPS connection (1): www.google.com
+2018-11-15 14:23:55,789 requests.packages.urllib3.connectionpool  "GET / HTTP/1.1" 200 None
+2018-11-15 14:23:55,795 root  Info problem: connection reset
+2018-11-15 14:23:55,796 root  Warning problem: connection reset
+2018-11-15 14:23:55,796 root  Error problem: connection reset
+2018-11-15 14:23:55,796 root  Critical problem: connection reset
