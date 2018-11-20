@@ -1,0 +1,400 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import time;  # This is required to include time module.
+
+ticks = time.time()
+print "Number of ticks since 12:00am, January 1, 1970:", ticks
+
+localtime = time.localtime(time.time())
+print "Local current time :", localtime
+print "Local current year :", localtime.tm_year
+
+localtime = time.asctime( time.localtime(time.time()) )
+print "Local current time :", localtime 
+
+import calendar
+
+cal = calendar.month(2008, 1)
+print "Here is the calendar:"
+print cal
+
+import datetime
+
+print datetime.date(2012, 12, 14).year
+
+print datetime.date.today().year
+
+a = datetime.datetime(2017, 3, 5)
+print(a) # datetime.datetime(2017, 3, 5, 0, 0)
+
+today = datetime.date.today()
+print( today.strftime("%m/%d/%Y") )
+
+
+
+now = datetime.datetime.now()
+ 
+then = datetime.datetime(2017, 2, 26)
+ 
+# Кол-во времени между датами.
+delta = now - then
+ 
+print(delta.days) # 38
+print(delta.seconds) # 1131
+
+print now + datetime.timedelta(days=10)
+
+# pip install dateutils
+
+from dateutil.relativedelta import relativedelta
+
+print today + relativedelta(months=1)
+
+
+import time
+ 
+for x in range(5):
+    print x
+    time.sleep(1)
+    
+
+##Decorators
+
+Decorators dynamically alter the functionality of a function, method or class without having to directly use subclasses. 
+This is ideal when you need to extend the functionality of functions that you don't want to modify. 
+
+
+
+
+What you need to know about functions
+Before diving in, there are some prerequisites [priːˈrekwəzɪt] (предпосылки) that should be clear. 
+
+
+###Assign functions to variables
+
+    def greet(name):
+        return "hello "+name
+
+    greet_someone = greet
+    print greet_someone("John")
+
+    # Outputs: hello John
+
+
+###Define functions inside other functions
+
+    def greet(name):
+        def get_message():
+            return "Hello "
+
+        result = get_message()+name
+        return result
+
+    print greet("John")
+
+    # Outputs: Hello John
+
+
+###Functions can be passed as parameters to other functions
+
+
+    def greet(name):
+       return "Hello " + name 
+
+    def call_func(func):
+        other_name = "John"
+        return func(other_name)  
+
+    print call_func(greet)
+
+    # Outputs: Hello John
+
+
+###Functions can return other functions
+In other words, functions generating other functions.
+
+
+
+    def compose_greet_func():
+        def get_message():
+            return "Hello there!"
+
+        return get_message
+
+    greet = compose_greet_func()
+    print greet()
+
+    # Outputs: Hello there!
+
+
+###Inner functions have access to the enclosing scope.
+
+Notice how we modified the example above to read a "name" argument 
+from the enclosing scope of the inner function and return the new function.
+
+
+    def compose_greet_func(name):
+        def get_message():
+            return "Hello there "+name+"!"
+
+        return get_message
+
+    greet = compose_greet_func("John")
+    print greet()
+
+    # Outputs: Hello there John!
+
+
+
+###Composition of Decorators
+Putting the ideas mentioned above together, we can build a decorator.
+In this example let's consider a function that wraps the string output of another function by p tags.
+
+    def get_text(name):
+       return "Hello, {0}".format(name)
+
+    def p_decorate(func):
+       def func_wrapper(name):
+           return "<p>{0}</p>".format(func(name))
+       return func_wrapper
+
+    my_get_text = p_decorate(get_text)
+
+    print my_get_text("John")
+
+    # <p>Hello, John</p>
+    
+    
+## Timing
+
+    def time_this(original_function):      
+        def new_function(*args,**kwargs):
+            import datetime                 
+            before = datetime.datetime.now()                     
+            x = original_function(*args,**kwargs)                
+            after = datetime.datetime.now()                      
+            print "Elapsed Time = {0}".format(after-before)      
+            return x                                             
+        return new_function                                   
+        
+    @time_this
+    def func_a(stuff):
+        import time
+        time.sleep(3)
+
+    func_a(1)    
+
+
+That was our first decorator. A function that takes another function as an argument, generates a new function, changing the work of the original function, and returning the generated function so we can use it anywhere. To have get_text itself be decorated by p_decorate, we just have to assign get_text to the result of p_decorate.
+    
+
+###Python's Decorator Syntax
+
+    def p_decorate(func):
+       def func_wrapper(name):
+           return "<p>{0}</p>".format(func(name))
+       return func_wrapper
+
+    @p_decorate
+    def get_text(name):
+       return "lorem ipsum, {0} dolor sit amet".format(name)
+
+    print get_text("John")
+
+    # Outputs <p>lorem ipsum, John dolor sit amet</p>
+
+Now let's consider we wanted to decorate our get_text function by 3 other functions.
+
+
+
+    def p_decorate(func):
+       def func_wrapper(name):
+           return "<p>{0}</p>".format(func(name))
+       return func_wrapper
+
+    def strong_decorate(func):
+        def func_wrapper(name):
+            return "<strong>{0}</strong>".format(func(name))
+        return func_wrapper
+
+    def div_decorate(func):
+        def func_wrapper(name):
+            return "<div>{0}</div>".format(func(name))
+        return func_wrapper
+
+With the basic approach, decorating get_text would be along the lines of
+
+
+    get_text = div_decorate(p_decorate(strong_decorate(get_text)))
+
+
+With Python's decorator syntax, same thing can be achieved with much more expressive power.
+
+
+
+
+    @div_decorate
+    @p_decorate
+    @strong_decorate
+    def get_text(name):
+       return "lorem ipsum, {0} dolor sit amet".format(name)
+
+    print get_text("John")
+
+    # Outputs <div><p><strong>lorem ipsum, John dolor sit amet</strong></p></div>
+
+
+Decorator with arguments.
+
+
+    def decorator(opentag,closetag):
+        def real_decorator(decfunc):
+            def wrapper(name):
+                return opentag+' '+ decfunc(name) +' '+closetag
+            return wrapper
+        return real_decorator
+       
+    @decorator('<h1>','</h1>') 
+    def myf(name):
+        return name
+        
+        
+    print myf('Dima')
+
+
+
+
+
+## Class
+
+
+class MyClass(object):
+    """A simple example class"""
+    i = 12345
+    
+    def f(self):
+        print 'hello world'
+        
+
+
+class Mapping(MyClass):
+    mv = 123
+    def __init__(self, iterable):
+        self.items_list = []
+        self.__update(iterable)
+
+    def update(self, iterable):
+        for item in iterable:
+            self.items_list.append(item)
+            
+    def f(self):
+        super(Mapping,self).f()
+        
+    @staticmethod
+    def st():
+        print 'Static method'
+        
+    @property
+    def name(self):
+        return self.__str+' Dima'
+        
+    def __call__(self):
+        print 'I was called as func'
+        
+    def __str__(self):
+        return 'My class'
+
+    __update = update   # private copy of original update() method
+    __str = 'Hello'
+    
+    
+m = Mapping([2,2])
+
+mm = Mapping([2,2])
+#print m.__str
+Mapping.st()
+m.st()
+print m.name
+
+print m
+
+
+#import pdb; pdb.set_trace()
+
+#m.update([1,2,3])
+print m.items_list
+
+
+
+
+
+from abc import ABCMeta, abstractmethod
+class Abstract:
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def foo(self):
+        pass
+        
+#a = Abstract()
+
+
+
+class Geterseter(object):
+    __name = None
+    
+    def __init__(self,name):
+        self.__name = name  
+    
+    @property
+    def name(self):
+        print 'Get value %s' % self.__name
+        return self.__name
+        
+      
+        
+    @name.setter
+    def name(self,value):
+        print 'Set value %s' % value
+        self.__name = value
+        
+        
+    def __setattr__(self, attrname, val):
+        print '__setattr___'
+        super(Geterseter, self).__setattr__(attrname, val)
+
+
+
+    def __getattr__(self, attrname):
+        print '___getattr___'
+        return super(MyModel, self).__getattr__(attrname)      
+        
+
+
+
+
+## Model
+
+# -*- coding: utf-8 -*-
+from django.db import models
+
+
+class Page(models.Model):
+    title = models.CharField(max_length=250, verbose_name='Title')
+    content = models.TextField(verbose_name=Content)
+    
+    
+
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
