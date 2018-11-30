@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import os
-import re
+
 
 
 def get_url (url):
@@ -16,11 +16,12 @@ def get_url (url):
 
 
 def get_issue_items (html):
-    soup = BeautifulSoup(html, 'lxml')
-    divs = soup.find_all('div', class_='in')
+    soup = BeautifulSoup( html, 'lxml' )
+    divs = soup.find_all( "div", {"class": "issue-item"} )
+
     text_list = list()
     href_list = list()
-    text_pattern = re.compile(r'.*>(.*)</a>')
+    descr_list = list()
     output_dir = os.path.join(os.getcwd(),'output')
     try:
         os.mkdir(output_dir)
@@ -28,14 +29,21 @@ def get_issue_items (html):
     except:
         data_file = open(os.path.join(output_dir, 'data.txt'), 'w')
 
-
+    element_id = 0
     for div in divs:
-        for a in div.find_all('a', class_="issue-item-title"):
-            text_list.append(re.findall(text_pattern, str(a)))
+        for a in div.find_all('a', {"class": "issue-item-title"}):
+            text_list.append(a.get_text())
             href_list.append(a['href'])
+            if a.next_sibling.next_sibling is not None:
+                element = a.next_sibling.next_sibling.get_text()
+                descr_list.append(element)
+            else:
+                descr_list.append('')
+            element_id +=1
+
     for i in range (0, len(href_list)):
-        item = ''.join(text_list[i]) + ' ==> ' + str(href_list[i])+'\n'
-        data_file.write(item)
+        item = 'item '+ str(i)+ ' ' + text_list[i] + ' ==> ' + href_list[i]+'\n' + descr_list[i] + '\n\n'
+        data_file.write(item.encode('utf-8'))
 
     data_file.close()
 

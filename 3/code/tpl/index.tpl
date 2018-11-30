@@ -1,7 +1,4 @@
 $def with (context)
-
-
-    
     
     <html>
         <head>
