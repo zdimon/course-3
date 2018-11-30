@@ -1,0 +1,24 @@
+
+{%extends 'base.html'%}
+{%block top%}<a class="navbar-brand" href="/">HOME</a>{%endblock%}
+
+{%block left%}
+{%for i in category%}
+		<a class="dropdown-item" href="/">{{i.name}}</a>
+{%endfor%}
+{%endblock%}
+
+
+
+{%block center%}
+
+{%for i in art%}
+
+		<div class="col-md-4">
+			<h4>{{i.title}}</h4>
+			<p>{{i.content}}</p>
+			<p><a class="btn btn-secondary" href="{{i.link}}" role="button">Read more &raquo;</a></p>
+		</div>
+{%endfor%}
+
+{%endblock%}
