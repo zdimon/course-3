@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>POEMS</title>
+
+  </head>
+  <body>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a  href="/home" class="navbar-brand">POEMS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+         <ul class="navbar-nav">
+           <li class="nav-item active">
+             <a class="nav-link" href="/home">Главная <span class="sr-only">(current)</span></a>
+           </li>
+           <li class="nav-item">
+             <a class="nav-link" href="/home/tags">Теги</a>
+           </li>
+           <li class="nav-item">
+             <a class="nav-link" href="#">Обратная связь</a>
+           </li>
+         </ul>
+        </div>
+      </nav>
+
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-6 offset-md-2">
+            <h1><div class="badge badge-secondary">Веселое творчество</div></h1>
+      {% block center %}{% endblock %}
+          </div>
+        </div>
+      </div>
+  </body>
+</html>
