@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block center %}
+ 
+    {% for i in news %}
+      <li> {{ i.id }}  </li>
+  
+        <div class="col-md-4">
+          <h2>{{ i.item_title }}</h2>
+          <p><a href="/detail/{{ i.id }}">{{ i.item_title }} </a></p>
+        </div>      
+      
+    {% endfor %}
+    
+    
+    <form method="POST" action="/">
+        {% csrf_token %}
+        <input type="text" name="title">
+        <input type="submit" value="Gooo" />
+    </form>
+    
+    
+    <hr />
+
+    {{ form }}
+
+    
+    
+{% endblock %}
+
+

@@ -1,0 +1,21 @@
+{% extends '_layout.html' %}
+
+{% block title %} {{ title }} {% endblock title %}
+
+
+{% block content %}
+<table>
+    <tr class='trheader'>
+        <th>Title</th>
+        <th>Domain</th>
+        <th>Input Date</th>
+    </tr>
+    {% for i in list %}
+    <tr>
+        <td><a href={{ i.url }} target='_blank'> {{i.title}} </a></td>
+        <td>{{ i.domain }}</td>
+        <td> {{i.creationDate}} </td>
+    </tr>
+    {% endfor %}    
+</table>    
+{% endblock content %}
