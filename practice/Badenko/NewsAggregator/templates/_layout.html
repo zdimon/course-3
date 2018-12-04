@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html>
+    <head>    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">     
+    <title> {% block title %}  {% endblock title %} </title>
+    </head>
+
+    <body>
+        <div class="topnav">
+            <a href="/">HOME</a>            
+            <a href="/data">DATA</a>
+            <a href="#">Link long</a>
+            <a href="/contact">CONTACT</a>
+        </div>       
+        </br>
+        <div class="content">
+            {% block content %}
+            {% endblock content %}
+        </div>
+        <div class="footer">
+            <a href="#">Link</a>
+            <a href="#">Link very long</a>
+            <a href="#">Link</a>
+            <a href="#">Link long</a>
+        </div>
+    </body>
+</html>

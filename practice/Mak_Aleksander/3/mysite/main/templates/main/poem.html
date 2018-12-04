@@ -1,0 +1,22 @@
+{% extends 'main/layout.html' %}
+{% block center %}
+
+
+
+  <div class="card">
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+        <p>{{ poem.content|linebreaks }}</p>
+
+        <footer class="blockquote-footer">{{ poem.author}} <cite title="Source Title">{{ poem.date}}</cite></footer>
+        <p>
+          Tags:
+          {% for tag in poem.category.all %}
+          #{{tag.name}}
+          {% endfor %}
+        </p>
+      </blockquote>
+    </div>
+  </div>
+
+{% endblock %}
