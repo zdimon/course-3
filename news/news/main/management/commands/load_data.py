@@ -17,13 +17,14 @@ class Command(BaseCommand):
         
         print 'Start'
         #News.objects.delete()
-        for r in News.objects.filter(pk__gt=10):
-            print r.delete()
-        '''
+        #for r in News.objects.filter(pk__gt=10):
+        #    print r.delete()
+        
         return True
-        for i in range(1,50):
+        for i in range(1,200):
             record = News()
             record.title = 'Title %s' % i
+            record.content = 'Content %s' % i
             record.save() 
             print 'Saving %s' % i
         
@@ -32,4 +33,4 @@ class Command(BaseCommand):
             print 'Loadd from %s' % options['url']
         # ...
         print 'End'
-        '''
+        

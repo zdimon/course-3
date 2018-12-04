@@ -1,0 +1,2113 @@
+<!DOCTYPE html>
+<html lang="ru" class="no-js">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta content='width=1024' name='viewport'>
+<title>Ускорение SQLAlchemy для архитектурных космонавтов / Блог компании Qrator Labs / Хабр</title>
+
+  <meta name="description" content="
+Хабр, это доклад инженера-программиста Алексея Старкова на конференции Moscow Python Conf++ 2018 в Москве. Видео в конце поста.Всем привет! Меня зовут Алексей Старков — это я, в свои лучшие годы,..." />
+
+  <meta name="keywords" content="sql, sqlalchemy, архитекурный космонавт" />
+
+  <meta property="fb:app_id" content="444736788986613" />
+<meta property="og:locale" content="ru_RU" />
+<meta property="og:type" content="article" />
+<meta property="fb:pages" content="472597926099084"/>
+<meta property="og:url" content="https://habr.com/company/qrator/blog/430818/" />
+<meta property="og:title" content="Ускорение SQLAlchemy для архитектурных космонавтов" />
+
+    <meta property="og:image" content="https://habrastorage.org/webt/nk/mr/3o/nkmr3o45oaha-8h6n1elhxx3nai.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/nk/mr/3o/nkmr3o45oaha-8h6n1elhxx3nai.png" />
+      <meta name="twitter:image" content="https://habrastorage.org/webt/nk/mr/3o/nkmr3o45oaha-8h6n1elhxx3nai.png">
+    <meta property="og:image" content="https://habrastorage.org/webt/wj/_u/7c/wj_u7c0h2uaody3dj48xsbytsb4.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/wj/_u/7c/wj_u7c0h2uaody3dj48xsbytsb4.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/of/cb/q_/ofcbq_bd033u4wh31hzexjkstfc.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/of/cb/q_/ofcbq_bd033u4wh31hzexjkstfc.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/md/ni/gt/mdnigtyu3igzmlqmcf89isptecc.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/md/ni/gt/mdnigtyu3igzmlqmcf89isptecc.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/xz/kg/zr/xzkgzr2wrphmvslxnx3v2qezxta.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/xz/kg/zr/xzkgzr2wrphmvslxnx3v2qezxta.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/yp/uq/c7/ypuqc7pzaeqvmbzsrksb9gefq-w.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/yp/uq/c7/ypuqc7pzaeqvmbzsrksb9gefq-w.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/qg/sz/np/qgsznprvrp4smdpbuoxopevxxt4.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/qg/sz/np/qgsznprvrp4smdpbuoxopevxxt4.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/x0/xs/ae/x0xsae3wqaqw4dfth-y8q7i3tqk.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/x0/xs/ae/x0xsae3wqaqw4dfth-y8q7i3tqk.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/ah/6t/fj/ah6tfjmleq-fzvoecldzw5qxxu0.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/ah/6t/fj/ah6tfjmleq-fzvoecldzw5qxxu0.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/nu/wf/g6/nuwfg6v2hg2jangw6agmu9i6bw0.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/nu/wf/g6/nuwfg6v2hg2jangw6agmu9i6bw0.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/eh/ws/3t/ehws3tezqmrdlvfcljs1pxbttgm.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/eh/ws/3t/ehws3tezqmrdlvfcljs1pxbttgm.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/m6/0a/gc/m60agccykga4hl82ktrjfjglzqq.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/m6/0a/gc/m60agccykga4hl82ktrjfjglzqq.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/dx/dd/05/dxdd05sisxq1ciu6nu-na0zons8.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/dx/dd/05/dxdd05sisxq1ciu6nu-na0zons8.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/wz/r8/-p/wzr8-pc9epal61cjoraog7bkvxc.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/wz/r8/-p/wzr8-pc9epal61cjoraog7bkvxc.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/bg/r0/rz/bgr0rzhohcouyykpc3raznbi4rq.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/bg/r0/rz/bgr0rzhohcouyykpc3raznbi4rq.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/nq/zq/7-/nqzq7-zlnbxkkmy7mywbp8lqvq4.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/nq/zq/7-/nqzq7-zlnbxkkmy7mywbp8lqvq4.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/cs/bo/lr/csbolr6uozuvbxhimmqik_llgak.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/cs/bo/lr/csbolr6uozuvbxhimmqik_llgak.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/fl/hq/lp/flhqlp2vg6srgo7wswpbowrlq6e.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/fl/hq/lp/flhqlp2vg6srgo7wswpbowrlq6e.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/zo/n7/uh/zon7uhhtngwjd5rnaztxexuatsu.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/zo/n7/uh/zon7uhhtngwjd5rnaztxexuatsu.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/qn/4a/fz/qn4afzy7q6yrh0t-yw4r4m6c9se.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/qn/4a/fz/qn4afzy7q6yrh0t-yw4r4m6c9se.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/ez/ud/sg/ezudsgqk1b9domctg8sdvzh4uj8.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/ez/ud/sg/ezudsgqk1b9domctg8sdvzh4uj8.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/j4/ek/x8/j4ekx8dvwphpdavetrxejd1uvxg.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/j4/ek/x8/j4ekx8dvwphpdavetrxejd1uvxg.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/kj/po/hs/kjpohswqs8svlzroeizbub0tpmk.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/kj/po/hs/kjpohswqs8svlzroeizbub0tpmk.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/g6/dz/gg/g6dzggup-pvokdl7h4mguhedazc.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/g6/dz/gg/g6dzggup-pvokdl7h4mguhedazc.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/xl/1c/eh/xl1cehyjtaoqytk_gz5h-wbc5we.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/xl/1c/eh/xl1cehyjtaoqytk_gz5h-wbc5we.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/rj/cl/ql/rjclqll79e8wcjwkjfxova8hhpe.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/rj/cl/ql/rjclqll79e8wcjwkjfxova8hhpe.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/mz/ih/qg/mzihqg-lfqb8vhflbkxjpf8igp8.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/mz/ih/qg/mzihqg-lfqb8vhflbkxjpf8igp8.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/y8/qc/v1/y8qcv1qj8_jq3y_pn-2xw-t6bji.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/y8/qc/v1/y8qcv1qj8_jq3y_pn-2xw-t6bji.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/ho/tj/tt/hotjtty0hmg99f_kquecwyo4ms4.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/ho/tj/tt/hotjtty0hmg99f_kquecwyo4ms4.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/ko/00/s7/ko00s71bgaxu6i-h_baocnnqz-w.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/ko/00/s7/ko00s71bgaxu6i-h_baocnnqz-w.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/ux/ji/uy/uxjiuybsymdbtrvqlazqhckdv8c.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/ux/ji/uy/uxjiuybsymdbtrvqlazqhckdv8c.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/bk/l6/ya/bkl6yaerwagttjp6qprlfbsdpaw.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/bk/l6/ya/bkl6yaerwagttjp6qprlfbsdpaw.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/_0/l6/tt/_0l6tt3pcdjmsxlwy2hivf1b4ty.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/_0/l6/tt/_0l6tt3pcdjmsxlwy2hivf1b4ty.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/qe/yr/h4/qeyrh4fd3cmfpm8-exbfd1rwpkw.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/qe/yr/h4/qeyrh4fd3cmfpm8-exbfd1rwpkw.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/ds/lc/ic/dslcicbf3yrljfchfwbxhcucleq.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/ds/lc/ic/dslcicbf3yrljfchfwbxhcucleq.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/xb/m5/uu/xbm5uu_ryeji94kthsv0rp2ogdw.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/xb/m5/uu/xbm5uu_ryeji94kthsv0rp2ogdw.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/zy/g5/ro/zyg5rofkv1ibi-yb-kuv3kikbww.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/zy/g5/ro/zyg5rofkv1ibi-yb-kuv3kikbww.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/wb/h2/w1/wbh2w1k4s4y6jqemt4oatlknwug.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/wb/h2/w1/wbh2w1k4s4y6jqemt4oatlknwug.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/oi/w8/pk/oiw8pkhgdpx7shz7rqrovfmg6lk.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/oi/w8/pk/oiw8pkhgdpx7shz7rqrovfmg6lk.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/7p/wk/qo/7pwkqo4-g_hksl5m_cqoo3xph5y.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/7p/wk/qo/7pwkqo4-g_hksl5m_cqoo3xph5y.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/ut/br/gl/utbrglrwurgv0uux2yk8eme4owg.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/ut/br/gl/utbrglrwurgv0uux2yk8eme4owg.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/qx/kk/bx/qxkkbxwleeqwvdukaghimiat7sw.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/qx/kk/bx/qxkkbxwleeqwvdukaghimiat7sw.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/r2/uq/f4/r2uqf4wn-wa-cvigivokusan6um.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/r2/uq/f4/r2uqf4wn-wa-cvigivokusan6um.png" />
+    <meta property="og:image" content="https://habrastorage.org/webt/m9/8d/mw/m98dmwpmo0trjpw3vta7dylmryw.png" />
+    <link rel="image_src" href="https://habrastorage.org/webt/m9/8d/mw/m98dmwpmo0trjpw3vta7dylmryw.png" />
+
+<meta property="og:description" content="Хабр, это доклад инженера-программиста Алексея Старкова на конференции Moscow Python Conf++ 2018 в Москве. Видео в конце поста.Всем привет! Меня зовут Алексей..." />
+<meta name="twitter:description" content="Хабр, это доклад инженера-программиста Алексея Старкова на конференции Moscow Python Conf++ 2018 в Москве. Видео в конце поста.Всем привет! Меня зовут Алексей...">
+<meta name="twitter:title" content="Ускорение SQLAlchemy для архитектурных космонавтов" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@habr_com" />
+
+  <meta property="al:android:url" content="habrahabr://post/430818" />
+<meta property="al:android:app_name" content="Habrahabr" />
+<meta property="al:android:package" content="ru.habrahabr" />
+<meta property="al:windows_phone:url" content="habrahabr://post/430818" />
+<meta property="al:windows_phone:app_name" content="Habrahabr" />
+<meta property="al:windows_phone:app_id" content="460a6bd6-8955-470f-935e-9ea1726a6060" />
+  <link rel="canonical" href="https://habr.com/company/qrator/blog/430818/"/>
+  <link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.habr.com/company/qrator/blog/430818/" >
+
+  <script type="application/ld+json">
+    {
+    "@context": "http:\/\/schema.org",
+    "@type": "Article",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https:\/\/habr.com\/company\/qrator\/blog\/430818\/"
+    },
+    "headline": "Ускорение SQLAlchemy для архитектурных космонавтов",
+    "datePublished": "2018-11-23T02:01:19+03:00",
+    "dateModified": "2018-11-23T19:24:05+03:00",
+    "author": {
+        "@type": "Person",
+        "name": "Александр Shapelez Козлов"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Habr",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https:\/\/dr.habracdn.net\/habrcom\/images\/habr_google.png"
+        }
+    },
+    "description": "Хабр, это доклад инженера-программиста Алексея Старкова на конференции Moscow Python Conf++ 2018 в Москве. Видео в конце поста.Всем привет! Меня зовут Алексей...",
+    "image": [
+        "https:\/\/habrastorage.org\/webt\/nk\/mr\/3o\/nkmr3o45oaha-8h6n1elhxx3nai.png",
+        "https:\/\/habrastorage.org\/webt\/wj\/_u\/7c\/wj_u7c0h2uaody3dj48xsbytsb4.png",
+        "https:\/\/habrastorage.org\/webt\/of\/cb\/q_\/ofcbq_bd033u4wh31hzexjkstfc.png",
+        "https:\/\/habrastorage.org\/webt\/md\/ni\/gt\/mdnigtyu3igzmlqmcf89isptecc.png",
+        "https:\/\/habrastorage.org\/webt\/xz\/kg\/zr\/xzkgzr2wrphmvslxnx3v2qezxta.png",
+        "https:\/\/habrastorage.org\/webt\/yp\/uq\/c7\/ypuqc7pzaeqvmbzsrksb9gefq-w.png",
+        "https:\/\/habrastorage.org\/webt\/qg\/sz\/np\/qgsznprvrp4smdpbuoxopevxxt4.png",
+        "https:\/\/habrastorage.org\/webt\/x0\/xs\/ae\/x0xsae3wqaqw4dfth-y8q7i3tqk.png",
+        "https:\/\/habrastorage.org\/webt\/ah\/6t\/fj\/ah6tfjmleq-fzvoecldzw5qxxu0.png",
+        "https:\/\/habrastorage.org\/webt\/nu\/wf\/g6\/nuwfg6v2hg2jangw6agmu9i6bw0.png",
+        "https:\/\/habrastorage.org\/webt\/eh\/ws\/3t\/ehws3tezqmrdlvfcljs1pxbttgm.png",
+        "https:\/\/habrastorage.org\/webt\/m6\/0a\/gc\/m60agccykga4hl82ktrjfjglzqq.png",
+        "https:\/\/habrastorage.org\/webt\/dx\/dd\/05\/dxdd05sisxq1ciu6nu-na0zons8.png",
+        "https:\/\/habrastorage.org\/webt\/wz\/r8\/-p\/wzr8-pc9epal61cjoraog7bkvxc.png",
+        "https:\/\/habrastorage.org\/webt\/bg\/r0\/rz\/bgr0rzhohcouyykpc3raznbi4rq.png",
+        "https:\/\/habrastorage.org\/webt\/nq\/zq\/7-\/nqzq7-zlnbxkkmy7mywbp8lqvq4.png",
+        "https:\/\/habrastorage.org\/webt\/cs\/bo\/lr\/csbolr6uozuvbxhimmqik_llgak.png",
+        "https:\/\/habrastorage.org\/webt\/fl\/hq\/lp\/flhqlp2vg6srgo7wswpbowrlq6e.png",
+        "https:\/\/habrastorage.org\/webt\/zo\/n7\/uh\/zon7uhhtngwjd5rnaztxexuatsu.png",
+        "https:\/\/habrastorage.org\/webt\/qn\/4a\/fz\/qn4afzy7q6yrh0t-yw4r4m6c9se.png",
+        "https:\/\/habrastorage.org\/webt\/ez\/ud\/sg\/ezudsgqk1b9domctg8sdvzh4uj8.png",
+        "https:\/\/habrastorage.org\/webt\/j4\/ek\/x8\/j4ekx8dvwphpdavetrxejd1uvxg.png",
+        "https:\/\/habrastorage.org\/webt\/kj\/po\/hs\/kjpohswqs8svlzroeizbub0tpmk.png",
+        "https:\/\/habrastorage.org\/webt\/g6\/dz\/gg\/g6dzggup-pvokdl7h4mguhedazc.png",
+        "https:\/\/habrastorage.org\/webt\/xl\/1c\/eh\/xl1cehyjtaoqytk_gz5h-wbc5we.png",
+        "https:\/\/habrastorage.org\/webt\/rj\/cl\/ql\/rjclqll79e8wcjwkjfxova8hhpe.png",
+        "https:\/\/habrastorage.org\/webt\/mz\/ih\/qg\/mzihqg-lfqb8vhflbkxjpf8igp8.png",
+        "https:\/\/habrastorage.org\/webt\/y8\/qc\/v1\/y8qcv1qj8_jq3y_pn-2xw-t6bji.png",
+        "https:\/\/habrastorage.org\/webt\/ho\/tj\/tt\/hotjtty0hmg99f_kquecwyo4ms4.png",
+        "https:\/\/habrastorage.org\/webt\/ko\/00\/s7\/ko00s71bgaxu6i-h_baocnnqz-w.png",
+        "https:\/\/habrastorage.org\/webt\/ux\/ji\/uy\/uxjiuybsymdbtrvqlazqhckdv8c.png",
+        "https:\/\/habrastorage.org\/webt\/bk\/l6\/ya\/bkl6yaerwagttjp6qprlfbsdpaw.png",
+        "https:\/\/habrastorage.org\/webt\/_0\/l6\/tt\/_0l6tt3pcdjmsxlwy2hivf1b4ty.png",
+        "https:\/\/habrastorage.org\/webt\/qe\/yr\/h4\/qeyrh4fd3cmfpm8-exbfd1rwpkw.png",
+        "https:\/\/habrastorage.org\/webt\/ds\/lc\/ic\/dslcicbf3yrljfchfwbxhcucleq.png",
+        "https:\/\/habrastorage.org\/webt\/xb\/m5\/uu\/xbm5uu_ryeji94kthsv0rp2ogdw.png",
+        "https:\/\/habrastorage.org\/webt\/zy\/g5\/ro\/zyg5rofkv1ibi-yb-kuv3kikbww.png",
+        "https:\/\/habrastorage.org\/webt\/wb\/h2\/w1\/wbh2w1k4s4y6jqemt4oatlknwug.png",
+        "https:\/\/habrastorage.org\/webt\/oi\/w8\/pk\/oiw8pkhgdpx7shz7rqrovfmg6lk.png",
+        "https:\/\/habrastorage.org\/webt\/7p\/wk\/qo\/7pwkqo4-g_hksl5m_cqoo3xph5y.png",
+        "https:\/\/habrastorage.org\/webt\/ut\/br\/gl\/utbrglrwurgv0uux2yk8eme4owg.png",
+        "https:\/\/habrastorage.org\/webt\/qx\/kk\/bx\/qxkkbxwleeqwvdukaghimiat7sw.png",
+        "https:\/\/habrastorage.org\/webt\/r2\/uq\/f4\/r2uqf4wn-wa-cvigivokusan6um.png",
+        "https:\/\/habrastorage.org\/webt\/m9\/8d\/mw\/m98dmwpmo0trjpw3vta7dylmryw.png"
+    ]
+}
+  </script>
+
+
+<meta name='yandex-verification' content='71593b225aeafc4e' />
+<meta name='referrer' content='unsafe-url' />
+<meta name="pocket-site-verification" content="ed24b2b9721edf0a282c5b4a3232c4" />
+
+
+<style type="text/css">
+  @font-face{font-family:'Fira Sans';font-style:normal;font-weight:500;src:url(/fonts/0/FiraSans/firaSans-medium.eot);src:local("Fira Sans Medium"),local("FiraSans-Medium"),url(/fonts/0/FiraSans/firaSans-medium.eot?#iefix) format("embedded-opentype"),url(/fonts/0/FiraSans/firaSans-medium.woff2) format("woff2"),url(/fonts/0/FiraSans/firaSans-medium.woff) format("woff"),url(/fonts/0/FiraSans/firaSans-medium.ttf) format("truetype")}
+</style>
+
+<link href="https://dr.habracdn.net/habrcom/styles/1543570818/main.bundle.css" rel="stylesheet" media="all" />
+
+
+
+
+
+<meta name='yandex-verification' content='67d46b975fa41645' />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#77a2b6">
+<meta name="application-name" content="Хабр"/>
+<meta name="msapplication-TileColor" content="#77a2b6">
+<meta name="theme-color" content="#77a2b6">
+
+
+  <link title="Хабр / Блог компании Qrator Labs / Комментарии к публикации «Ускорение SQLAlchemy для архитектурных космонавтов»" type="application/rss+xml" rel="alternate" href="https://habr.com/rss/post/430818/?hl=ru_RU&fl=ru%2Cen"/>
+
+<script>/* Font Face Observer v2.0.13 - © Bram Stein. License: BSD-3-Clause */(function(){'use strict';var f,g=[];function l(a){g.push(a);1==g.length&&f()}function m(){for(;g.length;)g[0](),g.shift()}f=function(){setTimeout(m)};function n(a){this.a=p;this.b=void 0;this.f=[];var b=this;try{a(function(a){q(b,a)},function(a){r(b,a)})}catch(c){r(b,c)}}var p=2;function t(a){return new n(function(b,c){c(a)})}function u(a){return new n(function(b){b(a)})}function q(a,b){if(a.a==p){if(b==a)throw new TypeError;var c=!1;try{var d=b&&b.then;if(null!=b&&"object"==typeof b&&"function"==typeof d){d.call(b,function(b){c||q(a,b);c=!0},function(b){c||r(a,b);c=!0});return}}catch(e){c||r(a,e);return}a.a=0;a.b=b;v(a)}}
+function r(a,b){if(a.a==p){if(b==a)throw new TypeError;a.a=1;a.b=b;v(a)}}function v(a){l(function(){if(a.a!=p)for(;a.f.length;){var b=a.f.shift(),c=b[0],d=b[1],e=b[2],b=b[3];try{0==a.a?"function"==typeof c?e(c.call(void 0,a.b)):e(a.b):1==a.a&&("function"==typeof d?e(d.call(void 0,a.b)):b(a.b))}catch(h){b(h)}}})}n.prototype.g=function(a){return this.c(void 0,a)};n.prototype.c=function(a,b){var c=this;return new n(function(d,e){c.f.push([a,b,d,e]);v(c)})};
+function w(a){return new n(function(b,c){function d(c){return function(d){h[c]=d;e+=1;e==a.length&&b(h)}}var e=0,h=[];0==a.length&&b(h);for(var k=0;k<a.length;k+=1)u(a[k]).c(d(k),c)})}function x(a){return new n(function(b,c){for(var d=0;d<a.length;d+=1)u(a[d]).c(b,c)})};window.Promise||(window.Promise=n,window.Promise.resolve=u,window.Promise.reject=t,window.Promise.race=x,window.Promise.all=w,window.Promise.prototype.then=n.prototype.c,window.Promise.prototype["catch"]=n.prototype.g);}());
+
+(function(){function l(a,b){document.addEventListener?a.addEventListener("scroll",b,!1):a.attachEvent("scroll",b)}function m(a){document.body?a():document.addEventListener?document.addEventListener("DOMContentLoaded",function c(){document.removeEventListener("DOMContentLoaded",c);a()}):document.attachEvent("onreadystatechange",function k(){if("interactive"==document.readyState||"complete"==document.readyState)document.detachEvent("onreadystatechange",k),a()})};function r(a){this.a=document.createElement("div");this.a.setAttribute("aria-hidden","true");this.a.appendChild(document.createTextNode(a));this.b=document.createElement("span");this.c=document.createElement("span");this.h=document.createElement("span");this.f=document.createElement("span");this.g=-1;this.b.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;";this.c.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;";
+this.f.style.cssText="max-width:none;display:inline-block;position:absolute;height:100%;width:100%;overflow:scroll;font-size:16px;";this.h.style.cssText="display:inline-block;width:200%;height:200%;font-size:16px;max-width:none;";this.b.appendChild(this.h);this.c.appendChild(this.f);this.a.appendChild(this.b);this.a.appendChild(this.c)}
+function t(a,b){a.a.style.cssText="max-width:none;min-width:20px;min-height:20px;display:inline-block;overflow:hidden;position:absolute;width:auto;margin:0;padding:0;top:-999px;white-space:nowrap;font-synthesis:none;font:"+b+";"}function y(a){var b=a.a.offsetWidth,c=b+100;a.f.style.width=c+"px";a.c.scrollLeft=c;a.b.scrollLeft=a.b.scrollWidth+100;return a.g!==b?(a.g=b,!0):!1}function z(a,b){function c(){var a=k;y(a)&&a.a.parentNode&&b(a.g)}var k=a;l(a.b,c);l(a.c,c);y(a)};function A(a,b){var c=b||{};this.family=a;this.style=c.style||"normal";this.weight=c.weight||"normal";this.stretch=c.stretch||"normal"}var B=null,C=null,E=null,F=null;function G(){if(null===C)if(J()&&/Apple/.test(window.navigator.vendor)){var a=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))(?:\.([0-9]+))/.exec(window.navigator.userAgent);C=!!a&&603>parseInt(a[1],10)}else C=!1;return C}function J(){null===F&&(F=!!document.fonts);return F}
+function K(){if(null===E){var a=document.createElement("div");try{a.style.font="condensed 100px sans-serif"}catch(b){}E=""!==a.style.font}return E}function L(a,b){return[a.style,a.weight,K()?a.stretch:"","100px",b].join(" ")}
+A.prototype.load=function(a,b){var c=this,k=a||"BESbswy",q=0,D=b||3E3,H=(new Date).getTime();return new Promise(function(a,b){if(J()&&!G()){var M=new Promise(function(a,b){function e(){(new Date).getTime()-H>=D?b():document.fonts.load(L(c,'"'+c.family+'"'),k).then(function(c){1<=c.length?a():setTimeout(e,25)},function(){b()})}e()}),N=new Promise(function(a,c){q=setTimeout(c,D)});Promise.race([N,M]).then(function(){clearTimeout(q);a(c)},function(){b(c)})}else m(function(){function u(){var b;if(b=-1!=
+f&&-1!=g||-1!=f&&-1!=h||-1!=g&&-1!=h)(b=f!=g&&f!=h&&g!=h)||(null===B&&(b=/AppleWebKit\/([0-9]+)(?:\.([0-9]+))/.exec(window.navigator.userAgent),B=!!b&&(536>parseInt(b[1],10)||536===parseInt(b[1],10)&&11>=parseInt(b[2],10))),b=B&&(f==v&&g==v&&h==v||f==w&&g==w&&h==w||f==x&&g==x&&h==x)),b=!b;b&&(d.parentNode&&d.parentNode.removeChild(d),clearTimeout(q),a(c))}function I(){if((new Date).getTime()-H>=D)d.parentNode&&d.parentNode.removeChild(d),b(c);else{var a=document.hidden;if(!0===a||void 0===a)f=e.a.offsetWidth,
+g=n.a.offsetWidth,h=p.a.offsetWidth,u();q=setTimeout(I,50)}}var e=new r(k),n=new r(k),p=new r(k),f=-1,g=-1,h=-1,v=-1,w=-1,x=-1,d=document.createElement("div");d.dir="ltr";t(e,L(c,"sans-serif"));t(n,L(c,"serif"));t(p,L(c,"monospace"));d.appendChild(e.a);d.appendChild(n.a);d.appendChild(p.a);document.body.appendChild(d);v=e.a.offsetWidth;w=n.a.offsetWidth;x=p.a.offsetWidth;I();z(e,function(a){f=a;u()});t(e,L(c,'"'+c.family+'",sans-serif'));z(n,function(a){g=a;u()});t(n,L(c,'"'+c.family+'",serif'));
+z(p,function(a){h=a;u()});t(p,L(c,'"'+c.family+'",monospace'))})})};"object"===typeof module?module.exports=A:(window.FontFaceObserver=A,window.FontFaceObserver.prototype.load=A.prototype.load);}());
+
+(function( w ){
+if( w.document.documentElement.className.indexOf( "fonts-loaded" ) > -1 ){ return; }
+
+var html = document.documentElement;
+var FS500 = new w.FontFaceObserver("Fira Sans", { weight: 500 });
+
+FS500.load().then(function() {
+html.classList.add('fonts-loaded');
+sessionStorage.fontsLoaded = true;
+console.log('FS500-loaded');
+}).catch(function () {
+sessionStorage.fontsLoaded = false;
+console.log('FS500-unloaded');
+});
+
+if (sessionStorage.fontsLoaded) {
+html.classList.add('fonts-loaded');
+}
+}(this));
+</script>
+<script src="https://dr.habracdn.net/habrcom/javascripts/1543570818/libs/jquery-1.8.3.min.js"></script>
+<script>
+  window.create_callback_for_blocked = function(key) {
+    return function() {
+      googletag.cmd.push(function () {
+        googletag.display(key);
+      });
+    }
+  }
+
+  window.habr_blockers_checker = new function() {
+    var result;
+    var callbacksQueue = [];
+    var calledOnce = false;
+
+    function fireCallbacks() {
+      callbacksQueue.forEach(function(callback) {
+        callback(result);
+      });
+      callbacksQueue = [];
+    }
+
+    this.detect = function(imgUrl, callback) {
+      var checksRemain = 2;
+      var detected = false;
+      var error1 = false;
+      var error2 = false;
+
+      if (typeof callback !== 'function') {
+        return;
+      };
+
+      callbacksQueue.push(callback);
+
+      if (typeof result !== 'undefined') {
+        fireCallbacks();
+      };
+
+      if (calledOnce) {
+        return;
+      }
+      calledOnce = true;
+
+      imgUrl += '?ch=*&rn=*';
+
+      function beforeCheck(timeout) {
+        if (checksRemain === 0 || timeout > 1E3) {
+          result = checksRemain === 0 && detected;
+          fireCallbacks();
+        } else {
+          setTimeout(function() {
+            beforeCheck(timeout * 2)
+          }, timeout * 2);
+        }
+      }
+
+      function checkImages() {
+        if (--checksRemain) {
+          return;
+        };
+        detected = !error1 && error2;
+      }
+
+      var random = Math.random() * 11;
+
+      var img1 = new Image;
+      img1.onload = checkImages;
+      img1.onerror = function() {
+        error1 = true;
+        checkImages()
+      };
+      img1.src = imgUrl.replace(/\*/, 1).replace(/\*/, random);
+
+      var img2 = new Image;
+      img2.onload = checkImages;
+      img2.onerror = function() {
+        error2 = true;
+        checkImages()
+      };
+      img2.src = imgUrl.replace(/\*/, 2).replace(/\*/, random);
+
+      beforeCheck(250, callback)
+    };
+
+    this.detectWrapper = function(callback) {
+      return this.detect('/images/px.gif', callback);
+    };
+  };
+
+  window.display_dfp_slot = function(key) {
+    if (window.habr_blockers_checker) {
+      window.habr_blockers_checker.detectWrapper(window.create_callback_for_blocked(key));
+    } else {
+      window.create_callback_for_blocked(key)();
+    }
+  };
+</script>
+
+
+<script src="https://dr.habracdn.net/habrcom/javascripts/1543570818/libs/raven.min.js"></script>
+<script>Raven.config('https://830576edd4b7478086093f693a5a0df5@s.tmtm.ru/37').install()</script>
+
+<script src="https://dr.habracdn.net/habrcom/javascripts/1543570818/_parts/advertise.js"></script>
+<script src="https://dr.habracdn.net/habrcom/javascripts/1543570818/_parts/adriver.js"></script>
+
+<script type="text/javascript">
+  function callGA(usesABP) {
+    if (typeof window.adb1 === 'undefined') { window.adb1 = 'yes';}
+    if (usesABP) { window.adb1 = 'aa'; }
+
+    var user_type = 'guest';
+
+    var page_type = "publish_corp";
+
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-726094-1',  'auto');
+        ga('create', 'UA-726094-24', 'auto', {'name': 'HGM'});
+
+
+    ga('require', 'displayfeatures');
+    ga('set', 'dimension1', user_type); // user type - guest/readonly/habrauser
+    ga('set', 'dimension3', 'na');
+    ga('set', 'dimension2', page_type);
+    ga('set', 'dimension4', window.adb1);
+
+
+    (function() {
+      var removeUtms = function(){
+        var location = window.location;
+        if (location.search.indexOf('utm_') != -1 && history.replaceState) {
+          var currentUrl = location.toString();
+          var strippedUrl = currentUrl.replace(/\?([^#]*)/, function(_, search) {
+            var result = search.split('&').map(function(param) {
+              if (/^utm_/.test(param)) {
+                return '';
+              }
+              return param;
+            }).filter(Boolean).join('&');
+            return result ? '?' + result : '';
+          });
+
+          history.replaceState({}, '', strippedUrl);
+        }
+      };
+      ga('require', 'GTM-559GVC8');
+      ga('send', 'pageview', { 'hitCallback': removeUtms });
+    })();
+
+    ga('HGM.set', 'dimension1', user_type);
+    ga('HGM.set', 'dimension2', "habrahabr");
+    ga('HGM.set', 'dimension4', window.adb1);
+
+    ga('HGM.send', 'pageview');
+  }
+
+
+  if (window.habr_blockers_checker) {
+    window.habr_blockers_checker.detectWrapper(callGA);
+  } else {
+    callGA(false)
+  }
+
+</script>
+
+
+  </head>
+
+  <body class="nl">
+
+    <div class="layout">
+      <div class="layout__row layout__row_services">
+        <div id="TMpanel">
+  <div class="container">
+    <div class="bmenu">
+      <a href="https://habr.com?utm_source=tm_habrahabr&utm_medium=tm_top_panel&utm_campaign=tm_promo" class="current">Хабр</a>
+      <a href="https://habr.com/flows/geektimes/">Geektimes</a>
+      <a href="https://toster.ru?utm_source=tm_habrahabr&utm_medium=tm_top_panel&utm_campaign=tm_promo">Тостер</a>
+      <a href="https://moikrug.ru?utm_source=tm_habrahabr&utm_medium=tm_top_panel&utm_campaign=tm_promo">Мой круг</a>
+      <a href="https://freelansim.ru?utm_source=tm_habrahabr&utm_medium=tm_top_panel&utm_campaign=tm_promo">Фрилансим</a>
+    </div>
+  </div>
+</div>
+
+      </div>
+
+      <div class="layout__row layout__row_navbar">
+        <div class="layout__cell">
+          <div class="main-navbar">
+  <div class="main-navbar__section main-navbar__section_left">
+    <span class="logo-wrapper">
+      <a href="/" class="logo" title="">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg icon-svg_logo-habrahabr" width="71" height="26" viewBox="0 0 92 32"><path d="M6.827 12.278c1.273-1.735 3.304-2.848 5.595-2.848l.521.019-.023-.001c4.272 0 7.587 2.988 7.587 7.941v14.047h-6.827v-11.636c0-2.529-1.31-3.931-3.381-3.931-1.9 0-3.473 1.31-3.473 4.062v11.505h-6.827v-31.45h6.827zM46.611 31.437h-6.552v-2.319c-1.357 1.764-3.468 2.89-5.843 2.89l-.332-.007.016.001c-5.713 0-9.946-4.98-9.946-11.296s4.233-11.256 9.972-11.256l.288-.006c2.378 0 4.491 1.131 5.832 2.884l.013.018v-2.306h6.552zm-15.725-10.72c0 2.533 2.053 4.586 4.586 4.586s4.586-2.053 4.586-4.586c0-2.533-2.053-4.586-4.586-4.586s-4.586 2.053-4.586 4.586zM73.959 20.704c0 6.316-4.246 11.296-9.959 11.296l-.342.008c-2.354 0-4.446-1.116-5.778-2.848l-.013-.017v2.293h-6.552v-31.45h6.814v12.095c1.343-1.61 3.351-2.628 5.596-2.628l.329.007-.016-.001c5.674-.013 9.92 4.94 9.92 11.243zm-16.157 0c0 2.533 2.053 4.586 4.586 4.586s4.586-2.053 4.586-4.586c0-2.533-2.053-4.586-4.586-4.586s-4.586 2.053-4.586 4.586zM92.318 9.776l-.59 6.801c-1.019-.342-2.193-.547-3.412-.563h-.008c-.15-.023-.323-.036-.498-.036-1.911 0-3.459 1.549-3.459 3.459 0 .151.01.3.029.447l-.002-.017v11.571h-6.84v-21.399h6.552v2.464c1.124-1.85 3.128-3.068 5.417-3.068l.448.016-.02-.001h.022c.842 0 1.655.12 2.425.343l-.061-.015z"/></svg>
+
+      </a>
+      
+    </span>
+    <ul class="nav-links" id="navbar-links">
+  <li class="nav-links__item">
+    <a href="/" class="nav-links__item-link ">Публикации</a>
+  </li>
+  <li class="nav-links__item">
+    <a href="/users/" class="nav-links__item-link ">Пользователи</a>
+  </li>
+  <li class="nav-links__item">
+    <a href="/hubs/" class="nav-links__item-link ">Хабы</a>
+  </li>
+  <li class="nav-links__item">
+    <a href="/companies/" class="nav-links__item-link ">Компании</a>
+  </li>
+  <li class="nav-links__item">
+    <a href="/sandbox/" class="nav-links__item-link ">Песочница</a>
+  </li>
+</ul>
+
+    <form action="/search/#h" method="get" class="search-form" id="search-form">
+  <button type="button" class="btn btn_navbar_search icon-svg_search" id="search-form-btn" title="Поиск по сайту">
+    <svg class="icon-svg" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" version="1.1" role="img"><path d="M21.416 13.21c0 4.6-3.65 8.34-8.14 8.34S5.11 17.81 5.11 13.21c0-4.632 3.65-8.373 8.167-8.373 4.488 0 8.14 3.772 8.14 8.372zm1.945 7.083c1.407-2.055 2.155-4.57 2.155-7.084C25.515 6.277 20.04.665 13.277.665S1.04 6.278 1.04 13.21c0 6.93 5.475 12.542 12.237 12.542 2.454 0 4.907-.797 6.942-2.208l7.6 7.79 3.14-3.22-7.6-7.82z"/></svg>
+  </button>
+  <label class="search-form__field-wrapper">
+    <input type="text" name="q" class="search-form__field" id="search-form-field" placeholder="Поиск" tabindex="-1"/>
+    <button type="button" class="btn btn_search-close" id="search-form-clear" title="Закрыть">
+      <svg class="icon-svg icon-svg_navbar-close-search" width="31" height="32" viewBox="0 0 31 32" aria-hidden="true" version="1.1" role="img"><path d="M26.67 0L15.217 11.448 3.77 0 0 3.77l11.447 11.45L0 26.666l3.77 3.77L15.218 18.99l11.45 11.448 3.772-3.77-11.448-11.45L30.44 3.772z"/></svg>
+
+    </button>
+  </label>
+</form>
+
+  </div>
+
+  <div class="main-navbar__section main-navbar__section_right">
+      <a href="https://habr.com/auth/login/" id="login" class="btn btn_medium btn_navbar_login">Войти</a>
+      <a href="https://habr.com/auth/register/" class="btn btn_medium btn_navbar_registration">Регистрация</a>
+
+
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="layout__row layout__row_body">
+        <div class="layout__cell layout__cell_body">
+          
+            
+  
+  
+  
+    <div class="page-header_bordered page-header_tall">
+      <div class="page-header page-header_full" id="company_817">
+  <div class="page-header_wrapper">
+    <div class="media-obj media-obj_page-header">
+        <a href="/company/qrator/" class="media-obj__image page-header__image">
+            <img src="//habrastorage.org/getpro/habr/company/f17/51d/f56/f1751df56c45182e5aad4a38d2995eb3.jpg" width="48" height="48" class="company-info__image-pic"/>
+        </a>
+
+      <div class="media-obj__body media-obj__body_page-header">
+         <div class="page-header__stats">
+          <div class="page-header__stats-value">172,00</div>
+          <div class="page-header__stats-label" title="Хабраиндекс - абстрактный показатель популярности компании на Хабре">Рейтинг</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-header__info">
+    <h1 class="page-header__info-title">Qrator Labs</h1>
+    <h2 class="page-header__info-desc">
+      Знаем всё о доступности в интернете
+    </h2>
+  </div>
+</div>
+
+    </div>
+
+  <div class="column-wrapper js-sticky-wrapper">
+    <div class="content_left js-content_left">
+      <div class="company_post">
+        
+    <article class="post post_full" id="post_430818">
+  <div class="post__wrapper">
+    <header class="post__meta">
+      <a href="https://habr.com/users/Shapelez/" class="post__user-info user-info" title="Автор публикации">
+          <img src="//habrastorage.org/getpro/habr/avatars/803/5e1/6eb/8035e16eb2a755688d69bb677570e42f.jpg" width="24" height="24" class="user-info__image-pic user-info__image-pic_small">
+        <span class="user-info__nickname user-info__nickname_small">Shapelez</span>
+      </a>
+
+      <span class="post__time">23 ноября 2018 в 02:01</span>
+
+      
+    </header>
+
+    <h1 class="post__title post__title_full">
+      <span class="post__title-text">Ускорение SQLAlchemy для архитектурных космонавтов</span>
+    </h1>
+
+
+      <ul class="post__hubs post__hubs_full-post inline-list">
+          <li class="inline-list__item inline-list__item_hub">
+            <a href="https://habr.com/company/qrator/" class="inline-list__item-link hub-link " title="Вы не подписаны на этот хаб" onclick="if (typeof ga === 'function') { ga('send', 'event', 'hub', 'post page', 'Блог компании Qrator Labs'); }">Блог компании Qrator Labs</a>, 
+          </li>
+          <li class="inline-list__item inline-list__item_hub">
+            <a href="https://habr.com/hub/python/" class="inline-list__item-link hub-link " title="Вы не подписаны на этот хаб" onclick="if (typeof ga === 'function') { ga('send', 'event', 'hub', 'post page', 'Python'); }">Python</a>, 
+          </li>
+          <li class="inline-list__item inline-list__item_hub">
+            <a href="https://habr.com/hub/sql/" class="inline-list__item-link hub-link " title="Вы не подписаны на этот хаб" onclick="if (typeof ga === 'function') { ga('send', 'event', 'hub', 'post page', 'SQL'); }">SQL</a>, 
+          </li>
+          <li class="inline-list__item inline-list__item_hub">
+            <a href="https://habr.com/hub/refactoring/" class="inline-list__item-link hub-link " title="Вы не подписаны на этот хаб" onclick="if (typeof ga === 'function') { ga('send', 'event', 'hub', 'post page', 'Проектирование и рефакторинг'); }">Проектирование и рефакторинг</a>, 
+          </li>
+          <li class="inline-list__item inline-list__item_hub">
+            <a href="https://habr.com/hub/complete_code/" class="inline-list__item-link hub-link " title="Вы не подписаны на этот хаб" onclick="if (typeof ga === 'function') { ga('send', 'event', 'hub', 'post page', 'Совершенный код'); }">Совершенный код</a>
+          </li>
+      </ul>
+
+    <ul class="post__marks inline-list"></ul>
+
+    <div class="post__body post__body_full">
+      <div class="post__text post__text-html js-mediator-article"><img src="https://habrastorage.org/webt/nk/mr/3o/nkmr3o45oaha-8h6n1elhxx3nai.png"><br>
+<blockquote>Хабр, это доклад инженера-программиста Алексея Старкова на конференции Moscow Python Conf++ 2018 в Москве. Видео в конце поста.</blockquote>Всем привет! Меня зовут Алексей Старков — это я, в свои лучшие годы, работаю на заводе.<br>
+Теперь я работаю в Qrator Labs. В основном, всю свою жизнь, я занимался C и C++ — люблю Александреску, «Банду Четырех», принципы SOLID — вот это всё. Что и делает меня архитектурным космонавтом. Последние пару лет пишу на Python, потому что мне это нравится.<br>
+<br>
+Собственно, кто такие «архитектурные космонавты»? Первый раз я встретил данный термин у Джоэля Спольски, вы наверное его читали. Он описывает «космонавтов», как людей, которые хотят построить идеальную архитектуру, которые навешивают абстракцию, над абстракцией, над абстракцией, которая становится все более и более общей. В конце концов, эти уровни идут так высоко, что описывают все возможные программы, но не решают никаких практических задач. В этот момент у «космонавта» (это последний раз, когда данный термин окружен кавычками) кончается воздух и он умирает.<br>
+<br>
+Я тоже имею тенденции к архитектурной космонавтике, но в этом докладе я расскажу немного о том, как это меня укусило и не позволило построить систему с необходимой производительностью. Главное — как я это поборол.<br>
+<br>
+Краткое содержание моего доклада: было / стало.<br>
+<a name="habracut"></a><br>
+<img src="https://habrastorage.org/webt/wj/_u/7c/wj_u7c0h2uaody3dj48xsbytsb4.png"><br>
+<br>
+Увеличение в тысячи и миллионы раз. Когда я сделал этот слайд, единственная мысль, которая у меня возникла, это: «Как?»<br>
+<br>
+<img src="https://habrastorage.org/webt/of/cb/q_/ofcbq_bd033u4wh31hzexjkstfc.png"><br>
+<br>
+Где я мог так сильно накосячить? Если вы не хотите накосячить так же как я — читайте дальше.<br>
+<br>
+<img src="https://habrastorage.org/webt/md/ni/gt/mdnigtyu3igzmlqmcf89isptecc.png"><br>
+<br>
+Я буду рассказывать про систему конфигурации. Система конфигурации — это внутренний инструмент в Qrator Labs, которая занимается тем, что хранит конфигурацию для Software Defined Network (SDN) — нашей сети фильтрации. Она занимается тем, что синхронизирует конфигурацию между компонентами и отслеживает ее состояние.<br>
+<br>
+<img src="https://habrastorage.org/webt/xz/kg/zr/xzkgzr2wrphmvslxnx3v2qezxta.png"><br>
+<br>
+Из чего она, вкратце, состоит? У нас есть база данных, в которой хранится слепок нашей конфигурации для всей сети, и есть сервер, который обрабатывает команды, приходящие на него и каким то образом меняет конфигурацию.<br>
+<br>
+Наши технические администраторы и клиенты приходят в этот сервер и с помощью консоли, через конечные API эндпойнты, REST API, JSON RPC и прочего выдают команды к серверу, вследствие чего он меняет нашу конфигурацию.<br>
+<br>
+Команды могут быть как очень простые, так и посложнее. Затем, у нас есть некий набор приемников, которые составляют нашу SDN и сервер пушит конфигурацию на эти приемники. Звучит довольно просто. В основном, я буду рассказывать вот про эту часть.<br>
+<br>
+<img src="https://habrastorage.org/webt/yp/uq/c7/ypuqc7pzaeqvmbzsrksb9gefq-w.png"><br>
+<br>
+Поскольку именно она имеет отношение к базе данных и к алхимии.<br>
+<br>
+<img src="https://habrastorage.org/webt/qg/sz/np/qgsznprvrp4smdpbuoxopevxxt4.png"><br>
+<br>
+В чем особенность этой системы? Она достаточно небольшая — средненькая. Сотни тысяч, до миллионов, сущностей хранятся в этой базе. Особенность в том, что граф отношений между сущностями довольно сложный. Есть несколько иерархий наследования между сущностями, есть включения, есть просто зависимости между ними. Все эти ограничения обусловлены бизнес-логикой и мы их должны соблюдать.<br>
+<br>
+Соотношение запросов на запись к запросам на чтение составляет примерно 15:1. Тут понятно: приходит много команд на изменение конфигурации и раз в некий продолжительный период времени у нас происходит пуш конфигурации на конечные точки.<br>
+<br>
+Внутри используется MySQL — он имеется и в других продуктах нашей компании, у нас достаточно серьезная экспертиза по данной БД, есть люди которые умеют с ней работать: построить схему данных, проектировать запросы и все остальное. Поэтому мы взяли MySQL, как универсальную реляционную базу данных.<br>
+<br>
+<img src="https://habrastorage.org/webt/x0/xs/ae/x0xsae3wqaqw4dfth-y8q7i3tqk.png"><br>
+<br>
+В чем возникла проблема после того, как мы спроектировали эту систему? Выполнение одной команды занимало от одной до тридцати секунд, в зависимости от сложности команды. Соответственно, задержка выполнения доходила до пяти минут. Одна команда пришла — 30 секунд, вторая и так далее, стопку накопили — задержка 5 минут.<br>
+<br>
+Задержка на применение конфигурации — до десяти минут. Было принято решение, что для нас этого недостаточно и необходимо провести оптимизацию.<br>
+<br>
+<img src="https://habrastorage.org/webt/ah/6t/fj/ah6tfjmleq-fzvoecldzw5qxxu0.png"><br>
+<br>
+Первое — прежде чем проводить любую оптимизацию, необходимо провести расследование и выяснить, в чем же, собственно, дело.<br>
+<br>
+<img src="https://habrastorage.org/webt/nu/wf/g6/nuwfg6v2hg2jangw6agmu9i6bw0.png"><br>
+<br>
+Как оказалось, у нас не хватало самого важного компонента для расследования — у нас не было телеметрии. Поэтому, если вы какую то систему проектируете, сначала, на этапе проектирования, закладывайте в нее телеметрию. Даже если система изначально маленькая, потом чуть побольше, потом еще больше — в итоге все приходят к ситуации, когда нужно смотреть трейсы, а телеметрии нет.<br>
+<br>
+<img src="https://habrastorage.org/webt/eh/ws/3t/ehws3tezqmrdlvfcljs1pxbttgm.png"><br>
+<br>
+Что можно сделать следующим, если у вас нет телеметрии? Можно анализировать логи. Здесь достаточно простые скрипты проходят наши логи и превращают их вот в такую таблицу, иллюстрирующую самое быстрое, самое медленное и среднее время выполнения команды. Начиная отсюда, мы уже видим, в каких местах у нас затыки: какие команды выполняются дольше, какие — быстрее. <br>
+<br>
+<img src="https://habrastorage.org/webt/m6/0a/gc/m60agccykga4hl82ktrjfjglzqq.png"><br>
+<br>
+Единственное, что нужно отметить — анализируя логи, мы считаем только время выполнения этих команд на сервере. Это первый этап — тот, что помечен как t2. t1 — это то, как клиент увидит время исполнения нашей команды: попадание в очередь, ожидание, выполнение на сервере. Это время будет больше, поэтому мы оптимизируем время t2, а после используем время t1 для того, чтобы определить, достигли ли мы цели.<br>
+<br>
+t1 является метрикой качества нашего быстродействия.<br>
+<br>
+<img src="https://habrastorage.org/webt/dx/dd/05/dxdd05sisxq1ciu6nu-na0zons8.png"><br>
+<br>
+Соответственно, так мы все команды попрофилировали — то есть взяли лог с сервера, прогнали его через наши скрипты, посмотрели и выявили компоненты, работающее наиболее медленно. Сервер построен достаточно модулярно, за каждую команду отвечает отдельный компонент, и мы можем профилировать компоненты индивидуально — и делать для них бенчмарки. Такой вот у нас был класс — для каждого проблемного компонента мы писали, в котором в code_under_test() мы делали некую активность, изображающую боевое использование компонента. И было два метода: profile() и bench(). Первый вызывает cProfile, показывая сколько раз что вызывалось, где бутылочные горлышки.<br>
+<br>
+bench() запускался несколько раз и считал нам разные метрики — так мы оценивали производительность.<br>
+<br>
+Но, оказалось, что проблема то не в этом!<br>
+<br>
+<img src="https://habrastorage.org/webt/wz/r8/-p/wzr8-pc9epal61cjoraog7bkvxc.png"><br>
+<br>
+Основная проблема оказалась в количестве запросов к базе данных. Запросов было очень много и, чтобы понять, почему их было так много — давайте посмотрим на то, как все было организовано.<br>
+<br>
+<img src="https://habrastorage.org/webt/bg/r0/rz/bgr0rzhohcouyykpc3raznbi4rq.png"><br>
+<br>
+Перед нами кусочек простой схемы, представляющей наши приемники, представленные в виде класса Reciever. Они объединены в некоторую группу — receiver group. И, соответственно, есть какие-то конфигурационные плейны — срезы конфигурации, представляющие собой подмножество конфигураций, отвечающие за одну «роль» этого ресивера. Например, для раутинга — routing plane. Плейны с ресиверами могут быть связаны в любом порядке — то есть это отношение «многие ко многим».<br>
+<br>
+Это кусочек большой схемы, который я привожу здесь для того, чтобы далее были понятны примеры.<br>
+<br>
+Что хочет сделать каждый архитектурный космонавт, когда он видит чужой API? Он хочет спрятать его, абстрагировать и написать свой интерфейс, для того чтобы можно было убрать этот API, вернее спрятать его.<br>
+<br>
+<img src="https://habrastorage.org/webt/nq/zq/7-/nqzq7-zlnbxkkmy7mywbp8lqvq4.png"><br>
+<br>
+Соответственно, есть «грязный» API алхимии, в котором находятся, собственно, мэпперы и наш «чистый» класс — Receiver, в котором хранится какая-то конфигурация и есть методы: load(), save(), delete(). И все остальные, связанные с ним классы. У нас получается граф питоновских объектов, как-то связанных между собой — у каждого из них есть метод load(), save(), delete(), который обращается к мэпперу алхимии, который, в свою очередь, обращается в API.<br>
+<br>
+<img src="https://habrastorage.org/webt/cs/bo/lr/csbolr6uozuvbxhimmqik_llgak.png"><br>
+<br>
+Реализация тут очень простая. У нас есть метод load, который делает query в базу данных и для каждого полученного объекта создает свой питоновский объект. Есть метод save, который делает обратную операцию — смотрит, есть ли объект в базе данных, по первичному ключу, если нет — создает, добавляет и далее мы сохраняем состояние этого объекта. delete по первичному ключу получает и удаляет объект из базы.<br>
+<br>
+<img src="https://habrastorage.org/webt/fl/hq/lp/flhqlp2vg6srgo7wswpbowrlq6e.png"><br>
+<br>
+Основная проблема сразу же видна — это мэппинг. Сначала мы делаем это один раз из питоновского объекта в мэппер, потом мэппер мэппит в базу. Дополнительный мэппинг — это один-два вызова, что может быть еще не так страшно. Основной проблемой оказалась ручная синхронизация. У нас есть два объекта нашего «чистого» интерфейса и у одного из них меняется атрибут — как мы увидим, что атрибут поменялся в другом? Никак. Необходимо слить изменения в базу и получить атрибут в другом объекте. Конечно, если мы знаем, что объекты присутствуют в одном контексте, мы можем как-то это отследить. Но если у нас две сессии в разных местах — только через базу, либо городить базу в памяти, чего мы делать не стали.<br>
+<br>
+Этот load/save/delete — это еще один мэппер, который полностью дублирует внутренности алхимии, которая хорошо написана, оттестирована. Этому инструменту много лет, в интернете по нему куча помощи и дублировать это тоже не очень хорошо.<br>
+<br>
+Видите значок в правом верхнем углу? Так я буду помечать слайды, на которых делается что-то для «чистоты», для повышения уровня абстракции, для архитектурной космонавтики. То есть слайды без этого значка — прагматичные и скучные, неинтересные и их можно не читать. <br>
+<br>
+Что делать, если медленно работает много запросов. Много ли? На самом деле много. Представим себе цепь наследования: один объект, у него один родитель, у того еще один родитель. Мы синхронизируем дочерний объект — для того, чтобы это сделать, сначала необходимо синхронизировать родителей. Для того, чтобы синхронизировать родителя, нужно синхронизировать и его родителя. Хорошо, всех синхронизировали. На самом же деле, в зависимости от того, как у нас построен граф, мы могли ходить и по сто раз синхронизировать все эти объекты — отсюда большое количество запросов.<br>
+<br>
+<img src="https://habrastorage.org/webt/zo/n7/uh/zon7uhhtngwjd5rnaztxexuatsu.png"><br>
+<br>
+Что мы сделали? Мы взяли всю нашу бизнес-логику и засунули ее в мэппер. Все остальные объекты у нас тоже слились с мэпперами и всё наше API, весь data abstraction layer, оказался «грязным». <br>
+<br>
+<img src="https://habrastorage.org/webt/qn/4a/fz/qn4afzy7q6yrh0t-yw4r4m6c9se.png"><br>
+<br>
+Вот как это выглядит в Python — у нашего мэппера есть какая-то бизнес-логика, тут же присутствует декларативное описание этой таблички. Колоночки перечислены, отношения. Вот такой вот мы имеем класс.<br>
+<br>
+<img src="https://habrastorage.org/webt/ez/ud/sg/ezudsgqk1b9domctg8sdvzh4uj8.png"><br>
+<br>
+Конечно, с точки зрения любого космонавта, грязное API — недостаток. Бизнес-логика в декларативном описании базы. Схемы перемешаны с бизнес-логикой. Фу. Некрасиво.<br>
+<br>
+Загромождается описание схемы. Это на самом деле проблема — если бизнес-логики у нас не две строчки, а больший объем, то у нас в этом же классе надо очень долго скроллить или искать, для того чтобы добраться до конкретных описаний. До этого все было красиво: в одном месте описание базы, декларативное, описание схем, в другом месте бизнес-логика. А тут схема загромождена.<br>
+<br>
+Но, зато, мы сразу получаем механизмы алхимии: unit of work, позволяющий отслеживать, какие объекты грязные и какие релейшены нужно обновить; получаем relationship, позволяющие избавиться от дополнительных вопросов в базу данных, не следя за тем, чтобы соответствующие коллекции были наполнены; и identity map, который нам больше всего помог. Identity map гарантирует, что два питоновских объекта будут одними и тем же питоновским объектом, если у них совпадает первичный ключ.<br>
+<br>
+Соответственно, у нас сразу же понизилась сложность до линейной.<br>
+<br>
+<img src="https://habrastorage.org/webt/j4/ek/x8/j4ekx8dvwphpdavetrxejd1uvxg.png"><br>
+<br>
+Это промежуточные результаты. Быстродействие сразу же увеличилось в 10 раз, количество запросов в базу данных упало примерно в 40-80 раз и RPS поднялся до 1-5. Ну, хорошо. Но API то грязный. Что делать?<br>
+<br>
+<img src="https://habrastorage.org/webt/kj/po/hs/kjpohswqs8svlzroeizbub0tpmk.png"><br>
+<br>
+Миксины. Берем бизнес-логику, опять выносим ее из нашего мэппера но, чтобы опять не было мэппинга, мы наш мэппер внутри алхимии унаследуем от нашего миксина. Почему не в обратную сторону? В алхимии так не получится, она ругнется и скажет: «У тебя на одну табличку ссылается два разных класса, нет никакого полиформизма — иди отсюда». А так — можно.<br>
+<br>
+Таким образом, у нас есть декларативное описание в мэппере, которое отнаследовано от миксина и получает всю бизнес-логику. Очень удобно. И остальные классы точно так же. Казалось бы — круто же, все чисто. Но есть один нюанс — связи и релейшены остаются внутри алхимии, а когда у нас есть, допустим, join через промежуточную табличку secondary table, то мэппер этой таблички каким-то образом будет присутствовать в клиентском коде, что не очень красиво.<br>
+<br>
+Алхими бы не была таким хорошим, известным, фреймворком если бы не давала возможности побороться с этим. <br>
+<br>
+<img src="https://habrastorage.org/webt/g6/dz/gg/g6dzggup-pvokdl7h4mguhedazc.png"><br>
+<br>
+Как выглядит миксин. У него бизнес-логика, мэпперы отдельно, декларативное описание таблички. Связи остаются внутри алхимии, но бизнес-логика отделена.<br>
+<br>
+Как выглядит общая схема?<br>
+<br>
+<img src="https://habrastorage.org/webt/xl/1c/eh/xl1cehyjtaoqytk_gz5h-wbc5we.png"><br>
+<br>
+У нас есть файл со схемой, в которой собраны все наши декларативные классы — назовем ее schema.py. И у нас есть сущности в бизнес-логике, отдельно. И, данные сущности наследуются внутри файла схемы — мы для каждой entity пишем отдельный класс, и наследуем его в схеме. Таким образом, бизнес-логика лежит в одной кучке, схема — в другой и их можно независимо менять. <br>
+<br>
+<img src="https://habrastorage.org/webt/rj/cl/ql/rjclqll79e8wcjwkjfxova8hhpe.png"><br>
+<br>
+В качестве примера улучшения мы будем рассматривать простую схему из двух табличек: приемники (Receiver table) и срезы конфигурации (ReceiverPlanes table). Срезы конфигурации отношением «многие к одному» связаны с табличкой приемников. Особенно сложного ничего нет.<br>
+<br>
+Для того, чтобы скрыть отношения внутри «грязного» интерфейса алхимии, мы используем отношения и коллекции.<br>
+<br>
+<img src="https://habrastorage.org/webt/mz/ih/qg/mzihqg-lfqb8vhflbkxjpf8igp8.png"><br>
+<br>
+Они позволяют спрятать наши мэпперы от клиентского кода. <br>
+<br>
+<img src="https://habrastorage.org/webt/y8/qc/v1/y8qcv1qj8_jq3y_pn-2xw-t6bji.png"><br>
+<br>
+В частности, две очень полезные коллекции это association_proxy и attribute_mapped_collection. Мы их применяем вместе. Как работает классическое отношение в алхимии: у нас есть relationship — это некая коллекция, список, мэпперов. Мэпперов объектов дальнего конца отношения. Attribute_mapped_collection позволяет заменить этот список на дикт, ключами в котором будут какие-то из атрибутов мэпперов, а значениями являются сами мэпперы. <br>
+<br>
+Это первый шаг.<br>
+<br>
+<img src="https://habrastorage.org/webt/ho/tj/tt/hotjtty0hmg99f_kquecwyo4ms4.png"><br>
+<br>
+Вторым шагом, мы делаем association_proxy над этим отношением. Он позволяет нам не передавать мэппер в коллекцию, а передавать какое-то значение, которое после будет использовано для инициализации нашего мэппера, ReceiverPlanes.<br>
+<br>
+Тут у нас lambda, в которой мы передаем ключ и значение. Ключ превращается в имя среза конфигурации, а значение — в значение среза конфигурации. В итоге, в клиентском коде, все выглядит вот так.<br>
+<br>
+<img src="https://habrastorage.org/webt/ko/00/s7/ko00s71bgaxu6i-h_baocnnqz-w.png"><br>
+<br>
+Мы просто в какой-то словарь кладем какой-то дикт. Все работает: никаких мэпперов, никакой алхимии, никаких баз данных.<br>
+<br>
+Правда, есть подводные камни.<br>
+<br>
+<img src="https://habrastorage.org/webt/ux/ji/uy/uxjiuybsymdbtrvqlazqhckdv8c.png"><br>
+<br>
+Если мы два раза одному ключу присваиваем разные, или даже одно, значения — на каждый такой set item вызывается lambda, создается объект — мэппер. И, в зависимости от того, как устроена схема это может привести к разным последствиям, от «просто нарушений констрейнтов», до непредсказуемых последствий. Например, вы вроде объект удалили из коллекции, а он там все-равно остался: вы удалили только один. Когда я только начинал, на такие вещи я убил уйму времени.<br>
+<br>
+И немного неявная синхронизация. Association_proxy и attribute_mapped_collection могут немного задерживаться: когда мы создаем объект мэппера — он добавляется в базу данных, но при этом он еще не присутствует в атрибуте коллекции. Он появится там только тогда, когда атрибут истечет (expire) в этой сессии. Когда он экспайрится, произойдет новая синхронизация с базой данных и он туда попадет.<br>
+<br>
+Чтобы с этим побороться мы применяли собственные, самописные, коллекции. Это даже не алхимия — можно просто создать свою коллекцию, чтобы все это побороть.<br>
+<br>
+<img src="https://habrastorage.org/webt/bk/l6/ya/bkl6yaerwagttjp6qprlfbsdpaw.png"><br>
+<br>
+Тут побольше кода и выделен самый важный участок. У нас есть некая коллекция, которая наследует от мьютэбл мэппинга — это дикт, в ключах которого можно менять значения. И есть метод _get_plane_obj — получить объект среза конфигурации.<br>
+<br>
+Тут мы делаем простые вещи — пытаемся получить его по имени, по какому-нибудь первичному ключу и, если его нет, то мы создаем и возвращаем этот объект.<br>
+<br>
+Далее мы переопределяем всего два метода: __setitem__ и __getitem__<br>
+В __setitem__ мы складываем эти объекты в нашу коллекцию, в relationship. Единственное — значение мы присваиваем в самом конце. Таким образом, мы осуществляем тот же механизм, что и association_proxy — передаем туда значение, дикт, и он присваивается соответствующему атрибуту.<br>
+<br>
+__getitem__ делает обратную манипуляцию. Он получает по ключу какой-то объект у релейшена и возвращает его атрибут. Здесь также присутствует небольшой подводный камень — если закешировать коллекцию внутри нашего мэппинга, то возможно немного рассинхронизироваться. Потому что когда у алхимии экспайрится атрибут коллекции, то коллекция заменяется на другую, после истечения. Поэтому мы можем сохранить референс на старую коллекцию и не знать, что старая истекла и уже появилась новая. Поэтому мы в последней части мы идем прямо к инстансу алхимии, опять получаем коллекцию через __getattr__ и у нее делаем __getitem__. То есть, коллекцию Planes мы здесь не можем закешировать.<br>
+<br>
+<img src="https://habrastorage.org/webt/_0/l6/tt/_0l6tt3pcdjmsxlwy2hivf1b4ty.png"><br>
+<br>
+Как эта коллекция пришлепывается на наши миксины? Как обычно — заводим атрибут коллекции. Единственное интересное место заключается в том, что когда мы загружаем инстанс из базы, метод __init__ не вызывается. Все атрибуты подставляются постфактум.<br>
+<br>
+Алхимия дает стандартный декоратор reconstructor, который позволяет какой-то метод пометить как вызывающийся после загрузки объекта из базы. И как раз во время загрузки мы должны инициализировать нашу коллекцию. Self — как раз этот инстанс. Использование точно такое же, как в предыдущем примере.<br>
+<br>
+<img src="https://habrastorage.org/webt/qe/yr/h4/qeyrh4fd3cmfpm8-exbfd1rwpkw.png"><br>
+<br>
+Но у нас в схеме все еще остались видны уши базы данных — это конфигурация. Какого типа конфигурация? Это varchar или это блоб? На самом деле, клиенту это не интересно. Он должен работать с абстрактными сущностями своего уровня. Для этого в алхимии предусмотрено декорирование типов.<br>
+<br>
+<img src="https://habrastorage.org/webt/ds/lc/ic/dslcicbf3yrljfchfwbxhcucleq.png"><br>
+<br>
+Простой примерчик. В нашей базе хранится IPAddress в виде varchar’а. Мы используем класс TypeDecorator, входящий в алхимию, который позволяет, во-первых, указать какой нижележащий тип базы данных будет использоваться для данного типа и, во-вторых, определить два параметра: process_bind_param преобразующий значение к типу базы данных и process_result_value, когда мы значение от типа базы данных преобразуем в питоновский объект. <br>
+<br>
+Атрибут от address приобретает как бы питоновский тип IPAddress. И мы можем как вызывать методы этого типа, так и присваивать ему объекты этого типа и у нас все работает. А в базе хранится… не знаю что хранится, varchar(45), а можем заменить ту строчку и будет хранится блоб. Или если какой-то нативный тип поддерживает IP-адреса, то можно и его использовать.<br>
+<br>
+Клиентский код от этого никак не зависит, его не нужно переписывать.<br>
+<br>
+<img src="https://habrastorage.org/webt/xb/m5/uu/xbm5uu_ryeji94kthsv0rp2ogdw.png"><br>
+<br>
+Еще одна интересная вещь — у нас есть версия. Мы хотим, чтобы как только мы поменяли наш объект, версию сразу увеличить. Какой-то счетчик версий у нас есть, мы объект поменяли — он поменялся, версия увеличилась. Делаем мы это автоматически, чтобы не забыть.<br>
+<br>
+<img src="https://habrastorage.org/webt/zy/g5/ro/zyg5rofkv1ibi-yb-kuv3kikbww.png"><br>
+<br>
+Для этого мы применяли эвенты. Эвенты — это события, возникающие на разных этапах жизни мэппера и они могут вызываться при изменении атрибутов, при переходе сущности из одного состояния в другое, например «создано», «сохранено в базу», «загружено из базы», «удалено»; а также — при событиях уровня сессии, перед тем, как sql-код эмитируется в базу данных, перед коммитом, после коммита, также после роллбэка.<br>
+<br>
+Алхимия позволяет нам назначать хэндлеры для всех этих событий, но порядок выполнения хэндлеров для одного и того же события не гарантирован. То есть он определенный, но неизвестно какой. Поэтому, если вам важен порядок выполнения, то нужно делать механизм регистрации.<br>
+<br>
+<img src="https://habrastorage.org/webt/wb/h2/w1/wbh2w1k4s4y6jqemt4oatlknwug.png"><br>
+<br>
+Вот пример. Здесь используется три события:<br>
+on_before_flush — перед тем, как sql-код будет эмитирован в базу данных, мы проходим по всем объектам, которые алхимия пометила как грязные в этой сессии и проверяем, модифицирован этот объект или нет. Зачем это нужно, если алхимия уже все пометила? Алхимия помечает объект грязным, как только изменился какой-то атрибут. Если мы присвоили этому атрибуту то же самое значение, которое у него было — он будет помечен как грязный. Для этого есть метод сессии is_modified — он используется внутри, я его не нарисовал. Далее, с точки зрения нашей семантики, с точки зрения нашей бизнес-логики, даже если атрибут изменился — объект все-равно может оставаться не модифицированным. Например, есть некий список, два элемента в котором поменяли местами — с точки зрения алхимии, атрибут изменился, но для бизнес-логики не важно, если в этом списке хранится, допустим, какое-то множество.<br>
+<br>
+И, в итоге, мы вызываем еще один метод, специфический для каждого объекта, чтобы понять модифицирован объект действительно или нет. И добавляем их в некую переменную, связанную с сессией, которую мы завели сами — это наша переменная dirty_instances, в которую мы добавляем этот объект.<br>
+<br>
+Следующее событие происходит перед коммитом — before_commit. Тут тоже есть небольшой подводный камень: если за всю транзакцию у нас не было ни одного flush’а, то flush вызовется перед коммитом — в моем случае хэндлер перед коммитом вызывался до flush.<br>
+<br>
+Как видите, то, что мы проделали в предыдущем пункте нам может не помочь и session.dirty_instances будет пустой. Поэтому внутри хэндлера мы еще раз делаем flush, чтобы вызвались все хэндлеры перед flush’ем и просто инкрементируем версию на один.<br>
+<br>
+after_commit, after_soft_rollback — после коммита просто чистим, чтобы в следующие разы не было никаких эксцессов.<br>
+<br>
+Таким образом, вы видите — этот метод install_handler устанавливает обработчики сразу для трех событий. В качестве класса мы передаем сюда сессию, так как это событие ее уровня.<br>
+<br>
+<img src="https://habrastorage.org/webt/oi/w8/pk/oiw8pkhgdpx7shz7rqrovfmg6lk.png"><br>
+<br>
+Ну вот. Я вам напомню, чего мы достигли — быстродействие 30-40 секунд на сложные и большие команды. Не на все, какие-то выполнялись за секунду, другие за 200 миллисекунд, как вы видите по RPS. Запросы в БД стали исчисляться сотнями.<br>
+<br>
+<img src="https://habrastorage.org/webt/7p/wk/qo/7pwkqo4-g_hksl5m_cqoo3xph5y.png"><br>
+<br>
+В итоге получилась довольно сбалансированная система. Был, правда, один нюанс. Некоторые запросы у нас приходят пачками, выбросами. То есть прилетает штук 30 запросов и каждый из них — вот такой! (выступающий показывает большой палец)<br>
+<br>
+Если мы их обрабатываем по одной секунде, то последний запрос в очереди будет работать 30 секунд. Первый — одну, второй — две и так далее.<br>
+<br>
+<img src="https://habrastorage.org/webt/ut/br/gl/utbrglrwurgv0uux2yk8eme4owg.png"><br>
+<br>
+Поэтому нам нужно еще ускориться. Что будем делать?<br>
+<br>
+На самом деле, алхимия состоит из двух частей. Первая — это абстракция над sql базой данных, которая называется SQLAlchemy Сore. Вторая — это ORM, собственно мэппинг между реляционной базой данных и объектным представлением. Соответственно, alchemy core примерно один к одному совпадает с sql — если вы знаете последний, то проблем с core у вас не возникнет. Если вы не знаете sql — выучите sql.<br>
+Кроме этого, core представляет наименьший оверхэд. Нет практически никакой накачки — запросы генерируются с помощью генератора запросов, а после исполняются. Оверхэд над dbapi минимальный.<br>
+<br>
+Запросы мы можем строить любой сложности, любого типа, можем оптимизировать их под задачу. То есть, если в общем случае ORM все равно, как у нас построена схема базы данных — есть некое описание таблиц, генерирует некие запросы, не зная, что в данном случае будет, например, оптимально выселектить отсюда, в другом — оттуда, тут такой фильтр применить, а там — другой, то тут мы можем запросы сделать под задачу.<br>
+<br>
+Недостаток такой, что мы опять пришли к ручной синхронизации. Все эвенты, релейшены — все это в core не работает. Мы сделали селект, нам пришли объекты, мы с ними что-то сделали, потом апдейт, инсерт… версию надо руками инкрементить, констрейнты самостоятельно проверять. Core не позволяет все это сделать удобно, на высоком уровне.<br>
+<br>
+Ну, мы не первый день живем.<br>
+<br>
+<img src="https://habrastorage.org/webt/qx/kk/bx/qxkkbxwleeqwvdukaghimiat7sw.png"><br>
+<br>
+Простой пример использования. Каждый мэппер внутри себя содержит объект __table__, который используется в core. Далее вы видите — берем обычный селект, перечисляем колонки, джойним две таблички, указываем левую и правую, указываем по какому условию мы ее джойним, ну и для вкуса добавляем ордер бай. Дальше мы этот сформированный запрос скармливаем в сессию и она нам возвращает iterable, в котором тапл-лайк объекты индексируемые как по названию колонки, так и по номеру. Номер соответствует тому порядку, по которому они перечислены в селекте.<br>
+<br>
+<img src="https://habrastorage.org/webt/r2/uq/f4/r2uqf4wn-wa-cvigivokusan6um.png"><br>
+<br>
+Стало значительно лучше. Быстродействие в самом худшем случае упало до 2-4 секунд, самый сложный и самый длинный запрос содержал 14 команд и RPS 10-15. Солидно.<br>
+<br>
+<img src="https://habrastorage.org/webt/m9/8d/mw/m98dmwpmo0trjpw3vta7dylmryw.png"><br>
+<br>
+Что бы хотелось сказать в заключение.<br>
+Не плодите сущности там, где они не нужны — не наворачивайте свое там, где есть готовое.<br>
+Используйте SQLA ORM — это очень удобный инструмент, позволяющий отслеживать события на высоком уровне, реагировать на различные события, связанные с базой данных, спрятать все уши алхимии.<br>
+Если ничего не помогает, быстродействия не хватает — используйте SQLA Core. Это все еще лучше, чем использовать чистый raw SQL, потому что оно предоставляет именно реляционную абстракцию над базой данных. Автоматически эскейпит параметры, правильно делает биндинги, ей не важно, какая под ней база данных — можно менять и Core поддерживает разные диалекты. Это очень удобно.<br>
+<br>
+Вот и все, что я вам хотел сегодня рассказать.<br>
+<br>
+<div class="oembed"><div><div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.2493%;"><iframe src="https://www.youtube.com/embed/flA2lEl2a0M?rel=0&amp;showinfo=1&amp;hl=en-US" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" allowfullscreen scrolling="no"></iframe></div></div></div></div>
+      
+      
+<script class="js-mediator-script">!function(e){function t(t,n){if(!(n in e)){for(var r,a=e.document,i=a.scripts,o=i.length;o--;)if(-1!==i[o].src.indexOf(t)){r=i[o];break}if(!r){r=a.createElement("script"),r.type="text/javascript",r.async=!0,r.defer=!0,r.src=t,r.charset="UTF-8";var d=function(){var e=a.getElementsByTagName("script")[0];e.parentNode.insertBefore(r,e)};"[object Opera]"==e.opera?a.addEventListener?a.addEventListener("DOMContentLoaded",d,!1):e.attachEvent("onload",d):d()}}}t("//mediator.mail.ru/script/2820404/","_mediator")}(window);</script>
+    </div>
+
+    
+
+    <dl class="post__tags">
+      <dt class="post__tags-label">Tags:</dt>
+      <dd class="post__tags-list">    <ul class="inline-list inline-list_fav-tags js-post-tags">
+        <li class="inline-list__item inline-list__item_tag"><a href="https://habr.com/search/?q=%5Bsql%5D&target_type=posts" rel="tag" class="inline-list__item-link post__tag  ">sql</a></li>
+        <li class="inline-list__item inline-list__item_tag"><a href="https://habr.com/search/?q=%5Bsqlalchemy%5D&target_type=posts" rel="tag" class="inline-list__item-link post__tag  ">sqlalchemy</a></li>
+        <li class="inline-list__item inline-list__item_tag"><a href="https://habr.com/search/?q=%5B%D0%B0%D1%80%D1%85%D0%B8%D1%82%D0%B5%D0%BA%D1%83%D1%80%D0%BD%D1%8B%D0%B9%20%D0%BA%D0%BE%D1%81%D0%BC%D0%BE%D0%BD%D0%B0%D0%B2%D1%82%5D&target_type=posts" rel="tag" class="inline-list__item-link post__tag  ">архитекурный космонавт</a></li>
+    </ul>
+    <button type="button" class="btn btn_outline_grey btn_mini hidden js-fav-edit-link" data-type="2" data-id="430818" onclick="show_edit_tags(this)">Добавить метки</button>
+</dd>
+    </dl>
+  </div>
+</article>
+
+
+        <form action="/json/favorites/" method="post" class="form form_bordered form_favorites-tags hidden" id="edit_tags_form">
+  <input type="hidden" name="action" value="add" />
+  <input type="hidden" name="ti" value="0" />
+  <input type="hidden" name="tt" value="0" />
+
+  <button type="button" class="btn form__close-btn" onclick="closeForm(this)" title="Закрыть"><svg class="icon-svg icon-svg_navbar-close-search" width="31" height="32" viewBox="0 0 31 32" aria-hidden="true" version="1.1" role="img"><path d="M26.67 0L15.217 11.448 3.77 0 0 3.77l11.447 11.45L0 26.666l3.77 3.77L15.218 18.99l11.45 11.448 3.772-3.77-11.448-11.45L30.44 3.772z"/></svg>
+</button>
+
+  <fieldset class="form__fieldset">
+    <legend class="form__legend">Пометьте публикацию своими метками</legend>
+    <input type="text" name="tags_string" class="form__text-field" />
+    <span class="form__desc">Метки лучше разделять запятой. Например: <i>программирование, алгоритмы</i></span>
+  </fieldset>
+
+  <div class="form__footer">
+    <button type="submit" class="btn btn_x-large btn_outline_blue" disabled>Сохранить</button>
+  </div>
+</form>
+
+        <div class="post-additionals post-additionals_company">
+            <ul class="post-stats post-stats_post js-user_" id="infopanel_post_430818">
+        <li class="post-stats__item post-stats__item_voting-wjt">
+          <div class="voting-wjt voting-wjt_post js-post-vote" data-id="430818" data-type="2">
+            <button type="button" class="btn voting-wjt__button " data-action="plus" onclick="posts_vote(this);" title="Голосовать могут только зарегистрированные пользователи Голосовать могут только пользователи с полноправным аккаунтом" disabled><svg class="icon-svg_arrow-up" width="10" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#vote-arrow" /></svg></button>
+
+            <span class="voting-wjt__counter voting-wjt__counter_positive  js-score" title="Общий рейтинг 29: &uarr;24 и &darr;5">+19</span>
+
+            <button type="button" class="btn voting-wjt__button " data-action="minus" onclick="posts_vote(this);" title="Голосовать могут только зарегистрированные пользователи Голосовать могут только пользователи с полноправным аккаунтом" disabled><svg class="icon-svg_arrow-down" width="10" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#vote-arrow" /></svg></button>
+          </div>
+        </li>
+
+    <li class="post-stats__item post-stats__item_bookmark">
+      <button type="button" class="btn bookmark-btn bookmark-btn_post " data-type="2" data-id="430818" data-action="add" title="Только зарегистрированные пользователи могут добавлять публикации в закладки" onclick="posts_add_to_favorite(this);" disabled>
+        <span class="btn_inner"><svg class="icon-svg_bookmark" width="10" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="bookmark__counter js-favs_count" title="Количество пользователей, добавивших публикацию в закладки">45</span></span>
+      </button>
+    </li>
+
+    <li class="post-stats__item post-stats__item_views">
+      <div class="post-stats__views" title="Количество просмотров">
+        <svg class="icon-svg_views-count" width="21" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-stats__views-count">4,6k</span>
+      </div>
+    </li>
+
+      <li class="post-stats__item post-stats__item_comments">
+          <a href="https://habr.com/company/qrator/blog/430818/#comments" class="post-stats__comments-link" rel="nofollow">
+            <svg class="icon-svg_post-comments" width="16" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-stats__comments-count" title="Читать комментарии">2</span>
+          </a>
+      </li>
+
+
+
+
+
+  </ul>
+
+            <form action="/json/complaints/add/" class="form form_bordered form_abuse hidden" method="post" id="abuse_form">
+  <input type="hidden" name="tt" value="2" />
+  <input type="hidden" name="ti" value="430818" />
+
+  <button type="button" class="btn form__close-btn" onclick="closeForm(this)"><svg class="icon-svg icon-svg_navbar-close-search" width="31" height="32" viewBox="0 0 31 32" aria-hidden="true" version="1.1" role="img"><path d="M26.67 0L15.217 11.448 3.77 0 0 3.77l11.447 11.45L0 26.666l3.77 3.77L15.218 18.99l11.45 11.448 3.772-3.77-11.448-11.45L30.44 3.772z"/></svg>
+</button>
+
+  <fieldset class="form__fieldset">
+    <legend class="form__legend">Нарушение</legend>
+    <input type="text" name="text" class="form__text-field" />
+    <span class="form__desc">Опишите суть нарушения</span>
+  </fieldset>
+
+  <div class="form__footer">
+    <button type="submit" class="btn btn_x-large btn_outline_blue" disabled>Отправить</button>
+  </div>
+</form>
+
+
+              <form action="/conversations/Shapelez/" method="GET" class="form form_bordered form_admin-causes hidden" id="admin_causes">
+
+    <input type="hidden" name="moderation" value="430818">
+
+    <button type="button" class="btn form__close-btn" onclick="closeForm(this)"><svg class="icon-svg icon-svg_navbar-close-search" width="31" height="32" viewBox="0 0 31 32" aria-hidden="true" version="1.1" role="img"><path d="M26.67 0L15.217 11.448 3.77 0 0 3.77l11.447 11.45L0 26.666l3.77 3.77L15.218 18.99l11.45 11.448 3.772-3.77-11.448-11.45L30.44 3.772z"/></svg>
+</button>
+
+    <fieldset class="form__fieldset form__fieldset_admin-causes">
+      <legend class="form__legend">Выберите рекомендации для отправки автору:</legend>
+
+      <div class="checkbox-group_columns">
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="1"/>
+          <span class="checkbox__label">Указан только блог</span>
+        </label>
+
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="2"/>
+          <span class="checkbox__label">Орфографические ошибки</span>
+        </label>
+
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="3"/>
+          <span class="checkbox__label">Пунктуационные ошибки</span>
+        </label>
+
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="4"/>
+          <span class="checkbox__label">Отступы</span>
+        </label>
+
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="5"/>
+          <span class="checkbox__label">Текст-простыня</span>
+        </label>
+
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="6"/>
+          <span class="checkbox__label">Короткие предложения</span>
+        </label>
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="7"/>
+          <span class="checkbox__label">Смайлики</span>
+        </label>
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="8"/>
+          <span class="checkbox__label">Много форматирования</span>
+        </label>
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="9"/>
+          <span class="checkbox__label">Картинки</span>
+        </label>
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="10"/>
+          <span class="checkbox__label">Ссылки</span>
+        </label>
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="11"/>
+          <span class="checkbox__label">Оформление кода</span>
+        </label>
+        <label class="checkbox checkbox_custom checkbox_recommendation-form">
+          <input type="checkbox" class="form__input form__input_checkbox" name="id[]" value="12"/>
+          <span class="checkbox__label">Рекламный характер</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="form__footer">
+      <button type="submit" class="btn btn_x-large btn_outline_blue" disabled>Отправить</button>
+    </div>
+  </form>
+
+
+            <div class="company-info company-info_post-additional">
+              <div class="company-info__about">
+                <div class="media-obj media-obj_company">
+    <a href="/company/qrator/" class="media-obj__image page-header__image">
+        <img src="//habrastorage.org/getpro/habr/company/f17/51d/f56/f1751df56c45182e5aad4a38d2995eb3.jpg" width="48" height="48" class="company-info__image-pic"/>
+    </a>
+
+  <div class="media-obj__body media-obj__body_page-header media-obj__body_page-header_branding">
+
+    <div class="page-header__info">
+      <h1 class="page-header__info-title">Qrator Labs</h1>
+      <sup class="page-header__stats-value page-header__stats-value_branding" title="Рейтинг компании">172,00</sup>
+      <h2 class="page-header__info-desc">
+        Знаем всё о доступности в интернете
+      </h2>
+    </div>
+  </div>
+</div>
+
+
+              </div>
+              <div class="company-info__author">
+                <div class="user-info">
+    <div class="user-info__stats">
+  <div class="media-obj media-obj_user-info">
+    <a href="/users/Shapelez/" class="media-obj__image" onclick="if (typeof ga === 'function') { ga('send', 'event', 'author_info_top', 'profile', 'Shapelez');}">
+        <img src="//habrastorage.org/getpro/habr/avatars/803/5e1/6eb/8035e16eb2a755688d69bb677570e42f.jpg" width="48" height="48" class="media-obj__image-pic media-obj__image-pic_user"/>
+    </a>
+
+    <div class="media-obj__body media-obj__body_user-info">
+          <a href="/info/help/karma/" class="user-info__stats-item stacked-counter" title="1104 голоса">
+            <div class="stacked-counter__value stacked-counter__value_green ">369,7</div>
+            <div class="stacked-counter__label">Карма</div>
+          </a>
+
+        <a href="/info/help/karma/#rating" class="user-info__stats-item stacked-counter stacked-counter_rating" title="Рейтинг пользователя">
+          <div class="stacked-counter__value stacked-counter__value_magenta">108,8</div>
+          <div class="stacked-counter__label">Рейтинг</div>
+        </a>
+
+        <a href="/users/Shapelez/subscription/followers/" class="user-info__stats-item stacked-counter stacked-counter_subscribers" title="Количество подписчиков">
+          <div class="stacked-counter__value stacked-counter__value_blue">233</div>
+          <div class="stacked-counter__label">Подписчики</div>
+        </a>
+    </div>
+  </div>
+
+</div>
+
+
+  <div class="user-info__about">
+    <div class="user-info__links">
+      <a href="/users/Shapelez/" class="user-info__fullname" onclick="if (typeof ga === 'function') { ga('send', 'event', 'author_info_top', 'profile', 'Shapelez');}">Александр Shapelez Козлов</a>&nbsp;<a href="/users/Shapelez/" class="user-info__nickname user-info__nickname_doggy" onclick="if (typeof ga === 'function') { ga('send', 'event', 'author_info_top', 'profile', 'Shapelez');}">Shapelez</a>
+      
+    </div>
+
+      <div class="user-info__specialization">Storycaster</div>
+  </div>
+
+</div>
+
+              </div>
+              
+            </div>
+            <div class="post-share">
+  <span class="post-share__title">Поделиться публикацией</span>
+  <ul class="post-share__buttons social-icons">
+    <li class="social-icons__item social-icons__item_post">
+      <a href="https://www.facebook.com/sharer/sharer.php?u=https://habr.com/company/qrator/blog/430818/"
+        class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_facebook"
+        title="Опубликовать ссылку в Facebook"
+        onclick="window.open(this.href, 'Опубликовать ссылку в Facebook', 'width=640,height=436,toolbar=0,status=0'); return false"
+      >
+        <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M14.889 8.608h-1.65c-.195 0-.413.257-.413.6v1.192h2.063v1.698h-2.063v5.102h-1.948v-5.102h-1.766v-1.698h1.766v-1c0-1.434.995-2.6 2.361-2.6h1.65v1.808z"/></svg>
+      </a>
+    </li>
+    <li class="social-icons__item social-icons__item_post">
+      <a href="https://twitter.com/intent/tweet?text=%D0%A3%D1%81%D0%BA%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B5+SQLAlchemy+%D0%B4%D0%BB%D1%8F+%D0%B0%D1%80%D1%85%D0%B8%D1%82%D0%B5%D0%BA%D1%82%D1%83%D1%80%D0%BD%D1%8B%D1%85+%D0%BA%D0%BE%D1%81%D0%BC%D0%BE%D0%BD%D0%B0%D0%B2%D1%82%D0%BE%D0%B2+https://habr.com/p/430818/+via+%40habr_com"
+        class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_twitter"
+        title="Опубликовать ссылку в Twitter"
+        onclick="window.open(this.href, 'Опубликовать ссылку в Twitter', 'width=800,height=300,resizable=yes,toolbar=0,status=0'); return false"
+      >
+        <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M17.414 8.642c-.398.177-.826.296-1.276.35.459-.275.811-.71.977-1.229-.43.254-.905.439-1.41.539-.405-.432-.982-.702-1.621-.702-1.227 0-2.222.994-2.222 2.222 0 .174.019.344.058.506-1.846-.093-3.484-.978-4.579-2.322-.191.328-.301.71-.301 1.117 0 .77.392 1.45.988 1.849-.363-.011-.706-.111-1.006-.278v.028c0 1.077.766 1.974 1.782 2.178-.187.051-.383.078-.586.078-.143 0-.282-.014-.418-.04.282.882 1.103 1.525 2.075 1.542-.76.596-1.718.951-2.759.951-.179 0-.356-.01-.53-.031.983.63 2.15.998 3.406.998 4.086 0 6.321-3.386 6.321-6.321l-.006-.287c.433-.314.81-.705 1.107-1.15z"/></svg>
+      </a>
+    </li>
+    <li class="social-icons__item social-icons__item_post">
+      <a href="https://vk.com/share.php?url=https://habr.com/company/qrator/blog/430818/"
+        class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_vkontakte"
+        title="Опубликовать ссылку во ВКонтакте"
+        onclick="window.open(this.href, 'Опубликовать ссылку во ВКонтакте', 'width=800,height=300,toolbar=0,status=0'); return false"
+      >
+        <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M16.066 11.93s1.62-2.286 1.782-3.037c.054-.268-.064-.418-.343-.418h-1.406c-.322 0-.44.139-.537.343 0 0-.76 1.619-1.685 2.64-.297.33-.448.429-.612.429-.132 0-.193-.11-.193-.408v-2.607c0-.365-.043-.472-.343-.472h-2.254c-.172 0-.279.1-.279.236 0 .343.526.421.526 1.352v1.921c0 .386-.022.537-.204.537-.483 0-1.631-1.663-2.274-3.552-.129-.386-.268-.494-.633-.494h-1.406c-.204 0-.354.139-.354.343 0 .375.44 2.114 2.167 4.442 1.159 1.566 2.683 2.414 4.056 2.414.838 0 1.041-.139 1.041-.494v-1.202c0-.301.118-.429.29-.429.193 0 .534.062 1.33.848.945.901 1.01 1.276 1.525 1.276h1.578c.161 0 .311-.075.311-.343 0-.354-.462-.987-1.17-1.738-.29-.386-.762-.805-.912-.998-.215-.226-.151-.354-.001-.59z"/></svg>
+      </a>
+    </li>
+    <li class="social-icons__item social-icons__item_post">
+      <a href="https://t.me/share/url?url=https://habr.com/company/qrator/blog/430818/&title=Ускорение SQLAlchemy для архитектурных космонавтов"
+        class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_telegram"
+        title="Поделиться ссылкой в Telegram"
+        onclick="window.open(this.href, 'Поделиться ссылкой в Telegram', 'width=800,height=300,toolbar=0,status=0'); return false"
+      >
+        <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M17.17 7.621l-10.498 3.699c-.169.059-.206.205-.006.286l2.257.904 1.338.536 6.531-4.796s.189.057.125.126l-4.68 5.062-.27.299.356.192 2.962 1.594c.173.093.397.016.447-.199.058-.254 1.691-7.29 1.728-7.447.047-.204-.087-.328-.291-.256zm-6.922 8.637c0 .147.082.188.197.084l1.694-1.522-1.891-.978v2.416z"/></svg>
+      </a>
+    </li>
+    <li class="social-icons__item social-icons__item_post">
+      <a href="https://getpocket.com/edit?url=https://habr.com/company/qrator/blog/430818/&title=Ускорение SQLAlchemy для архитектурных космонавтов"
+        class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_pocket"
+        title="Добавить ссылку в Pocket"
+        target="_blank"
+      >
+      </a>
+    </li>
+  </ul>
+</div>
+
+        </div>
+
+          
+
+
+        
+
+
+
+            <div class="comments-section" id="comments">
+    <header class="comments-section__head">
+      <span class="comments-section__head-title">Комментарии <strong class="comments-section__head-counter" id="comments_count">2</strong></span>
+      
+    </header>
+    
+    
+
+    <ul class="content-list content-list_comments" id="comments-list">
+        <li class="content-list__item content-list__item_comment js-comment " rel="19407078">
+    
+    <span class="parent_id" data-parent_id="0"></span>
+    <div class="comment" id="comment_19407078">
+        <span class="comment__folding-dotholder"></span>
+        <div class="comment__head   " rel="19407078">
+          <a href="https://habr.com/users/dmxrand/" class="user-info user-info_inline"  data-user-login="dmxrand">
+    <svg class="default-image default-image_mini default-image_lilac" width="24" height="24"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#slug" /></svg>
+  <span class="user-info__nickname user-info__nickname_small user-info__nickname_comment">dmxrand</span>
+</a>
+
+          
+          <time class="comment__date-time comment__date-time_published">23 ноября 2018 в 12:35</time>
+          <ul class="inline-list inline-list_comment-nav">
+  <li class="inline-list__item inline-list__item_comment-nav">
+    <a href="#comment_19407078" class="icon_comment-anchor" title="Ссылка на комментарий"><svg width="12" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#anchor" /></svg></a>
+  </li>
+
+    <li class="inline-list__item inline-list__item_comment-nav">
+      <a href="#" class="icon_comment-bookmark " onclick="return comments_add_to_favorite(this)" data-type="3" data-id="19407078" data-action="add" title="Только зарегистрированные пользователи могут добавлять комментарии в избранное" disabled><svg width="12" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg></a>
+    </li>
+
+
+  <li class="inline-list__item inline-list__item_comment-nav hidden js-comment_children">
+    <a href="#comment_19407078" class="icon_comment-arrow-down js-comment_parent back_to_children" data-id="19407078" data-parent_id="0" title="Вернуться к ответу"><svg width="12" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#rounded-arrow" /></svg></a>
+  </li>
+</ul>
+
+            <div class="voting-wjt voting-wjt_comments js-comment-vote" data-id="19407078" data-post-target="430818" data-type="3">
+    <button type="button" class="btn voting-wjt__button voting-wjt__button_small " data-action="plus" onclick="comment_vote(this);" title="Голосовать могут только зарегистрированные пользователи" disabled><svg class="icon-svg_arrow-up" width="10" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#vote-arrow" /></svg></button>
+
+    <span class="voting-wjt__counter   js-score" title="Общий рейтинг 0: &uarr;0 и &darr;0">0</span>
+
+    <button type="button" class="btn voting-wjt__button voting-wjt__button_small " data-action="minus" onclick="comment_vote(this);" title="Голосовать могут только зарегистрированные пользователи" disabled><svg class="icon-svg_arrow-down" width="10" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#vote-arrow" /></svg></button>
+  </div>
+
+        </div>
+
+        <div class="comment__message ">Поправьте плиз «Поэтому мы взяли SQL»</div>
+
+        <div class="comment__footer">
+</div>
+
+        <div class="comment__reply-form js-form_placeholder"></div>
+    </div>
+
+    <ul class="content-list content-list_nested-comments content-list_nested-comments-0" id="reply_comments_19407078">  <li class="content-list__item content-list__item_comment js-comment " rel="19407096">
+    
+    <span class="parent_id" data-parent_id="19407078"></span>
+    <div class="comment" id="comment_19407096">
+        <span class="comment__folding-dotholder"></span>
+        <div class="comment__head comment__head_topic-author  " rel="19407096">
+          <a href="https://habr.com/users/Shapelez/" class="user-info user-info_inline"  data-user-login="Shapelez">
+    <img src="//habrastorage.org/getpro/habr/avatars/803/5e1/6eb/8035e16eb2a755688d69bb677570e42f_small.jpg" class="user-info__image-pic user-info__image-pic_small" width="24" height="24" />
+  <span class="user-info__nickname user-info__nickname_small user-info__nickname_comment">Shapelez</span>
+</a>
+
+          
+          <time class="comment__date-time comment__date-time_published">23 ноября 2018 в 12:39</time>
+          <ul class="inline-list inline-list_comment-nav">
+  <li class="inline-list__item inline-list__item_comment-nav">
+    <a href="#comment_19407096" class="icon_comment-anchor" title="Ссылка на комментарий"><svg width="12" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#anchor" /></svg></a>
+  </li>
+
+    <li class="inline-list__item inline-list__item_comment-nav">
+      <a href="#" class="icon_comment-bookmark " onclick="return comments_add_to_favorite(this)" data-type="3" data-id="19407096" data-action="add" title="Только зарегистрированные пользователи могут добавлять комментарии в избранное" disabled><svg width="12" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg></a>
+    </li>
+
+    <li class="inline-list__item inline-list__item_comment-nav">
+      <span class="icon_comment-branch js-comment_tree" data-id="19407096" data-parent_id="19407078" title="Показать ветку комментариев"><svg width="8" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#tree" /></svg></span>
+    </li>
+
+    <li class="inline-list__item inline-list__item_comment-nav">
+      <a href="#comment_19407078" class="icon_comment-arrow-up js-comment_parent" data-id="19407096" data-parent_id="19407078" title="Показать предыдущий комментарий"><svg width="12" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#rounded-arrow" /></svg></a>
+    </li>
+
+  <li class="inline-list__item inline-list__item_comment-nav hidden js-comment_children">
+    <a href="#comment_19407096" class="icon_comment-arrow-down js-comment_parent back_to_children" data-id="19407096" data-parent_id="19407078" title="Вернуться к ответу"><svg width="12" height="12"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#rounded-arrow" /></svg></a>
+  </li>
+</ul>
+
+            <div class="voting-wjt voting-wjt_comments js-comment-vote" data-id="19407096" data-post-target="430818" data-type="3">
+    <button type="button" class="btn voting-wjt__button voting-wjt__button_small " data-action="plus" onclick="comment_vote(this);" title="Голосовать могут только зарегистрированные пользователи" disabled><svg class="icon-svg_arrow-up" width="10" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#vote-arrow" /></svg></button>
+
+    <span class="voting-wjt__counter   js-score" title="Общий рейтинг 0: &uarr;0 и &darr;0">0</span>
+
+    <button type="button" class="btn voting-wjt__button voting-wjt__button_small " data-action="minus" onclick="comment_vote(this);" title="Голосовать могут только зарегистрированные пользователи" disabled><svg class="icon-svg_arrow-down" width="10" height="16"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#vote-arrow" /></svg></button>
+  </div>
+
+        </div>
+
+        <div class="comment__message ">Спасибо, исправили.</div>
+
+        <div class="comment__footer">
+</div>
+
+        <div class="comment__reply-form js-form_placeholder"></div>
+    </div>
+
+    <ul class="content-list content-list_nested-comments content-list_nested-comments-1" id="reply_comments_19407096"></ul>
+  </li>
+</ul>
+  </li>
+
+      
+    </ul>
+    <div class="js-form_placeholder">
+              <p class="for_users_only_msg">Только&nbsp;<a href="/info/help/registration/">полноправные пользователи</a> могут оставлять комментарии. <a href="https://habr.com/auth/login/">Войдите</a>, пожалуйста.</p>
+
+    </div>
+  </div>
+
+
+      </div>
+    </div>
+
+    <div class="sidebar_right sidebar_content-area">
+      
+        
+  <div class="default-block default-block_sidebar">
+  <div class="default-block__header">
+    <span class="default-block__header-title">Информация</span>
+  </div>
+  <div class="default-block__content default-block__content_profile-summary">
+      <ul class="defination-list">
+          <li class="defination-list__item defination-list__item_profile-summary">
+            <span class="defination-list__label defination-list__label_profile-summary">Дата основания</span>
+            <span class="defination-list__value">2008 год</span>
+          </li>
+
+          <li class="defination-list__item defination-list__item_profile-summary">
+            <span class="defination-list__label defination-list__label_profile-summary">Локация</span>
+            <span class="defination-list__value">
+              Москва<br/>Россия
+            </span>
+          </li>
+
+          <li class="defination-list__item defination-list__item_profile-summary">
+            <span class="defination-list__label defination-list__label_profile-summary">Сайт</span>
+            <span class="defination-list__value"><a href="http://qrator.net" target="_blank" class="defination-list__link" title="http://qrator.net">qrator.net</a></span>
+          </li>
+
+          <li class="defination-list__item defination-list__item_profile-summary">
+            <span class="defination-list__label defination-list__label_profile-summary">Численность</span>
+            <span class="defination-list__value">51&#8211;100 человек</span>
+          </li>
+
+          <li class="defination-list__item defination-list__item_profile-summary">
+            <span class="defination-list__label defination-list__label_profile-summary">Дата регистрации</span>
+            <span class="defination-list__value">28 августа 2009 г.</span>
+          </li>
+      </ul>
+  </div>
+</div>
+
+  
+
+
+    <div class="js-ad_sticky">
+    <div class="default-block">
+      <div class="default-block__header">
+        <h3 class="default-block__header-title">Блог на Хабре</h3>
+      </div>
+      <div class="default-block__content">
+        <ul class="content-list">
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/431244/" class="post-info__title">«Два нефильтрованных» или легкий способ прострелить ногу</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">6,5k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/431244/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">5</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/430818/" class="post-info__title">Ускорение SQLAlchemy для архитектурных космонавтов</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">4,6k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/430818/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">2</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/430102/" class="post-info__title">ENOG 15: «Почему Интернет до сих пор онлайн?»</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">5,2k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/430102/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">0</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/427889/" class="post-info__title">Wrong, wrong, WRONG! methods of DDoS mitigation</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">5,7k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/427889/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">2</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/423957/" class="post-info__title">Генерация трафика в юзерспейсе</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">4,6k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/423957/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">3</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/421015/" class="post-info__title">Исследование устойчивости национальных сегментов сети Интернет за 2018 год</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">6,2k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/421015/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">1</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/416633/" class="post-info__title">QUIC, TLS 1.3, DNS-over-HTTPS, далее везде</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">16,7k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/416633/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">64</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/353398/" class="post-info__title">Транскрипция двенадцатого выпуска подкаста «Прокуратор»</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">3,5k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/353398/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">2</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/352306/" class="post-info__title">Четыре факта о memcached-амплификации</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">4,6k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/352306/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">1</span>
+                </a>
+              </div>
+            </li>
+            <li class="content-list__item content-list__item_devided post-info">
+              <a href="https://habr.com/company/qrator/blog/351466/" class="post-info__title">Годовой отчет по кибер- и инфобезопасности за 2017 год</a>
+              <div class="post-info__meta">
+                <span class="post-info__meta-item">
+                  <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">8,9k</span>
+                </span>
+
+                <a href="https://habr.com/company/qrator/blog/351466/#comments" class="post-info__meta-item" rel="nofollow">
+                  <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter post-info__meta-counter_small">0</span>
+                </a>
+              </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  
+
+    </div>
+  </div>
+
+  
+
+  <script type="text/javascript">
+    var userLabel = 'reader';
+  </script>
+
+        </div>
+      </div>
+
+        <div class="layout__row layout__row_promo-blocks">
+          <div class="layout__cell">
+              <div class="column-wrapper column-wrapper_bottom column-wrapper_bordered">
+    <div class="content_left">
+      
+
+  <div class="default-block default-block_content">
+    <div class="default-block__header default-block__header_large">
+      <h2 class="default-block__header-title default-block__header-title_large">Самое читаемое</h2>
+    </div>
+    <div class="default-block__content default-block__content_most-read" id="broadcast_tabs_posts">
+      <ul class="toggle-menu toggle-menu__most-read">
+        <li class="toggle-menu__item">
+          <a href="#broadcast_posts_today" class="toggle-menu__item-link active" rel="nofollow">Сутки</a>
+        </li>
+        <li class="toggle-menu__item">
+          <a href="#broadcast_posts_week" class="toggle-menu__item-link" rel="nofollow">Неделя</a>
+        </li>
+        <li class="toggle-menu__item">
+          <a href="#broadcast_posts_month" class="toggle-menu__item-link" rel="nofollow">Месяц</a>
+        </li>
+      </ul>
+
+        <div class="tabs__content tabs__content_reading" id="broadcast_posts_today">
+            <ul class="content-list content-list_most-read">
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431764/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Полицейские Калифорнии в течение 7 минут пытались остановить Tesla с заснувшим за рулем водителем</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;72</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">72,6k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">38</span>
+                    </span>
+                    <a href="https://habr.com/post/431764/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">186</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431824/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">На сайте «М.Видео» случайно открыли информацию по смартфону от «Яндекса» за несколько дней до презентации</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;52</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">42,8k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">19</span>
+                    </span>
+                    <a href="https://habr.com/post/431824/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">278</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431806/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Palm Phone протестировали: вердикт — разработчики потерпели полное фиаско</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;27</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">27,6k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">7</span>
+                    </span>
+                    <a href="https://habr.com/post/431806/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">55</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431700/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Бытовой мультиметр, которого я так и не нашел на рынке</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;18</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">53,1k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">70</span>
+                    </span>
+                    <a href="https://habr.com/post/431700/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">97</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431774/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">В Японии началось телевещание в формате 8K</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;35</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">29,2k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">23</span>
+                    </span>
+                    <a href="https://habr.com/post/431774/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">142</span>
+                    </a>
+                  </div>
+                </li>
+            </ul>
+        </div>
+        <div class="tabs__content tabs__content_reading" id="broadcast_posts_week">
+            <ul class="content-list content-list_most-read">
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431064/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Манифест жёсткого программиста</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;90</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">57k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">214</span>
+                    </span>
+                    <a href="https://habr.com/post/431064/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">383</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/company/golovanov_net/blog/431564/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Величайшая ошибка в истории физики</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;33</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">56,4k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">77</span>
+                    </span>
+                    <a href="https://habr.com/company/golovanov_net/blog/431564/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">168</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431154/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Недоработки в квестах Fallout 76 позволили игрокам устроить ядерный ад</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;31</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">55,6k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">17</span>
+                    </span>
+                    <a href="https://habr.com/post/431154/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">68</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431354/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Первый видеокодек на машинном обучении кардинально превзошёл все существующие кодеки, в том числе H.265 и VP9</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;58</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">53,9k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">75</span>
+                    </span>
+                    <a href="https://habr.com/post/431354/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">182</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/431700/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Бытовой мультиметр, которого я так и не нашел на рынке</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;18</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">53,1k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">70</span>
+                    </span>
+                    <a href="https://habr.com/post/431700/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">97</span>
+                    </a>
+                  </div>
+                </li>
+            </ul>
+        </div>
+        <div class="tabs__content tabs__content_reading" id="broadcast_posts_month">
+            <ul class="content-list content-list_most-read">
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/company/jethackers/blog/429466/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Реактивный самолёт своими руками: «Два дебила — это сила»</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;323</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">199k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">162</span>
+                    </span>
+                    <a href="https://habr.com/company/jethackers/blog/429466/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">448</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/company/pochtoy/blog/430554/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Google запатентовала VR-обувь, в которой можно ходить вечно</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;26</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">114k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">34</span>
+                    </span>
+                    <a href="https://habr.com/company/pochtoy/blog/430554/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">103</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/428734/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Ошибка, которая сохранилась в Windows с 1974 года</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;80</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">113k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">118</span>
+                    </span>
+                    <a href="https://habr.com/post/428734/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">231</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/post/429612/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Фулстеки — это вечные мидлы. Не идите по этому пути, если не хотите страдать</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;161</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">100k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">255</span>
+                    </span>
+                    <a href="https://habr.com/post/429612/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">724</span>
+                    </a>
+                  </div>
+                </li>
+                <li class="content-list__item content-list__item_devided post-info">
+                  <a href="https://habr.com/company/pochtoy/blog/429000/" class="post-info__title post-info__title_large" onclick="if (typeof ga === 'function') { ga('send', 'event', 'tm_block', 'most_read', ''); }">Зачем Билл Гейтс изобрел унитаз на $233 млрд</a>
+                  <div class="post-info__meta">
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_rating" width="11" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#arrow-bold" /></svg><span class="post-info__meta-counter">&plus;95</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_views" width="16" height="9"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#eye" /></svg><span class="post-info__meta-counter">97,3k</span>
+                    </span>
+                    <span class="post-info__meta-item">
+                      <svg class="post-info__meta-icon icon-svg_bookmark-mini" width="8" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#book" /></svg><span class="post-info__meta-counter">76</span>
+                    </span>
+                    <a href="https://habr.com/company/pochtoy/blog/429000/#comments" class="post-info__meta-item" rel="nofollow">
+                      <svg class="post-info__meta-icon icon-svg_comments" width="14" height="13"><use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#comment" /></svg><span class="post-info__meta-counter">417</span>
+                    </a>
+                  </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+  </div>
+
+    </div>
+
+    <div class="sidebar_right">
+    </div>
+  </div>
+
+          </div>
+        </div>
+
+      <div class="layout__row layout__row_footer-links">
+        <div class="layout__cell">
+          <div class="footer-grid footer-grid_menu">
+  <div class="footer-grid__item footer-block">
+    <h3 class="footer-block__title">
+      Аккаунт
+    </h3>
+    <div class="footer-block__content">
+      <ul class="footer-menu">
+          <li class="footer-menu__item">
+            <a href="https://habr.com/auth/login/" class="footer-menu__item-link">Войти</a>
+          </li>
+          <li class="footer-menu__item">
+            <a href="https://habr.com/auth/register/" class="footer-menu__item-link">Регистрация</a>
+          </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-grid__item footer-block">
+    <h3 class="footer-block__title">Разделы</h3>
+    <div class="footer-block__content">
+      <ul class="footer-menu">
+        <li class="footer-menu__item">
+          <a href="https://habr.com/posts/top/" class="footer-menu__item-link">Публикации</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://habr.com/hubs/" class="footer-menu__item-link">Хабы</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://habr.com/companies/" class="footer-menu__item-link">Компании</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://habr.com/users/" class="footer-menu__item-link">Пользователи</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://habr.com/sandbox/" class="footer-menu__item-link">Песочница</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-grid__item footer-block">
+    <h3 class="footer-block__title">Информация</h3>
+    <div class="footer-block__content">
+      <ul class="footer-menu">
+        <li class="footer-menu__item">
+          <a href="/info/help/rules/" class="footer-menu__item-link">Правила</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="/info/help/" class="footer-menu__item-link">Помощь</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="/info/topics/madskillz/" class="footer-menu__item-link">Документация</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://id.tmtm.ru/info/agreement/" class="footer-menu__item-link">Соглашение</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://id.tmtm.ru/info/confidential/" class="footer-menu__item-link">Конфиденциальность</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-grid__item footer-block">
+    <h3 class="footer-block__title">Услуги</h3>
+    <div class="footer-block__content">
+      <ul class="footer-menu">
+        <li class="footer-menu__item">
+          <a href="https://tmtm.ru/services/advertising/" target="_blank" class="footer-menu__item-link">Реклама</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://tmtm.ru/services/corpblog/" target="_blank" class="footer-menu__item-link">Тарифы</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://tmtm.ru/services/content/" target="_blank" class="footer-menu__item-link">Контент</a>
+        </li>
+        <li class="footer-menu__item">
+          <a href="https://tmtm.ru/workshops/" target="_blank" class="footer-menu__item-link">Семинары</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+    <div class="footer-grid__item footer-grid__item_300 footer-block">
+      <h3 class="footer-block__title">Приложения</h3>
+      <div class="footer-block__content footer-block__content_apps">
+        <a href="https://appmetrica.yandex.com/serve/240693928167260216?utm_source=HH_desktop&utm_medium=button&utm_campaign=appiOS" class="footer-menu__app" target="_blank" onclick="if (  typeof ga === 'function') { ga('send', 'event', 'footer', 'links', 'ios_app'); }"><svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="140" height="40" viewBox="0 0 140 40"><path fill="#fff" d="M0 0h140v40h-140z"/><path d="M139.387 35.99c0 2.215-1.794 4.01-4.014 4.01h-131.354c-2.218 0-4.019-1.794-4.019-4.01v-31.975c0-2.214 1.801-4.015 4.019-4.015h131.353c2.22 0 4.014 1.801 4.014 4.015l.001 31.975z"/><path fill="#fff" d="M30.609 19.78c-.03-3.374 2.763-5.016 2.89-5.092-1.582-2.306-4.034-2.621-4.895-2.647-2.059-.217-4.057 1.232-5.106 1.232-1.07 0-2.685-1.211-4.426-1.176-2.24.035-4.336 1.332-5.486 3.346-2.372 4.107-.603 10.142 1.67 13.462 1.137 1.626 2.465 3.441 4.204 3.377 1.701-.07 2.337-1.085 4.39-1.085 2.034 0 2.631 1.085 4.404 1.044 1.826-.029 2.975-1.633 4.072-3.274 1.314-1.863 1.841-3.699 1.862-3.793-.041-.013-3.544-1.35-3.579-5.394zM27.259 9.858c.915-1.144 1.541-2.701 1.367-4.281-1.324.059-2.981.916-3.934 2.035-.844.986-1.598 2.603-1.403 4.123 1.488.111 3.015-.751 3.97-1.877zM55.229 32.05h-2.378l-1.302-4.092h-4.527l-1.241 4.092h-2.315l4.485-13.932h2.77l4.508 13.932zm-4.072-5.809l-1.178-3.638c-.125-.372-.358-1.247-.702-2.625h-.042c-.137.593-.358 1.468-.662 2.625l-1.157 3.638h3.741zM66.763 26.903c0 1.709-.462 3.059-1.385 4.05-.827.883-1.854 1.323-3.08 1.323-1.323 0-2.274-.475-2.853-1.426h-.042v5.292h-2.232v-10.831c0-1.074-.028-2.177-.083-3.307h1.963l.125 1.592h.042c.744-1.2 1.874-1.799 3.39-1.799 1.185 0 2.174.468 2.966 1.405.793.938 1.189 2.172 1.189 3.701zm-2.274.082c0-.978-.22-1.784-.662-2.418-.483-.662-1.131-.992-1.943-.992-.551 0-1.051.184-1.498.548-.448.366-.741.845-.878 1.437-.069.276-.104.503-.104.68v1.675c0 .731.224 1.347.672 1.851s1.03.755 1.746.755c.841 0 1.495-.325 1.963-.972.47-.648.704-1.503.704-2.564zM78.318 26.903c0 1.709-.462 3.059-1.386 4.05-.826.883-1.853 1.323-3.079 1.323-1.323 0-2.274-.475-2.852-1.426h-.042v5.292h-2.232v-10.831c0-1.074-.028-2.177-.083-3.307h1.963l.125 1.592h.042c.743-1.2 1.873-1.799 3.39-1.799 1.184 0 2.173.468 2.967 1.405.79.938 1.187 2.172 1.187 3.701zm-2.274.082c0-.978-.221-1.784-.663-2.418-.483-.662-1.129-.992-1.942-.992-.552 0-1.051.184-1.499.548-.448.366-.74.845-.877 1.437-.068.276-.104.503-.104.68v1.675c0 .731.224 1.347.67 1.851.448.503 1.03.755 1.748.755.841 0 1.495-.325 1.963-.972.469-.648.704-1.503.704-2.564zM91.236 28.143c0 1.185-.411 2.149-1.237 2.894-.908.813-2.171 1.22-3.795 1.22-1.499 0-2.701-.289-3.611-.868l.517-1.86c.98.593 2.055.89 3.227.89.841 0 1.495-.191 1.965-.57.468-.379.701-.888.701-1.522 0-.565-.193-1.042-.579-1.428-.384-.386-1.026-.745-1.922-1.077-2.439-.91-3.658-2.242-3.658-3.995 0-1.145.427-2.084 1.282-2.815.852-.732 1.989-1.097 3.411-1.097 1.268 0 2.321.221 3.162.662l-.558 1.82c-.785-.427-1.673-.641-2.666-.641-.785 0-1.399.194-1.838.579-.372.344-.558.764-.558 1.262 0 .551.213 1.006.64 1.364.372.331 1.047.689 2.027 1.075 1.199.483 2.079 1.047 2.646 1.694.563.642.844 1.45.844 2.413zM98.616 23.679h-2.46v4.878c0 1.241.433 1.86 1.302 1.86.399 0 .73-.035.991-.104l.062 1.695c-.44.164-1.019.247-1.736.247-.881 0-1.57-.269-2.068-.806-.495-.538-.744-1.441-.744-2.708v-5.064h-1.466v-1.675h1.466v-1.839l2.192-.662v2.501h2.46l.001 1.677zM109.716 26.944c0 1.544-.442 2.812-1.323 3.803-.924 1.021-2.151 1.53-3.681 1.53-1.474 0-2.648-.489-3.523-1.467s-1.313-2.212-1.313-3.7c0-1.557.45-2.832 1.354-3.823.901-.992 2.118-1.489 3.647-1.489 1.474 0 2.66.489 3.555 1.468.857.95 1.284 2.176 1.284 3.678zm-2.315.072c0-.927-.198-1.721-.599-2.384-.468-.802-1.137-1.202-2.004-1.202-.897 0-1.579.401-2.047 1.202-.401.664-.599 1.471-.599 2.426 0 .927.198 1.721.599 2.383.483.802 1.157 1.202 2.027 1.202.852 0 1.521-.408 2.004-1.223.411-.675.619-1.478.619-2.404zM116.971 23.967c-.221-.041-.456-.062-.704-.062-.785 0-1.392.296-1.82.89-.372.523-.558 1.185-.558 1.984v5.271h-2.231l.021-6.882c0-1.158-.028-2.212-.084-3.163h1.944l.082 1.922h.062c.236-.661.607-1.192 1.116-1.591.497-.359 1.034-.538 1.613-.538.206 0 .393.015.558.041l.001 2.128zM126.954 26.552c0 .4-.026.737-.082 1.012h-6.696c.026.992.35 1.751.972 2.275.564.468 1.294.702 2.19.702.991 0 1.896-.158 2.709-.475l.35 1.549c-.951.415-2.073.621-3.368.621-1.558 0-2.781-.459-3.67-1.375s-1.333-2.146-1.333-3.689c0-1.515.414-2.776 1.242-3.782.867-1.074 2.038-1.611 3.512-1.611 1.448 0 2.544.537 3.288 1.611.589.853.886 1.908.886 3.162zm-2.129-.579c.015-.662-.131-1.233-.433-1.716-.386-.621-.98-.931-1.779-.931-.73 0-1.323.303-1.777.91-.372.483-.593 1.062-.661 1.736l4.649.001zM44.529 6.682c.238-.142.506-.262.807-.36s.654-.148 1.062-.148c.656 0 1.174.156 1.553.467s.568.731.568 1.259c0 .42-.127.772-.38 1.056s-.578.474-.97.568v.03c.217.035.422.093.615.178s.363.198.508.34c.146.142.261.308.345.498.084.189.127.399.127.63 0 .379-.076.697-.229.955s-.352.467-.599.63c-.246.162-.522.28-.827.35s-.609.107-.914.107c-.326 0-.647-.035-.965-.102s-.612-.179-.884-.335l.274-.843c.176.088.403.173.68.254.277.082.558.121.843.121.467 0 .828-.105 1.081-.314.253-.21.381-.491.381-.843 0-.238-.051-.431-.153-.584-.103-.153-.235-.272-.397-.361-.162-.088-.343-.149-.543-.182s-.398-.051-.594-.051h-.457v-.831h.457c.209 0 .404-.026.584-.082.179-.053.335-.13.467-.228s.236-.216.31-.351c.073-.135.111-.288.111-.457 0-.305-.109-.543-.326-.716s-.508-.26-.873-.26c-.25 0-.501.041-.752.121-.25.082-.474.17-.671.264l-.239-.78zM53.251 13.131l-.081-.568h-.03c-.331.453-.811.68-1.442.68-.224 0-.426-.038-.609-.112s-.342-.176-.477-.305c-.136-.129-.24-.281-.315-.457-.074-.176-.111-.37-.111-.579 0-.616.25-1.078.752-1.386s1.211-.462 2.133-.462v-.091c0-.65-.341-.975-1.024-.975-.487 0-.916.122-1.287.365l-.223-.72c.453-.284 1.018-.426 1.693-.426 1.291 0 1.937.68 1.937 2.041v1.817c0 .508.024.9.071 1.178h-.986zm-.152-2.457c-.612 0-1.069.077-1.368.233s-.449.41-.449.762c0 .258.07.45.211.579s.32.193.536.193c.141 0 .275-.025.404-.076.128-.05.24-.12.337-.208.098-.088.177-.195.239-.32.061-.126.09-.259.09-.401v-.762zM59.457 8.196v.904h-2.052v4.032h-1.096v-4.936h3.148zM65.732 10.603c0 .393-.054.752-.162 1.076-.109.326-.259.603-.452.832-.193.23-.423.41-.69.538-.268.129-.563.194-.889.194-.65 0-1.117-.233-1.402-.7h-.021v2.599h-1.097v-5.321l-.01-.798-.029-.828h.964l.062.782h.021c.365-.588.92-.884 1.666-.884.29 0 .56.061.807.182.247.122.462.293.645.513s.327.484.431.793c.103.309.156.649.156 1.022zm-1.116.041c0-.244-.029-.469-.087-.675s-.142-.382-.253-.528-.247-.261-.406-.345c-.159-.085-.337-.127-.534-.127-.155 0-.308.035-.457.102-.15.067-.28.159-.39.274-.112.115-.201.254-.269.417s-.103.335-.103.518v.823c0 .182.028.352.087.508s.138.291.243.406.23.205.376.269c.146.065.306.096.482.096.414 0 .735-.157.965-.472.229-.316.346-.739.346-1.266zM71.624 8.196l-1.25 3.422c-.297.812-.587 1.477-.868 1.995s-.55.895-.807 1.133c-.379.338-.782.545-1.209.619l-.264-.923c.284-.074.555-.22.812-.437s.463-.487.62-.812l.081-.223-.061-.233-1.788-4.54h1.208l.935 2.752.142.437.153.538h.021l.111-.411.162-.574.833-2.742 1.168-.001zM73.523 10.247h.507c.372 0 .661-.067.863-.203s.305-.302.305-.498c0-.203-.086-.365-.26-.487-.172-.121-.411-.183-.716-.183-.197 0-.395.032-.593.096-.2.065-.384.144-.554.239l-.284-.71c.284-.155.566-.262.849-.319.281-.058.562-.087.847-.087.225 0 .45.022.676.066.225.044.427.118.603.223s.321.242.431.411c.112.17.168.379.168.63 0 .156-.03.293-.092.411-.06.118-.141.223-.243.314s-.215.166-.339.223c-.125.058-.253.101-.38.128v.03c.161.021.319.062.472.122.152.061.288.14.411.239.12.098.219.217.294.355.073.139.11.296.11.472 0 .291-.069.535-.213.731-.141.197-.323.352-.544.467-.219.115-.462.198-.726.249s-.521.076-.771.076c-.305 0-.607-.032-.903-.096-.298-.065-.566-.164-.804-.299l.286-.721c.176.095.376.175.603.239s.459.096.695.096c.372 0 .659-.072.858-.218.198-.146.298-.327.298-.543 0-.142-.032-.262-.101-.36-.068-.098-.163-.178-.284-.239-.122-.061-.264-.104-.427-.127-.161-.024-.339-.036-.528-.036h-.517v-.691zM79.381 8.196v1.746c0 .4-.006.759-.021 1.076l-.051 1.005.021.02.38-.757.382-.757 1.219-2.336h1.421v4.935h-1.036v-1.746c0-.365.01-.731.026-1.096l.055-1.108h-.051c-.114.305-.229.568-.345.793l-.343.691-.626 1.219c-.206.406-.425.823-.654 1.249h-1.421v-4.934h1.044zM88.521 8.196v.904h-1.502v4.032h-1.079v-4.032h-1.493v-.904h4.074zM94.115 10.43l-.01.269-.03.228h-3.29c.015.467.161.828.442 1.081s.652.381 1.112.381c.481 0 .924-.077 1.331-.233l.172.762c-.468.203-1.019.305-1.656.305-.384 0-.73-.06-1.034-.178-.305-.118-.562-.286-.773-.503-.208-.217-.371-.477-.483-.782-.11-.305-.165-.646-.165-1.025s.055-.73.165-1.051c.112-.321.27-.601.472-.838.204-.238.45-.423.736-.559.288-.135.609-.203.961-.203.311 0 .593.055.849.168.253.111.47.27.648.477.18.206.317.454.411.741s.142.609.142.96zm-1.047-.283c0-.386-.092-.699-.278-.939s-.455-.361-.807-.361c-.319 0-.588.121-.811.365s-.352.555-.386.935h2.282zM98.534 8.237c.197-.033.446-.061.751-.082s.616-.03.935-.03c.202 0 .431.013.685.036s.497.077.726.162c.231.085.423.211.579.381s.236.399.236.69c0 .15-.028.284-.082.401-.055.118-.127.222-.219.31s-.197.161-.315.218c-.118.058-.241.101-.371.127l.01.03c.358.061.65.189.873.386s.335.467.335.812c0 .345-.096.62-.284.823-.191.203-.423.356-.701.457s-.571.166-.879.194c-.307.026-.583.041-.826.041-.272 0-.538-.006-.798-.021l-.654-.041v-4.894zm1.056 1.97h.558c.17 0 .331-.012.483-.036.153-.023.286-.061.401-.111.116-.051.204-.118.27-.203.064-.085.096-.187.096-.31 0-.223-.092-.387-.281-.492-.186-.105-.478-.157-.877-.157l-.3.01-.35.03v1.269zm0 2.183l.339.03.321.01c.15 0 .3-.009.456-.03.155-.02.298-.059.427-.116s.231-.134.309-.232c.077-.097.118-.227.118-.388 0-.283-.127-.477-.376-.585-.251-.108-.588-.161-1.017-.161h-.577v1.472z"/></svg></a>
+
+        <a href="https://appmetrica.yandex.com/serve/745097116363323173?id=ru.habrahabr&utm_source=HH_desktop&utm_medium=button&utm_campaign=appAndroid" class="footer-menu__app" target="_blank" onclick="if (typeof ga === 'function') { ga('send', 'event', 'footer', 'links', 'android_app'); }"><svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="135" height="40" viewBox="0 0 135 40"><path d="M130 40h-125c-2.75 0-5-2.25-5-5v-30c0-2.75 2.25-5 5-5h125c2.75 0 5 2.25 5 5v30c0 2.75-2.25 5-5 5z"/><path fill="#fff" d="M68.136 21.752c-2.352 0-4.269 1.788-4.269 4.253 0 2.449 1.917 4.253 4.269 4.253 2.352 0 4.269-1.804 4.269-4.253 0-2.465-1.917-4.253-4.269-4.253zm0 6.83c-1.289 0-2.401-1.063-2.401-2.578 0-1.531 1.112-2.578 2.401-2.578 1.289 0 2.4 1.047 2.4 2.578 0 1.515-1.111 2.578-2.4 2.578zm-9.314-6.83c-2.352 0-4.269 1.788-4.269 4.253 0 2.449 1.917 4.253 4.269 4.253 2.352 0 4.269-1.804 4.269-4.253.001-2.465-1.916-4.253-4.269-4.253zm0 6.83c-1.289 0-2.4-1.063-2.4-2.578 0-1.531 1.112-2.578 2.4-2.578 1.289 0 2.4 1.047 2.4 2.578.001 1.515-1.111 2.578-2.4 2.578zm-11.078-5.525v1.804h4.318c-.129 1.015-.467 1.756-.983 2.272-.628.628-1.611 1.321-3.335 1.321-2.658 0-4.736-2.143-4.736-4.801s2.078-4.801 4.736-4.801c1.434 0 2.481.564 3.254 1.289l1.273-1.273c-1.079-1.031-2.513-1.82-4.527-1.82-3.641 0-6.702 2.964-6.702 6.605 0 3.641 3.061 6.605 6.702 6.605 1.966 0 3.448-.644 4.608-1.853 1.192-1.192 1.563-2.868 1.563-4.221 0-.419-.032-.806-.097-1.128h-6.074zm45.308 1.401c-.354-.95-1.434-2.706-3.641-2.706-2.191 0-4.011 1.724-4.011 4.253 0 2.384 1.804 4.253 4.221 4.253 1.949 0 3.077-1.192 3.544-1.885l-1.45-.967c-.483.709-1.144 1.176-2.094 1.176-.951 0-1.627-.435-2.062-1.289l5.687-2.352-.194-.483zm-5.8 1.418c-.048-1.643 1.273-2.481 2.223-2.481.741 0 1.369.371 1.579.902l-3.802 1.579zm-4.623 4.124h1.869v-12.501h-1.869v12.501zm-3.062-7.298h-.064c-.419-.499-1.224-.951-2.239-.951-2.127 0-4.076 1.869-4.076 4.269 0 2.384 1.949 4.237 4.076 4.237 1.015 0 1.82-.451 2.239-.967h.064v.612c0 1.627-.87 2.497-2.272 2.497-1.144 0-1.853-.822-2.143-1.514l-1.627.677c.467 1.128 1.708 2.513 3.77 2.513 2.191 0 4.044-1.289 4.044-4.43v-7.636h-1.772v.693zm-2.142 5.88c-1.289 0-2.368-1.079-2.368-2.562 0-1.498 1.079-2.594 2.368-2.594 1.273 0 2.272 1.096 2.272 2.594-.001 1.483-.999 2.562-2.272 2.562zm24.381-11.083h-4.471v12.501h1.865v-4.736h2.606c2.068 0 4.101-1.497 4.101-3.882s-2.033-3.883-4.101-3.883zm.048 6.025h-2.654v-4.285h2.654c1.395 0 2.187 1.155 2.187 2.143 0 .968-.792 2.142-2.187 2.142zm11.532-1.795c-1.351 0-2.75.595-3.329 1.914l1.657.692c.354-.692 1.013-.917 1.705-.917.965 0 1.946.579 1.962 1.608v.129c-.338-.193-1.062-.483-1.946-.483-1.785 0-3.603.981-3.603 2.815 0 1.673 1.464 2.75 3.104 2.75 1.255 0 1.946-.563 2.38-1.222h.064v.965h1.801v-4.793c0-2.22-1.656-3.458-3.795-3.458zm-.225 6.851c-.611 0-1.464-.306-1.464-1.062 0-.965 1.062-1.335 1.978-1.335.82 0 1.206.177 1.705.418-.145 1.159-1.142 1.979-2.219 1.979zm10.582-6.578l-2.139 5.42h-.064l-2.219-5.42h-2.01l3.329 7.575-1.898 4.214h1.946l5.131-11.789h-2.076zm-16.807 7.998h1.866v-12.501h-1.866v12.501z"/><linearGradient id="a" gradientUnits="userSpaceOnUse" x1="21.8" y1="33.29" x2="5.017" y2="16.508" gradientTransform="matrix(1 0 0 -1 0 42)"><stop offset="0" stop-color="#00A0FF"/><stop offset=".007" stop-color="#00A1FF"/><stop offset=".26" stop-color="#00BEFF"/><stop offset=".512" stop-color="#00D2FF"/><stop offset=".76" stop-color="#00DFFF"/><stop offset="1" stop-color="#00E3FF"/></linearGradient><path fill="url(#a)" d="M10.435 7.538c-.291.308-.463.786-.463 1.405v22.116c0 .62.172 1.097.463 1.405l.074.072 12.389-12.389v-.292l-12.389-12.39-.074.073z"/><linearGradient id="b" gradientUnits="userSpaceOnUse" x1="33.834" y1="21.999" x2="9.637" y2="21.999" gradientTransform="matrix(1 0 0 -1 0 42)"><stop offset="0" stop-color="#FFE000"/><stop offset=".409" stop-color="#FFBD00"/><stop offset=".775" stop-color="#FFA500"/><stop offset="1" stop-color="#FF9C00"/></linearGradient><path fill="url(#b)" d="M27.028 24.278l-4.129-4.131v-.292l4.13-4.13.093.053 4.893 2.78c1.398.794 1.398 2.093 0 2.888l-4.893 2.78-.094.052z"/><linearGradient id="c" gradientUnits="userSpaceOnUse" x1="24.827" y1="19.704" x2="2.069" y2="-3.054" gradientTransform="matrix(1 0 0 -1 0 42)"><stop offset="0" stop-color="#FF3A44"/><stop offset="1" stop-color="#C31162"/></linearGradient><path fill="url(#c)" d="M27.122 24.225l-4.224-4.224-12.463 12.463c.461.488 1.221.548 2.078.061l14.609-8.3"/><linearGradient id="d" gradientUnits="userSpaceOnUse" x1="7.297" y1="41.824" x2="17.46" y2="31.661" gradientTransform="matrix(1 0 0 -1 0 42)"><stop offset="0" stop-color="#32A071"/><stop offset=".069" stop-color="#2DA771"/><stop offset=".476" stop-color="#15CF74"/><stop offset=".801" stop-color="#06E775"/><stop offset="1" stop-color="#00F076"/></linearGradient><path fill="url(#d)" d="M27.122 15.777l-14.608-8.3c-.857-.487-1.617-.426-2.078.061l12.463 12.463 4.223-4.224z"/><path opacity=".2" enable-background="new" d="M27.029 24.132l-14.515 8.247c-.812.461-1.538.431-2.004.011l-.075.075.074.072c.466.42 1.192.451 2.004-.011l14.608-8.3-.092-.094z"/><path opacity=".12" enable-background="new" d="M10.435 32.318c-.291-.308-.463-.786-.463-1.405v.146c0 .619.172 1.097.463 1.405l.075-.075-.075-.071zM32.015 21.299l-4.986 2.833.093.093 4.893-2.78c.699-.397 1.048-.92 1.048-1.443-.059.473-.415.937-1.048 1.297z"/><path opacity=".25" fill="#fff" enable-background="new" d="M12.514 7.623l19.501 11.08c.634.36.989.824 1.048 1.298 0-.523-.349-1.047-1.048-1.444l-19.501-11.08c-1.398-.794-2.541-.135-2.541 1.466v.147c0-1.601 1.143-2.261 2.541-1.467z"/><g fill="#fff" stroke="#fff" stroke-width=".2" stroke-miterlimit="10"><path d="M42.114 14.273h-.737v-2.011h.587c.519-.447.773-1.212.763-2.296v-2.966h4.006v5.263h.67v2.011h-.737v-1.274h-4.551v1.273zm1.383-4.306c.012.949-.179 1.715-.569 2.296h3.033v-4.526h-2.464v2.23zM53.415 12.225c-.59.607-1.323.909-2.2.909-.877 0-1.61-.303-2.199-.909-.59-.606-.884-1.348-.884-2.225s.294-1.619.884-2.225c.589-.607 1.322-.91 2.199-.91.872 0 1.604.305 2.196.914.592.609.888 1.349.888 2.221-.001.877-.296 1.619-.884 2.225zm-3.831-.503c.444.45.987.674 1.63.674.642 0 1.187-.225 1.63-.674.444-.45.667-1.024.667-1.722s-.223-1.273-.667-1.722c-.443-.45-.987-.674-1.63-.674-.643 0-1.186.225-1.63.674-.443.45-.666 1.024-.666 1.722s.223 1.273.666 1.722zM58.179 13.134c-.883 0-1.623-.299-2.221-.896-.598-.598-.896-1.344-.896-2.238s.298-1.64.896-2.237c.598-.598 1.338-.897 2.221-.897.904 0 1.64.327 2.204.981l-.537.52c-.407-.509-.964-.763-1.667-.763-.654 0-1.206.221-1.655.662-.45.441-.675 1.02-.675 1.734s.225 1.293.675 1.734c.449.441 1.001.662 1.655.662.721 0 1.335-.29 1.844-.871l.536.536c-.274.33-.617.591-1.031.783-.413.194-.863.29-1.349.29zM63.677 13h-.771v-5.263h-1.676v-.737h4.123v.737h-1.676v5.263zM70.646 7l-2.271 5.061c-.313.715-.779 1.072-1.399 1.072-.185 0-.383-.044-.596-.134l.201-.712c.129.073.263.109.402.109.179 0 .317-.035.415-.104.098-.07.188-.197.272-.381l.218-.478-2.017-4.433h.905l1.483 3.444h.033l1.449-3.444h.905zM71.52 13v-6h4.341v6h-.771v-5.263h-2.8v5.263h-.77zM77.234 13v-6h.771v2.572h3v-2.572h.771v6h-.771v-2.707h-3v2.707h-.771zM88.058 12.225c-.59.607-1.323.909-2.2.909-.877 0-1.61-.303-2.199-.909-.59-.606-.884-1.348-.884-2.225s.294-1.619.884-2.225c.589-.607 1.322-.91 2.199-.91.872 0 1.604.305 2.196.914.592.609.888 1.349.888 2.221-.001.877-.296 1.619-.884 2.225zm-3.83-.503c.444.45.987.674 1.63.674s1.187-.225 1.63-.674c.444-.45.667-1.024.667-1.722s-.223-1.273-.667-1.722c-.443-.45-.987-.674-1.63-.674s-1.186.225-1.63.674c-.443.45-.666 1.024-.666 1.722s.222 1.273.666 1.722zM92.094 13v-6h2.17c.47 0 .876.155 1.22.465.344.311.516.7.516 1.169 0 .285-.074.537-.223.754-.147.218-.345.383-.591.495v.033c.296.101.539.274.729.519.189.246.285.531.285.855 0 .492-.181.899-.541 1.223-.36.325-.786.487-1.278.487h-2.287zm.77-3.428h1.399c.291 0 .524-.096.7-.289.176-.192.264-.403.264-.632s-.085-.439-.256-.628c-.17-.19-.395-.285-.674-.285h-1.434v1.834zm0 2.691h1.551c.296 0 .536-.104.721-.311.185-.206.276-.433.276-.679 0-.246-.095-.47-.285-.674-.189-.204-.438-.306-.746-.306h-1.517v1.97z"/></g></svg></a>
+      </div>
+    </div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="layout__row layout__row_footer">
+        <div class="layout__cell">
+          <div class="footer-grid footer">
+  <div class="footer-grid__item footer-grid__item_copyright">
+    <span class="footer__logo"><svg class="icon-svg icon-svg_tmtm" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="32" height="32" viewBox="0 0 32 32"><path fill="#b12b51" d="M0 0v32h23.637l4.175-4.189-4.175 4.175v-8.358h8.358l-4.184 4.184 4.189-4.184v-23.628h-32zm14.653 14.148h-2.088v5.127h-2.106v-5.127h-2.089v-1.423h6.282v1.423zm8.977 1.852v3.275h-2.048v-4.065l-1.487 2.683h-.922l-1.487-2.683v4.065h-1.989v-6.55h2.28l1.686 2.975 1.686-2.975h2.281v3.275z"/><path fill="#fff" d="M8.37 14.148h2.088v5.127h2.106v-5.127h2.089v-1.423h-6.283zM22.264 12.725h-.915l-1.686 2.975-1.686-2.975h-2.28v6.55h1.989v-4.065l1.487 2.683h.922l1.487-2.683v4.065h2.048v-6.55h-.649z"/><path fill="#dc82a0" d="M23.637 23.628v8.358l8.358-8.358z"/></svg></span>
+    <span class="footer__copyright">&copy; 2006 &ndash; 2018 «<a href="https://tmtm.ru/" class="footer__link">TM</a>»</span>
+  </div>
+  <div class="footer-grid__item footer-grid__item_link">
+      <a href="/info/about/" class="footer__link">О сайте</a>
+  </div>
+  <div class="footer-grid__item footer-grid__item_link">
+    <a href="https://habr.com/feedback/" class="footer__link">Служба поддержки</a>
+  </div>
+  <div class="footer-grid__item footer-grid__item_link">
+      <a href="https://m.habr.com/post/430818/?mobile=yes" class="footer__link">Мобильная версия</a>
+  </div>
+
+  <div class="footer-grid__item footer-grid__item_social">
+    <ul class="social-icons">
+      <li class="social-icons__item">
+        <a href="https://twitter.com/habr_com"
+          class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_twitter"
+          target="_blank"
+          onclick="if (typeof ga === 'function') { ga('send', 'event', 'footer', 'Social_icons', 'twitter'); }"
+        >
+          <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M17.414 8.642c-.398.177-.826.296-1.276.35.459-.275.811-.71.977-1.229-.43.254-.905.439-1.41.539-.405-.432-.982-.702-1.621-.702-1.227 0-2.222.994-2.222 2.222 0 .174.019.344.058.506-1.846-.093-3.484-.978-4.579-2.322-.191.328-.301.71-.301 1.117 0 .77.392 1.45.988 1.849-.363-.011-.706-.111-1.006-.278v.028c0 1.077.766 1.974 1.782 2.178-.187.051-.383.078-.586.078-.143 0-.282-.014-.418-.04.282.882 1.103 1.525 2.075 1.542-.76.596-1.718.951-2.759.951-.179 0-.356-.01-.53-.031.983.63 2.15.998 3.406.998 4.086 0 6.321-3.386 6.321-6.321l-.006-.287c.433-.314.81-.705 1.107-1.15z"/></svg>
+        </a>
+      </li>
+      <li class="social-icons__item">
+        <a href="https://www.facebook.com/habrahabr.ru"
+          class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_facebook"
+          target="_blank"
+          onclick="if (typeof ga === 'function') { ga('send', 'event', 'footer', 'Social_icons', 'facebook'); }"
+        >
+          <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M14.889 8.608h-1.65c-.195 0-.413.257-.413.6v1.192h2.063v1.698h-2.063v5.102h-1.948v-5.102h-1.766v-1.698h1.766v-1c0-1.434.995-2.6 2.361-2.6h1.65v1.808z"/></svg>
+        </a>
+      </li>
+        <li class="social-icons__item">
+          <a href="https://vk.com/habr"
+            class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_vkontakte"
+            target="_blank"
+            onclick="if (typeof ga === 'function') { ga('send', 'event', 'footer', 'Social_icons', 'vkontakte'); }"
+          >
+            <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M16.066 11.93s1.62-2.286 1.782-3.037c.054-.268-.064-.418-.343-.418h-1.406c-.322 0-.44.139-.537.343 0 0-.76 1.619-1.685 2.64-.297.33-.448.429-.612.429-.132 0-.193-.11-.193-.408v-2.607c0-.365-.043-.472-.343-.472h-2.254c-.172 0-.279.1-.279.236 0 .343.526.421.526 1.352v1.921c0 .386-.022.537-.204.537-.483 0-1.631-1.663-2.274-3.552-.129-.386-.268-.494-.633-.494h-1.406c-.204 0-.354.139-.354.343 0 .375.44 2.114 2.167 4.442 1.159 1.566 2.683 2.414 4.056 2.414.838 0 1.041-.139 1.041-.494v-1.202c0-.301.118-.429.29-.429.193 0 .534.062 1.33.848.945.901 1.01 1.276 1.525 1.276h1.578c.161 0 .311-.075.311-.343 0-.354-.462-.987-1.17-1.738-.29-.386-.762-.805-.912-.998-.215-.226-.151-.354-.001-.59z"/></svg>
+          </a>
+        </li>
+      <li class="social-icons__item">
+        <a href="https://telegram.me/habr_com"
+          class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_telegram"
+          target="_blank"
+          onclick="if (typeof ga === 'function') { ga('send', 'event', 'footer', 'Social_icons', 'telegram'); }"
+        >
+          <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="24" height="24" viewBox="0 0 24 24"><path d="M17.17 7.621l-10.498 3.699c-.169.059-.206.205-.006.286l2.257.904 1.338.536 6.531-4.796s.189.057.125.126l-4.68 5.062-.27.299.356.192 2.962 1.594c.173.093.397.016.447-.199.058-.254 1.691-7.29 1.728-7.447.047-.204-.087-.328-.291-.256zm-6.922 8.637c0 .147.082.188.197.084l1.694-1.522-1.891-.978v2.416z"/></svg>
+        </a>
+      </li>
+        <li class="social-icons__item">
+          <a href="https://www.youtube.com/channel/UCd_sTwKqVrweTt4oAKY5y4w"
+            class="social-icons__item-link social-icons__item-link_normal social-icons__item-link_youtube"
+            target="_blank"
+            onclick="if (typeof ga === 'function') { ga('send', 'event', 'footer', 'Social_icons', 'youtube'); }"
+          >
+            <svg class="icon-svg" aria-hidden="true" aria-labelledby="title" version="1.1" role="img" width="32" height="32" viewBox="0 0 32 32"><path d="M3.2 0h25.6c1.767 0 3.2 1.433 3.2 3.2v25.6c0 1.767-1.433 3.2-3.2 3.2h-25.6c-1.767 0-3.2-1.433-3.2-3.2v-25.6c0-1.767 1.433-3.2 3.2-3.2zm18.133 16l-10.667-5.333v10.667l10.667-5.333z"/></svg>
+
+          </a>
+        </li>
+    </ul>
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      <a href="#" class="layout__elevator hidden" id="scroll_to_top" title="Наверх"  onclick="if (typeof ga === 'function') { ga('send', 'event', 'navigation_button', 'down'); }">
+        <svg class="icon-svg icon-svg_scroll-up" width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" version="1.1" role="img"><path d="M16 0C7.164 0 0 7.164 0 16s7.164 16 16 16 16-7.164 16-16S24.836 0 16 0zm8.412 19.523c-.517.512-1.355.512-1.872 0L16 13.516l-6.54 6.01c-.518.51-1.356.51-1.873 0-.516-.513-.517-1.343 0-1.855l7.476-7.326c.517-.512 1.356-.512 1.873 0l7.476 7.327c.516.513.516 1.342 0 1.854z"/></svg>
+      </a>
+    </div>
+
+    <div class="overlay hidden" id="js-lang_settings">
+  <div class="popup">
+    <div class="popup__head popup__head_lang-settings">
+      <span class="popup__head-title">Настройка языка</span>
+      <button type="button" class="btn btn_small btn_popup-close js-hide_lang_settings">
+        <svg class="icon-svg" width="12" height="12">
+          <use xlink:href="https://habr.com/images/1543570818/common-svg-sprite.svg#close" />
+        </svg>
+      </button>
+    </div>
+    <div class="popup__body">
+      <form action="" method="GET" class="form form_lang-settings" id="lang-settings-form">
+        <fieldset class="form__fieldset form__fieldset_thin">
+          <legend class="form__legend form__legend_lang-settings">Интерфейс</legend>
+            <div class="form-field form-field_lang-settings">
+              <label class="radio radio_custom ">
+                <input type="radio" name="hl" class="radio__input" value="ru_RU" checked>
+                <span class="radio__label radio__label_another">русский</span>
+              </label>
+            </div>
+            <div class="form-field form-field_lang-settings">
+              <label class="radio radio_custom ">
+                <input type="radio" name="hl" class="radio__input" value="en_US" >
+                <span class="radio__label radio__label_another">английский</span>
+              </label>
+            </div>
+        </fieldset>
+
+        <fieldset class="form__fieldset form__fieldset_thin">
+          <legend class="form__legend form__legend_lang-settings">Язык публикаций</legend>
+            <div class="form-field form-field_lang-settings">
+              <label class="checkbox checkbox_custom">
+                <input type="checkbox" name="fl" class="checkbox__input" value="ru" checked>
+                <span class="checkbox__label checkbox__label_another">русский</span>
+              </label>
+            </div>
+            <div class="form-field form-field_lang-settings">
+              <label class="checkbox checkbox_custom">
+                <input type="checkbox" name="fl" class="checkbox__input" value="en" checked>
+                <span class="checkbox__label checkbox__label_another">английский</span>
+              </label>
+            </div>
+        </fieldset>
+
+        <div class="form__footer form__footer_lang-settings">
+          <button type="submit" class="btn btn_blue btn_huge btn_full-width">Сохранить настройки</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+    <script type="text/javascript">
+  // global vars
+  var g_base_url = 'habr.com';
+  var g_base_fullurl = 'https://habr.com/';
+  var g_tmid_fullurl = 'https://id.tmtm.ru/';
+  var g_is_guest = false;
+  var g_show_xpanel = false;
+  var g_is_enableShortcuts = '1';
+    var g_current_hl = 'ru_RU';
+
+</script>
+
+    <script src="https://dr.habracdn.net/habrcom/javascripts/1543570818/vendors.bundle.js"></script>
+    <script src="https://dr.habracdn.net/habrcom/javascripts/1543570818/main.bundle.js"></script>
+      <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    showProcessingMessages: false,
+    showMathMenu: true,
+    tex2jax: {
+      inlineMath: [['$inline$','$inline$']],
+      displayMath: [['$$display$$','$$display$$']],
+      processEscapes: true
+    },
+    MathMenu: {
+      showRenderer: true,
+      showContext:  true
+    }
+  });
+
+  MathJax.Extension.Img2jax = {
+    PreProcess: function (element) {
+      var hasMath = false;
+      var images = element.querySelectorAll('[data-tex]');
+      for (var i = images.length - 1; i >= 0; i--) {
+        var img = images[i];
+        var tex = img.alt.replace(/(\r\n|\n|\r)/gm, " ");
+        if (tex && tex[0] === '$'){
+          var script = document.createElement("script"); script.type = "math/tex";
+          hasMath = true;
+          if (img.getAttribute('data-tex') == "display"){script.type += ";mode=display"}
+          MathJax.HTML.setScript(script, tex.substring(1,tex.length-1));
+          img.parentNode.replaceChild(script,img);
+        }
+      }
+    }
+  };
+
+  MathJax.Hub.Register.PreProcessor(["PreProcess", MathJax.Extension.Img2jax]);
+</script>
+
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_SVG-full&locale=ru">
+</script>
+
+  <script type="text/javascript" src="https://dr.habracdn.net/habrcom/javascripts/1543570818/libs/highlight.pack.js"></script>
+  <script type="text/javascript" src="https://dr.habracdn.net/habrcom/javascripts/1543570818/libs/highlight.langs.js"></script>
+
+
+      <script src="https://dr.habracdn.net/habrcom/javascripts/1543570818/check-login.js"></script>
+
+      <script type="text/javascript" src="https://habr.com/viewcount/post/430818/"></script>
+
+    
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function (d, w, c) {
+    (w[c] = w[c] || []).push(function() {
+        try {
+            if (typeof (_yaparams) != 'undefined') {
+                w.yaCounter24049213 = new Ya.Metrika({id:24049213,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    params:_yaparams});
+            } else {
+                w.yaCounter24049213 = new Ya.Metrika({id:24049213,
+                    webvisor:true,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true});
+            }
+
+        } catch(e) { }
+    });
+
+    var n = d.getElementsByTagName("script")[0],
+        s = d.createElement("script"),
+        f = function () { n.parentNode.insertBefore(s, n); };
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js";
+
+    if (w.opera == "[object Opera]") {
+        d.addEventListener("DOMContentLoaded", f, false);
+    } else { f(); }
+})(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript><div><img src="//mc.yandex.ru/watch/24049213" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+    <!-- Facebook Pixel Code -->
+<script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window,document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '317458588730613');
+    fbq('track', 'PageView');
+</script>
+<noscript>
+        <img height="1" width="1" src="https://www.facebook.com/tr?id=317458588730613&ev=PageView&noscript=1"/>
+</noscript>
+<!-- End Facebook Pixel Code -->
+    
+  </body>
+</html>

@@ -4,7 +4,7 @@ import os
 
 render=web.template.render('tpl/')
 urls = ('/(.*)','add')
-db=[]
+
 
 ##########Create a default DB##############
 if not os.path.exists('data.json'):
@@ -14,6 +14,10 @@ if not os.path.exists('data.json'):
 		f.write(json.dumps(db))
 ###########################################	
 
+with open('data.json','r') as f:
+	db = json.loads(f.read())
+
+
 #########ServerResponseBlock###############	
 class add:
     def POST(self,url):
@@ -22,7 +26,7 @@ class add:
     	
     	with open('data.json','r') as f:
 		data=f.read()
-		db=json.loads(data)
+		#db=json.loads(data)
 	db.append({'name':i['name']})
 	with open('data.json','w') as f:
 		f.write(json.dumps(db))

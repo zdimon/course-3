@@ -1,0 +1,1637 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<link href="//files.realpython.com" rel="dns-prefetch">
+<link href="//fonts.googleapis.com" rel="dns-prefetch">
+<link href="//fonts.gstatic.com" rel="dns-prefetch">
+<title>Interactive Data Visualization in Python With Bokeh – Real Python</title>
+<meta name="author" content="Real Python">
+<meta name="description" content="This Python tutorial will get you up and running with Bokeh, using examples and a real-world dataset. You&#39;ll learn how to visualize your data, customize and organize your visualizations, and add interactivity.">
+<meta name="keywords" content="">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="canonical" href="https://realpython.com/python-data-visualization-bokeh/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://files.realpython.com/media/Interactive-Visualization-w-Bokeh-Watermark.cf07569335d5.jpg">
+<meta property="og:image" content="https://files.realpython.com/media/Interactive-Visualization-w-Bokeh-Watermark.cf07569335d5.jpg">
+<meta name="twitter:creator" content="@realpython">
+<meta name="twitter:site" content="@realpython">
+<meta property="og:title" content="Interactive Data Visualization in Python With Bokeh – Real Python">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://realpython.com/python-data-visualization-bokeh/">
+<meta property="og:description" content="This Python tutorial will get you up and running with Bokeh, using examples and a real-world dataset. You&#39;ll learn how to visualize your data, customize and organize your visualizations, and add interactivity.">
+<link href="/static/favicon.68cbf4197b0c.png" rel="icon">
+<link href="https://realpython.com/atom.xml" rel="alternate" title="Real Python" type="application/atom+xml">
+<link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="/static/realpython.min.e4e61e8aae7a.css">
+<script src="https://d31vxm9ubutrmw.cloudfront.net/static/js/2153.js"></script>
+<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-35184939-1', 'auto', {'allowLinker': true});
+      ga('require', 'linker');
+      ga('linker:autoLink', ['fastspring.com', 'realpython.onfastspring.com', 'onfastspring.com']);
+      ga('send', 'pageview');
+      
+      ga('require', 'ecommerce');
+      
+    </script>
+</head>
+<body>
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark flex-column">
+<div class="container flex-row">
+<a class="navbar-brand" href="/">
+<img src="/static/real-python-logo.ab1a167d9717.svg" height="40" class="d-inline-block align-top" alt="Real Python">
+</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item">
+<a class="nav-link" href="/start-here/">Start Here</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="/">Tutorials</a>
+</li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBooksCourses" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<span class="fa fa-graduation-cap"></span> Products
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownBooksCourses">
+<a class="dropdown-item" href="/products/real-python-course/">The Real Python Course</a>
+<a class="dropdown-item" href="/products/python-tricks-book/">Python Tricks: The Book</a>
+<a class="dropdown-item" href="/products/managing-python-dependencies/">Managing Python Dependencies</a>
+<a class="dropdown-item" href="/products/sublime-python/">Sublime Text + Python Setup</a>
+<a class="dropdown-item" href="/products/pythonic-wallpapers/">Pythonic Wallpapers Pack</a>
+<a class="dropdown-item" href="https://nerdlettering.com" target="_blank">Pythonic Mugs, Shirts, and More</a>
+<a class="dropdown-item" href="https://www.pythonistacafe.com" target="_blank">Pythonista Cafe Community</a>
+<a class="dropdown-item" href="/products/">Browse All »</a>
+</div>
+</li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMore" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+More
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMore">
+<a class="dropdown-item" href="/newsletter/">Newsletter</a>
+<a class="dropdown-item" href="/resources/">Resources</a>
+<a class="dropdown-item" href="/mentoring/">Mentoring</a>
+<a class="dropdown-item" href="/team/">The Team</a>
+<a class="dropdown-item" href="/write-for-us/">Join Us</a>
+<a class="dropdown-item" href="/support/">Support</a>
+<a class="dropdown-item" href="https://www.pythonjobshq.com" target="_blank">Python Jobs</a>
+</div>
+</li>
+</ul>
+<form class="form-inline my-2 my-lg-0" action="/search" method="GET">
+<input class="search-field form-control form-control-md mr-sm-1 mr-lg-2 w-100" type="search" placeholder="Search&hellip;" aria-label="Search" name="q">
+</form>
+</div>
+</div>
+</nav>
+<div class="container main-content">
+<div class="row justify-content-center">
+<div class="col-md-11 col-lg-8 article">
+<figure class="embed-responsive embed-responsive-16by9">
+<img class="card-img-top m-0 p-0 embed-responsive-item rounded" style="object-fit: contain;" alt="Interactive Data Visualization in Python With Bokeh" src="https://files.realpython.com/media/Interactive-Visualization-w-Bokeh-Watermark.cf07569335d5.jpg" width="1920" height="1080" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/Interactive-Visualization-w-Bokeh-Watermark.cf07569335d5.jpg&amp;w=480&amp;sig=cb4b63f77b978b65460fcd171b54c4c95e6826f6 480w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/Interactive-Visualization-w-Bokeh-Watermark.cf07569335d5.jpg&amp;w=960&amp;sig=1f37d0cea295e63d25612cd38a1d3bb15a5202bf 960w, https://files.realpython.com/media/Interactive-Visualization-w-Bokeh-Watermark.cf07569335d5.jpg 1920w" sizes="75vw">
+</figure>
+<h1>Interactive Data Visualization in Python With Bokeh</h1>
+<p>
+<span class="text-muted">by <a class="text-muted" href="#author">Leon D&#39;Angio</a>
+<span class="ml-3 fa fa-clock-o"></span> Nov 19, 2018
+<span class="ml-3 mr-1 fa fa-comments"></span><a href="#comments"><span class="disqus-comment-count text-muted" data-disqus-identifier="https://realpython.com/python-data-visualization-bokeh/"></span></a>
+<span class="ml-3 fa fa-tags"></span>
+<a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
+<a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
+</span></p>
+
+<div class="article-body">
+<div class="bg-light sidebar-module sidebar-module-inset">
+<p class="h3 mb-2 text-muted">Table of Contents</p>
+<div class="toc">
+<ul>
+<li><a href="#from-data-to-visualization">From Data to Visualization</a><ul>
+<li><a href="#prepare-the-data">Prepare the Data</a></li>
+<li><a href="#determine-where-the-visualization-will-be-rendered">Determine Where the Visualization Will Be Rendered</a></li>
+<li><a href="#set-up-the-figures">Set up the Figure(s)</a></li>
+<li><a href="#connect-to-and-draw-your-data">Connect to and Draw Your Data</a></li>
+<li><a href="#organize-the-layout">Organize the Layout</a></li>
+<li><a href="#preview-and-save-your-beautiful-data-creation">Preview and Save Your Beautiful Data Creation</a></li>
+</ul>
+</li>
+<li><a href="#generating-your-first-figure">Generating Your First Figure</a></li>
+<li><a href="#getting-your-figure-ready-for-data">Getting Your Figure Ready for Data</a></li>
+<li><a href="#drawing-data-with-glyphs">Drawing Data With Glyphs</a></li>
+<li><a href="#a-quick-aside-about-data">A Quick Aside About Data</a></li>
+<li><a href="#using-the-columndatasource-object">Using the ColumnDataSource Object</a></li>
+<li><a href="#organizing-multiple-visualizations-with-layouts">Organizing Multiple Visualizations With Layouts</a></li>
+<li><a href="#adding-interaction">Adding Interaction</a><ul>
+<li><a href="#configuring-the-toolbar">Configuring the Toolbar</a></li>
+<li><a href="#selecting-data-points">Selecting Data Points</a></li>
+<li><a href="#adding-hover-actions">Adding Hover Actions</a></li>
+<li><a href="#linking-axes-and-selections">Linking Axes and Selections</a></li>
+<li><a href="#highlighting-data-using-the-legend">Highlighting Data Using the Legend</a></li>
+</ul>
+</li>
+<li><a href="#summary-and-next-steps">Summary and Next Steps</a></li>
+</ul>
+</div>
+</div>
+<div class="sidebar-module sidebar-module-inset p-0" style="overflow:hidden;">
+<div style="display:block;position:relative;">
+<div style="display:block;width:100%;padding-top:12.5%;"></div>
+<div class="rpad" data-unit="8x1" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;"></div>
+</div>
+</div>
+<p>Bokeh prides itself on being a library for <em>interactive</em> data visualization. </p>
+<p>Unlike popular counterparts in the Python visualization space, like Matplotlib and Seaborn, Bokeh renders its graphics using HTML and JavaScript. This makes it a great candidate for building web-based dashboards and applications. However, it&rsquo;s an equally powerful tool for exploring and understanding your data or creating beautiful custom charts for a project or report.</p>
+<p>Using a number of examples on a real-world dataset, the goal of this tutorial is to get you up and running with Bokeh.</p>
+<p><strong>You&rsquo;ll learn how to:</strong> </p>
+<ul>
+<li><strong>Transform your data</strong> into visualizations, using Bokeh</li>
+<li><strong>Customize and organize</strong> your visualizations </li>
+<li><strong>Add interactivity</strong> to your visualizations</li>
+</ul>
+<p>So let&rsquo;s jump in.</p>
+<div class="alert alert-warning" role="alert"><p><strong>Free Bonus:</strong> <a href="" class="alert-link" data-toggle="modal" data-target="#modal-python-tricks-sample" data-focus="false">Click here to get access to a chapter from Python Tricks: The Book</a> that shows you Python's best practices with simple examples you can apply instantly to write more beautiful + Pythonic code.</p></div>
+<h2 id="from-data-to-visualization">From Data to Visualization</h2>
+<p>Building a visualization with Bokeh involves the following steps:</p>
+<ul>
+<li>Prepare the data</li>
+<li>Determine where the visualization will be rendered</li>
+<li>Set up the figure(s)</li>
+<li>Connect to and draw your data</li>
+<li>Organize the layout</li>
+<li>Preview and save your beautiful data creation</li>
+</ul>
+<p>Let&rsquo;s explore each step in more detail. </p>
+<h3 id="prepare-the-data">Prepare the Data</h3>
+<p>Any good data visualization starts with&mdash;you guessed it&mdash;data. If you need a quick refresher on handling data in Python, definitely check out the <a href="https://realpython.com/tutorials/data-science/">growing number of excellent <em>Real Python</em> tutorials on the subject</a>.</p>
+<p>This step commonly involves data handling libraries like <a href="https://pandas.pydata.org">Pandas</a> and <a href="http://www.numpy.org/#">Numpy</a> and is all about taking the required steps to transform it into a form that is best suited for your intended visualization. </p>
+<h3 id="determine-where-the-visualization-will-be-rendered">Determine Where the Visualization Will Be Rendered</h3>
+<p>At this step, you&rsquo;ll determine how you want to generate and ultimately view your visualization. In this tutorial, you&rsquo;ll learn about two common options that Bokeh provides: generating a static HTML file and rendering your visualization inline in a <a href="http://jupyter.org">Jupyter Notebook</a>.</p>
+<h3 id="set-up-the-figures">Set up the Figure(s)</h3>
+<p>From here, you&rsquo;ll assemble your figure, preparing the canvas for your visualization. In this step, you can customize everything from the titles to the tick marks. You can also set up a suite of tools that can enable various user interactions with your visualization.</p>
+<h3 id="connect-to-and-draw-your-data">Connect to and Draw Your Data</h3>
+<p>Next, you&rsquo;ll use Bokeh&rsquo;s multitude of renderers to give shape to your data. Here, you have the flexibility to draw your data from scratch using the many available marker and shape options, all of which are easily customizable. This functionality gives you incredible creative freedom in representing your data. </p>
+<p>Additionally, Bokeh has some built-in functionality for building things like <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/categorical.html#stacked">stacked bar charts</a> and plenty of examples for creating more advanced visualizations like <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/graph.html">network graphs</a> and <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/geo.html">maps</a>.</p>
+<h3 id="organize-the-layout">Organize the Layout</h3>
+<p>If you need more than one figure to express your data, Bokeh&rsquo;s got you covered. Not only does Bokeh offer the standard grid-like layout options, but it also allows you to easily organize your visualizations into a tabbed layout in just a few lines of code. </p>
+<p>In addition, your plots can be quickly linked together, so a selection on one will be reflected on any combination of the others. </p>
+<h3 id="preview-and-save-your-beautiful-data-creation">Preview and Save Your Beautiful Data Creation</h3>
+<p>Finally, it&rsquo;s time to see what you created. </p>
+<p>Whether you&rsquo;re viewing your visualization in a browser or notebook, you&rsquo;ll be able to explore your visualization, examine your customizations, and play with any interactions that were added. </p>
+<p>If you like what you see, you can save your visualization to an image file. Otherwise, you can revisit the steps above as needed to bring your data vision to reality. </p>
+<p>That&rsquo;s it! Those six steps are the building blocks for a tidy, flexible template that can be used to take your data from the table to the big screen:</p>
+<div class="highlight python"><pre><span></span><span class="sd">&quot;&quot;&quot;Bokeh Visualization Template</span>
+
+<span class="sd">This template is a general outline for turning your data into a </span>
+<span class="sd">visualization using Bokeh.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Data handling</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">gridplot</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">Tabs</span><span class="p">,</span> <span class="n">Panel</span>
+
+<span class="c1"># Prepare the data</span>
+
+<span class="c1"># Determine where the visualization will be rendered</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;filename.html&#39;</span><span class="p">)</span>  <span class="c1"># Render to static HTML, or </span>
+<span class="n">output_notebook</span><span class="p">()</span>  <span class="c1"># Render inline in a Jupyter Notebook</span>
+
+<span class="c1"># Set up the figure(s)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">()</span>  <span class="c1"># Instantiate a figure() object</span>
+
+<span class="c1"># Connect to and draw the data</span>
+
+<span class="c1"># Organize the layout</span>
+
+<span class="c1"># Preview and save </span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>  <span class="c1"># See what I made, and save if I like it</span>
+</pre></div>
+<p>Some common code snippets that are found in each step are previewed above, and you&rsquo;ll see how to fill out the rest as you move through the rest of the tutorial!</p>
+<h2 id="generating-your-first-figure">Generating Your First Figure</h2>
+<p>There are <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/concepts.html#output-methods">multiple ways to output your visualization</a> in Bokeh. In this tutorial, you&rsquo;ll see these two options:</p>
+<ul>
+<li><strong><code>output_file('filename.html')</code></strong> will write the visualization to a static HTML file.</li>
+<li><strong><code>output_notebook()</code></strong> will render your visualization directly in a Jupyter Notebook.</li>
+</ul>
+<p>It&rsquo;s important to note that neither function will actually show you the visualization. That doesn&rsquo;t happen until <code>show()</code> is called. However, they will ensure that, when <code>show()</code> is called, the visualization appears where you intend it to.</p>
+<p>By calling both <code>output_file()</code> and <code>output_notebook()</code> in the same execution, the visualization will be rendered both to a static HTML file and inline in the notebook. However, if for whatever reason you run multiple <code>output_file()</code> commands in the same execution, only the last one will be used for rendering. </p>
+<p>This is a great opportunity to give you your first glimpse at a default Bokeh <code>figure()</code> using <code>output_file()</code>:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+
+<span class="c1"># The figure will be rendered in a static HTML file called output_file_test.html</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;output_file_test.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Empty Bokeh Figure&#39;</span><span class="p">)</span>
+
+<span class="c1"># Set up a generic figure() object</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">()</span>
+
+<span class="c1"># See what it looks like</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/output_file_example.44c5ca494d41.png" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/output_file_example.44c5ca494d41.png" width="1280" height="1330" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/output_file_example.44c5ca494d41.png&amp;w=320&amp;sig=a9fbf061bba54fe1fea956b1c906ba5d6107cca1 320w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/output_file_example.44c5ca494d41.png&amp;w=640&amp;sig=608b85472bc31d57f9a651ec03cf5432505a6bc5 640w, https://files.realpython.com/media/output_file_example.44c5ca494d41.png 1280w" sizes="75vw" alt="output_file()" /></a></p>
+<p>As you can see, a new browser window opened with a tab called <em>Empty Bokeh Figure</em> and an empty figure. Not shown is the file generated with the name <em>output_file_test.html</em> in your current working directory. </p>
+<p>If you were to run the same code snippet with <code>output_notebook()</code> in place of <code>output_file()</code>, assuming you have a Jupyter Notebook fired up and ready to go, you will get the following:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+
+<span class="c1"># The figure will be right in my Jupyter Notebook</span>
+<span class="n">output_notebook</span><span class="p">()</span>
+
+<span class="c1"># Set up a generic figure() object</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">()</span>
+
+<span class="c1"># See what it looks like</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/output_notebook_example.94b3a3850c89.png" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/output_notebook_example.94b3a3850c89.png" width="1770" height="1552" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/output_notebook_example.94b3a3850c89.png&amp;w=442&amp;sig=0048fc3e5a4c917e211125799635ee9a386c45c3 442w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/output_notebook_example.94b3a3850c89.png&amp;w=885&amp;sig=5697d3ccdf618d23b17b04f13096aeb1bc3dca35 885w, https://files.realpython.com/media/output_notebook_example.94b3a3850c89.png 1770w" sizes="75vw" alt="output_notebook()" /></a></p>
+<p>As you can see, the result is the same, just rendered in a different location. </p>
+<p>More information about both <code>output_file()</code> and <code>output_notebook()</code> can be found in the <a href="https://bokeh.pydata.org/en/latest/docs/reference/io.html#bokeh-io-output">Bokeh official docs</a>.</p>
+<div class="alert alert-primary" role="alert">
+<p><strong>Note:</strong> Sometimes, when rendering multiple visualizations sequentially, you&rsquo;ll see that past renders are not being cleared with each execution. If you experience this, import and run the following between executions:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Import reset_output (only needed once) </span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">reset_output</span>
+
+<span class="c1"># Use reset_output() between subsequent show() calls, as needed</span>
+<span class="n">reset_output</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Before moving on, you may have noticed that the default Bokeh figure comes pre-loaded with a toolbar. This is an important sneak preview into the interactive elements of Bokeh that come right out of the box. You&rsquo;ll find out more about the toolbar and how to configure it in the <a href="#adding-interaction">Adding Interaction</a> section at the end of this tutorial. </p>
+<h2 id="getting-your-figure-ready-for-data">Getting Your Figure Ready for Data</h2>
+<p>Now that you know how to create and view a generic Bokeh figure either in a browser or Jupyter Notebook, it&rsquo;s time to learn more about how to configure the <code>figure()</code> object. </p>
+<p>The <code>figure()</code> object is not only the foundation of your data visualization but also the object that unlocks all of Bokeh&rsquo;s available tools for visualizing data. The Bokeh figure is a subclass of the <a href="https://bokeh.pydata.org/en/latest/docs/reference/models/plots.html#bokeh.models.plots.Plot">Bokeh Plot object</a>, which provides many of the parameters that make it possible to configure the aesthetic elements of your figure. </p>
+<p>To show you just a glimpse into the customization options available, let&rsquo;s create the ugliest figure ever:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+
+<span class="c1"># The figure will be rendered inline in my Jupyter Notebook</span>
+<span class="n">output_notebook</span><span class="p">()</span>
+
+<span class="c1"># Example figure</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">background_fill_color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span>
+             <span class="n">background_fill_alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+             <span class="n">border_fill_color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+             <span class="n">border_fill_alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+             <span class="n">plot_height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+             <span class="n">plot_width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+             <span class="n">h_symmetry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;X Label&#39;</span><span class="p">,</span>
+             <span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+             <span class="n">x_axis_location</span><span class="o">=</span><span class="s1">&#39;above&#39;</span><span class="p">,</span>
+             <span class="n">x_range</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;2018-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2018-06-30&#39;</span><span class="p">),</span>
+             <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Y Label&#39;</span><span class="p">,</span>
+             <span class="n">y_axis_type</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+             <span class="n">y_axis_location</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+             <span class="n">y_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+             <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Example Figure&#39;</span><span class="p">,</span>
+             <span class="n">title_location</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
+             <span class="n">toolbar_location</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">,</span>
+             <span class="n">tools</span><span class="o">=</span><span class="s1">&#39;save&#39;</span><span class="p">)</span>
+
+<span class="c1"># See what it looks like</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/example_figure.4f94be1e1632.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/example_figure.4f94be1e1632.png" width="1016" height="622" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/example_figure.4f94be1e1632.png&amp;w=254&amp;sig=5d90408350e41cd00db16058d600a88c336ddfca 254w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/example_figure.4f94be1e1632.png&amp;w=508&amp;sig=4ec1cc92ccc695ae7f5cfbba52974744ac00bb89 508w, https://files.realpython.com/media/example_figure.4f94be1e1632.png 1016w" sizes="75vw" alt="Example Figure" /></a></p>
+<p>Once the <code>figure()</code> object is instantiated, you can still configure it after the fact. Let&rsquo;s say you want to get rid of the gridlines:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Remove the gridlines from the figure() object</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">grid_line_color</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># See what it looks like </span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p>The gridline properties are accessible via the figure&rsquo;s <code>grid</code> attribute. In this case, setting <code>grid_line_color</code> to <code>None</code> effectively removes the gridlines altogether. <a href="https://bokeh.pydata.org/en/latest/docs/reference/models/plots.html#bokeh.models.plots.Plot.axis">More details about figure attributes</a> can be found below the fold in the Plot class documentation. </p>
+<p><a href="https://files.realpython.com/media/example_figure_no_gridlines.b860b44b0650.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/example_figure_no_gridlines.b860b44b0650.png" width="1012" height="616" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/example_figure_no_gridlines.b860b44b0650.png&amp;w=253&amp;sig=0ce6a8ce3fb767e842b28ab2abb2fcb887a1ce37 253w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/example_figure_no_gridlines.b860b44b0650.png&amp;w=506&amp;sig=a752565f801613881c8b1652970b9f6a29315009 506w, https://files.realpython.com/media/example_figure_no_gridlines.b860b44b0650.png 1012w" sizes="75vw" alt="Example Figure w/o Gridlines" /></a></p>
+<div class="alert alert-primary" role="alert">
+<p><strong>Note:</strong> If you&rsquo;re working in a notebook or IDE with auto-complete functionality, this feature can definitely be your friend! With so many customizable elements, it can be very helpful in discovering the available options:</p>
+<p><a href="https://files.realpython.com/media/auto_complete.37c784671746.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/auto_complete.37c784671746.gif" width="854" height="302" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/auto_complete.37c784671746.gif&amp;w=213&amp;sig=ce128d62037d2cb54aad03536d2838c76cc72469 213w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/auto_complete.37c784671746.gif&amp;w=427&amp;sig=e92d9071f388e778a489c2543c58f17bf7a9568e 427w, https://files.realpython.com/media/auto_complete.37c784671746.gif 854w" sizes="75vw" alt="Auto Complete GIF" /></a>
+</p>
+<p>Otherwise, doing a quick web search, with the keyword <em>bokeh</em> and what you are trying to do, will generally point you in the right direction. </p>
+</div>
+<p>There is tons more I could touch on here, but don&rsquo;t feel like you&rsquo;re missing out. I&rsquo;ll make sure to introduce different figure tweaks as the tutorial progresses. Here are some other helpful links on the topic:</p>
+<ul>
+<li><strong><a href="https://bokeh.pydata.org/en/latest/docs/reference/models/plots.html#bokeh.models.plots.Plot">The Bokeh Plot Class</a></strong> is the superclass of the <code>figure()</code> object, from which figures inherit a lot of their attributes.</li>
+<li><strong><a href="https://bokeh.pydata.org/en/latest/docs/reference/plotting.html#bokeh.plotting.figure.Figure">The Figure Class</a></strong> documentation is a good place to find more detail about the arguments of the <code>figure()</code> object.</li>
+</ul>
+<p>Here are a few specific customization options worth checking out:</p>
+<ul>
+<li><a href="https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#text-properties"><strong>Text Properties</strong></a> covers all the attributes related to changing font styles, sizes, colors, and so forth.</li>
+<li><a href="https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#tick-label-formats"><strong>TickFormatters</strong></a> are built-in objects specifically for formatting your axes using Python-like string formatting syntax.</li>
+</ul>
+<p>Sometimes, it isn&rsquo;t clear how your figure needs to be customized until it actually has some data visualized in it, so next you&rsquo;ll learn how to make that happen. </p>
+<h2 id="drawing-data-with-glyphs">Drawing Data With Glyphs</h2>
+<p>An empty figure isn&rsquo;t all that exciting, so let&rsquo;s look at glyphs: the building blocks of Bokeh visualizations. A glyph is a vectorized graphical shape or marker that is used to represent your data, like a circle or square. More examples can be found in the <a href="https://bokeh.pydata.org/en/latest/docs/gallery/markers.html">Bokeh gallery</a>. After you create your figure, you are given access to <a href="https://bokeh.pydata.org/en/latest/docs/reference/plotting.html">a bevy of configurable glyph methods</a>.</p>
+<p>Let&rsquo;s start with a very basic example, drawing some points on an x-y coordinate grid:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+
+<span class="c1"># My x-y coordinate data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+<span class="c1"># Output the visualization directly in the notebook</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;first_glyphs.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;First Glyphs&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create a figure with no toolbar and axis ranges of [0,3]</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;My Coordinates&#39;</span><span class="p">,</span>
+             <span class="n">plot_height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+             <span class="n">x_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">y_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+             <span class="n">toolbar_location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Draw the coordinates as circles</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+           <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Show plot</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/first_glyphs.ed000f56ed12.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/first_glyphs.ed000f56ed12.png" width="658" height="612" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/first_glyphs.ed000f56ed12.png&amp;w=164&amp;sig=408e51978e7320e8bf76509284afd7a4c8e55a02 164w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/first_glyphs.ed000f56ed12.png&amp;w=329&amp;sig=45107f316019b02edf3a3b52b32dd0801e4be2bf 329w, https://files.realpython.com/media/first_glyphs.ed000f56ed12.png 658w" sizes="75vw" alt="First Glyphs" /></a></p>
+<p>Once your figure is instantiated, you can see how it can be used to draw the x-y coordinate data using customized <code>circle</code> glyphs.</p>
+<p>Here are a few categories of glyphs:</p>
+<ul>
+<li>
+<p><strong>Marker</strong> includes shapes like circles, diamonds, squares, and triangles and is effective for creating visualizations like scatter and bubble charts.</p>
+</li>
+<li>
+<p><strong>Line</strong> covers things like single, step, and multi-line shapes that can be used to build line charts.</p>
+</li>
+<li>
+<p><strong>Bar/Rectangle</strong> shapes can be used to create traditional or stacked bar (<code>hbar</code>) and column (<code>vbar</code>) charts as well as waterfall or <a href="https://en.wikipedia.org/wiki/Gantt_chart">gantt</a> charts.</p>
+</li>
+</ul>
+<p>Information about the glyphs above, as well as others, can be found in <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/plotting.html">Bokeh&rsquo;s Reference Guide</a>. </p>
+<p>These glyphs can be combined as needed to fit your visualization needs. Let&rsquo;s say I want to create a visualization that shows how many words I wrote per day to make this tutorial, with an overlaid trend line of the cumulative word count:</p>
+<div class="highlight python"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_notebook</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+
+<span class="c1"># My word count data</span>
+<span class="n">day_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">daily_words</span> <span class="o">=</span> <span class="p">[</span><span class="mi">450</span><span class="p">,</span> <span class="mi">628</span><span class="p">,</span> <span class="mi">488</span><span class="p">,</span> <span class="mi">210</span><span class="p">,</span> <span class="mi">287</span><span class="p">,</span> <span class="mi">791</span><span class="p">,</span> <span class="mi">508</span><span class="p">,</span> <span class="mi">639</span><span class="p">,</span> <span class="mi">397</span><span class="p">,</span> <span class="mi">943</span><span class="p">]</span>
+<span class="n">cumulative_words</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">daily_words</span><span class="p">)</span>
+
+<span class="c1"># Output the visualization directly in the notebook</span>
+<span class="n">output_notebook</span><span class="p">()</span>
+
+<span class="c1"># Create a figure with a datetime type x-axis</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;My Tutorial Progress&#39;</span><span class="p">,</span>
+             <span class="n">plot_height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span>
+             <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Day Number&#39;</span><span class="p">,</span> <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Words Written&#39;</span><span class="p">,</span>
+             <span class="n">x_minor_ticks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6000</span><span class="p">),</span>
+             <span class="n">toolbar_location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># The daily words will be represented as vertical bars (columns)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">vbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">day_num</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">daily_words</span><span class="p">,</span> 
+         <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> 
+         <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Daily&#39;</span><span class="p">)</span>
+
+<span class="c1"># The cumulative sum will be a trend line</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">day_num</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">cumulative_words</span><span class="p">,</span> 
+         <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+         <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Cumulative&#39;</span><span class="p">)</span>
+
+<span class="c1"># Put the legend in the upper left corner</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;top_left&#39;</span>
+
+<span class="c1"># Let&#39;s check it out</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/multi_glyph_example.0721ffa49fb3.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/multi_glyph_example.0721ffa49fb3.png" width="1460" height="822" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/multi_glyph_example.0721ffa49fb3.png&amp;w=365&amp;sig=8e274330d6a4d62ed6d7ed83f3c9248f5bac0621 365w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/multi_glyph_example.0721ffa49fb3.png&amp;w=730&amp;sig=20c9ae0b2c639f5e30e9198587e22093ffd39a04 730w, https://files.realpython.com/media/multi_glyph_example.0721ffa49fb3.png 1460w" sizes="75vw" alt="Multi-Glyph Example" /></a></p>
+<p>To combine the columns and lines on the figure, they are simply created using the same <code>figure()</code> object. </p>
+<p>Additionally, you can see above how seamlessly a legend can be created by setting the <code>legend</code> property for each glyph. The legend was then moved to the upper left corner of the plot by assigning <code>'top_left'</code> to <code>fig.legend.location</code>. </p>
+<p>You can check out <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#legends">much more info about styling legends</a>. Teaser: they will show up again later in the tutorial when we start digging into interactive elements of the visualization. </p>
+<h2 id="a-quick-aside-about-data">A Quick Aside About Data</h2>
+<p>Anytime you are exploring a new visualization library, it&rsquo;s a good idea to start with some data in a domain you are familiar with. The beauty of Bokeh is that nearly any idea you have should be possible. It&rsquo;s just a matter of how you want to leverage the available tools to do so. </p>
+<p>The remaining examples will use publicly available data from Kaggle, which has information about <a href="https://www.kaggle.com/pablote/nba-enhanced-stats">the National Basketball Association&rsquo;s (NBA) 2017-18 season</a>, specifically:</p>
+<ul>
+<li><a href="https://www.kaggle.com/pablote/nba-enhanced-stats#2017-18_playerBoxScore.csv"><strong>2017-18_playerBoxScore.csv</strong></a>: game-by-game snapshots of player statistics</li>
+<li><a href="https://www.kaggle.com/pablote/nba-enhanced-stats#2017-18_teamBoxScore.csv"><strong>2017-18_teamBoxScore.csv</strong></a>: game-by-game snapshots of team statistics</li>
+<li><a href="https://www.kaggle.com/pablote/nba-enhanced-stats#2017-18_standings.csv"><strong>2017-18_standings.csv</strong></a>: daily team standings and rankings</li>
+</ul>
+<p>This data has nothing to do with what I do for work, but I love basketball and enjoy thinking about ways to visualize the ever-growing amount of data associated with it. </p>
+<p>If you don&rsquo;t have data to play with from school or work, think about something you&rsquo;re interested in and try to find some data related to that. It will go a long way in making both the learning and the creative process faster and more enjoyable! </p>
+<p>To follow along with the examples in the tutorial, you can download the datasets from the links above and read them into a Pandas <code>DataFrame</code> using the following commands:</p>
+<div class="highlight python"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># Read the csv files</span>
+<span class="n">player_stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;2017-18_playerBoxScore.csv&#39;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gmDate&#39;</span><span class="p">])</span>
+<span class="n">team_stats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;2017-18_teamBoxScore.csv&#39;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gmDate&#39;</span><span class="p">])</span>
+<span class="n">standings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;2017-18_standings.csv&#39;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;stDate&#39;</span><span class="p">])</span>
+</pre></div>
+<p>This code snippet reads the data from the three CSV files and automatically interprets the date columns as <a href="https://docs.python.org/3/library/datetime.html"><code>datetime</code> objects</a>. </p>
+<p>It&rsquo;s now time to get your hands on some real data. </p>
+<h2 id="using-the-columndatasource-object">Using the <code>ColumnDataSource</code> Object</h2>
+<p>The examples above used <a href="https://realpython.com/python-lists-tuples/#python-lists">Python lists</a> and <a href="https://realpython.com/numpy-array-programming/">Numpy arrays</a> to represent the data, and Bokeh is well equipped to handle these datatypes. However, when it comes to data in Python, you are most likely going to come across <a href="https://realpython.com/python-dicts/">Python dictionaries</a> and <a href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html#pandas.DataFrame">Pandas DataFrames</a>, especially if you&rsquo;re reading in data from a file or external data source. </p>
+<p>Bokeh is well equipped to work with these more complex data structures and even has built-in functionality to handle them, namely the <code>ColumnDataSource</code>.</p>
+<p>You may be asking yourself, &ldquo;Why use a <code>ColumnDataSource</code> when Bokeh can interface with other data types directly?&rdquo; </p>
+<p>For one, whether you reference a list, array, dictionary, or DataFrame directly, Bokeh is going to turn it into a <code>ColumnDataSource</code> behind the scenes anyway. More importantly, the <code>ColumnDataSource</code> makes it much easier to implement Bokeh&rsquo;s interactive affordances. </p>
+<p>The <code>ColumnDataSource</code> is foundational in passing the data to the glyphs you are using to visualize. Its primary functionality is to map names to the columns of your data. This makes it easier for you to reference elements of your data when building your visualization. It also makes it easier for Bokeh to do the same when building your visualization. </p>
+<p>The <code>ColumnDataSource</code> can interpret three types of data objects:</p>
+<ul>
+<li>
+<p><strong>Python <code>dict</code></strong>: The keys are names associated with the respective value sequences (lists, arrays, and so forth).</p>
+</li>
+<li>
+<p><strong>Pandas <code>DataFrame</code></strong>: The columns of the <code>DataFrame</code> become the reference names for the <code>ColumnDataSource</code>.</p>
+</li>
+<li>
+<p><strong>Pandas <code>groupby</code></strong>: The columns of the <code>ColumnDataSource</code> reference the columns as seen by calling <code>groupby.describe()</code>.</p>
+</li>
+</ul>
+<p>Let&rsquo;s start by visualizing the race for first place in the NBA&rsquo;s Western Conference in 2017-18 between the defending champion Golden State Warriors and the challenger Houston Rockets. The daily win-loss records of these two teams is stored in a DataFrame named <code>west_top_2</code>:</p>
+<div class="highlight python"><span class="repl-toggle" title="Toggle REPL prompts and output">&gt;&gt;&gt;</span><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">west_top_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">standings</span><span class="p">[(</span><span class="n">standings</span><span class="p">[</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;HOU&#39;</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">standings</span><span class="p">[</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GS&#39;</span><span class="p">)]</span>
+<span class="gp">... </span>              <span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">]]</span>
+<span class="gp">... </span>              <span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span><span class="s1">&#39;stDate&#39;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">west_top_2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">        stDate teamAbbr  gameWon</span>
+<span class="go">9   2017-10-17       GS        0</span>
+<span class="go">39  2017-10-18       GS        0</span>
+<span class="go">69  2017-10-19       GS        0</span>
+<span class="go">99  2017-10-20       GS        1</span>
+<span class="go">129 2017-10-21       GS        1</span>
+</pre></div>
+<p>From here, you can load this <code>DataFrame</code> into two <code>ColumnDataSource</code> objects and visualize the race:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;west-top-2-standings-race.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Western Conference Top 2 Teams Wins Race&#39;</span><span class="p">)</span>
+
+<span class="c1"># Isolate the data for the Rockets and Warriors</span>
+<span class="n">rockets_data</span> <span class="o">=</span> <span class="n">west_top_2</span><span class="p">[</span><span class="n">west_top_2</span><span class="p">[</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;HOU&#39;</span><span class="p">]</span>
+<span class="n">warriors_data</span> <span class="o">=</span> <span class="n">west_top_2</span><span class="p">[</span><span class="n">west_top_2</span><span class="p">[</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GS&#39;</span><span class="p">]</span>
+
+<span class="c1"># Create a ColumnDataSource object for each team</span>
+<span class="n">rockets_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">rockets_data</span><span class="p">)</span>
+<span class="n">warriors_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">warriors_data</span><span class="p">)</span>
+
+<span class="c1"># Create and configure the figure</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+             <span class="n">plot_height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+             <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Western Conference Top 2 Teams Wins Race, 2017-18&#39;</span><span class="p">,</span>
+             <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Wins&#39;</span><span class="p">,</span>
+             <span class="n">toolbar_location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Render the race as step lines</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> 
+         <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#CE1141&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Rockets&#39;</span><span class="p">,</span> 
+         <span class="n">source</span><span class="o">=</span><span class="n">rockets_cds</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> 
+         <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#006BB6&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Warriors&#39;</span><span class="p">,</span> 
+         <span class="n">source</span><span class="o">=</span><span class="n">warriors_cds</span><span class="p">)</span>
+
+<span class="c1"># Move the legend to the upper left corner</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;top_left&#39;</span>
+
+<span class="c1"># Show the plot</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/rockets_v_warriors.9d4eda72977b.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/rockets_v_warriors.9d4eda72977b.png" width="1214" height="598" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/rockets_v_warriors.9d4eda72977b.png&amp;w=303&amp;sig=632025f9d1a2ca29fcf693f167126ae0d99ab7a0 303w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/rockets_v_warriors.9d4eda72977b.png&amp;w=607&amp;sig=16f6ba63dde1eade261e7d7cc9674250af0fa2e3 607w, https://files.realpython.com/media/rockets_v_warriors.9d4eda72977b.png 1214w" sizes="75vw" alt="Rockets vs. Warriors" /></a></p>
+<p>Notice how the respective <code>ColumnDataSource</code> objects are referenced when creating the two lines. You simply pass the original column names as input parameters and specify which <code>ColumnDataSource</code> to use via the <code>source</code> property.</p>
+<p>The visualization shows the tight race throughout the season, with the Warriors building a pretty big cushion around the middle of the season. However, a bit of a late-season slide allowed the Rockets to catch up and ultimately surpass the defending champs to finish the season as the Western Conference number-one seed.</p>
+<div class="alert alert-primary" role="alert">
+<p><strong>Note:</strong> In Bokeh, you can specify colors either by name, hex value, or RGB color code. </p>
+<p>For the visualization above, a color is being specified for the respective lines representing the two teams. Instead of using CSS color names like <code>'red'</code> for the Rockets and <code>'blue'</code> for the Warriors, you might have wanted to add a nice visual touch by using the <a href="https://teamcolorcodes.com/nba-team-color-codes/">official team colors</a> in the form of hex color codes. Alternatively, you could have used tuples representing RGB color codes: <code>(206, 17, 65)</code> for the Rockets, <code>(0, 107, 182)</code> for the Warriors.</p>
+<p>Bokeh provides a helpful <a href="https://bokeh.pydata.org/en/latest/docs/reference/colors.html#bokeh-colors-groups">list of CSS color names categorized by their general hue</a>. Also, <a href="https://htmlcolorcodes.com">htmlcolorcodes.com</a> is a great site for finding CSS, hex, and RGB color codes.</p>
+</div>
+<p><code>ColumnDataSource</code> objects can do more than just serve as an easy way to reference <code>DataFrame</code> columns. The <code>ColumnDataSource</code> object has three built-in filters that can be used to create views on your data using a <code>CDSView</code> object:</p>
+<ul>
+<li><strong><code>GroupFilter</code></strong> selects rows from a <code>ColumnDataSource</code> based on a categorical reference value</li>
+<li><strong><code>IndexFilter</code></strong> filters the <code>ColumnDataSource</code> via a list of integer indices</li>
+<li><strong><code>BooleanFilter</code></strong> allows you to use a list of <code>boolean</code> values, with <code>True</code> rows being selected</li>
+</ul>
+<p>In the previous example, two <code>ColumnDataSource</code> objects were created, one each from a subset of the <code>west_top_2</code> DataFrame. The next example will recreate the same output from one <code>ColumnDataSource</code> based on all of <code>west_top_2</code> using a <code>GroupFilter</code> that creates a view on the data:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CDSView</span><span class="p">,</span> <span class="n">GroupFilter</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;west-top-2-standings-race.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Western Conference Top 2 Teams Wins Race&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create a ColumnDataSource</span>
+<span class="n">west_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">west_top_2</span><span class="p">)</span>
+
+<span class="c1"># Create views for each team</span>
+<span class="n">rockets_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">west_cds</span><span class="p">,</span>
+                       <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;HOU&#39;</span><span class="p">)])</span>
+<span class="n">warriors_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">west_cds</span><span class="p">,</span>
+                        <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;GS&#39;</span><span class="p">)])</span>
+
+<span class="c1"># Create and configure the figure</span>
+<span class="n">west_fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                  <span class="n">plot_height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+                  <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Western Conference Top 2 Teams Wins Race, 2017-18&#39;</span><span class="p">,</span>
+                  <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Wins&#39;</span><span class="p">,</span>
+                  <span class="n">toolbar_location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Render the race as step lines</span>
+<span class="n">west_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">west_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">rockets_view</span><span class="p">,</span>
+              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#CE1141&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Rockets&#39;</span><span class="p">)</span>
+<span class="n">west_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">west_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">warriors_view</span><span class="p">,</span>
+              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#006BB6&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Warriors&#39;</span><span class="p">)</span>
+
+<span class="c1"># Move the legend to the upper left corner</span>
+<span class="n">west_fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;top_left&#39;</span>
+
+<span class="c1"># Show the plot</span>
+<span class="n">show</span><span class="p">(</span><span class="n">west_fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/rockets_v_warriors_v2.8b33de43b78c.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/rockets_v_warriors_v2.8b33de43b78c.png" width="1230" height="608" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/rockets_v_warriors_v2.8b33de43b78c.png&amp;w=307&amp;sig=aa3e354ff064d9ce6295783bf13bd614cf63b58e 307w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/rockets_v_warriors_v2.8b33de43b78c.png&amp;w=615&amp;sig=46d04baf2df42a5a7ca6c5e977604c42c21eadf0 615w, https://files.realpython.com/media/rockets_v_warriors_v2.8b33de43b78c.png 1230w" sizes="75vw" alt="Rockets vs. Warriors 2" /></a></p>
+<p>Notice how the <code>GroupFilter</code> is passed to <code>CDSView</code> in a list. This allows you to combine multiple filters together to isolate the data you need from the <code>ColumnDataSource</code> as needed. </p>
+<p>For information about integrating data sources, check out the Bokeh user guide&rsquo;s post on the <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/data.html"><code>ColumnDataSource</code> and other source objects available</a>.</p>
+<p>The Western Conference ended up being an exciting race, but say you want to see if the Eastern Conference was just as tight. Not only that, but you&rsquo;d like to view them in a single visualization. This is a perfect segue to the next topic: layouts.</p>
+<h2 id="organizing-multiple-visualizations-with-layouts">Organizing Multiple Visualizations With Layouts</h2>
+<p>The Eastern Conference standings came down to two rivals in the Atlantic Division: the Boston Celtics and the Toronto Raptors. Before replicating the steps used to create <code>west_top_2</code>, let&rsquo;s try to put the <code>ColumnDataSource</code> to the test one more time using what you learned above. </p>
+<p>In this example, you&rsquo;ll see how to feed an entire DataFrame into a <code>ColumnDataSource</code> and create views to isolate the relevant data:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CDSView</span><span class="p">,</span> <span class="n">GroupFilter</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;east-top-2-standings-race.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Eastern Conference Top 2 Teams Wins Race&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create a ColumnDataSource</span>
+<span class="n">standings_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">standings</span><span class="p">)</span>
+
+<span class="c1"># Create views for each team</span>
+<span class="n">celtics_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> 
+                                           <span class="n">group</span><span class="o">=</span><span class="s1">&#39;BOS&#39;</span><span class="p">)])</span>
+<span class="n">raptors_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> 
+                                           <span class="n">group</span><span class="o">=</span><span class="s1">&#39;TOR&#39;</span><span class="p">)])</span>
+
+<span class="c1"># Create and configure the figure</span>
+<span class="n">east_fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+           <span class="n">plot_height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+           <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Eastern Conference Top 2 Teams Wins Race, 2017-18&#39;</span><span class="p">,</span>
+           <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Wins&#39;</span><span class="p">,</span>
+           <span class="n">toolbar_location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Render the race as step lines</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> 
+              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#007A33&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Celtics&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">celtics_view</span><span class="p">)</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> 
+              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#CE1141&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Raptors&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">raptors_view</span><span class="p">)</span>
+
+<span class="c1"># Move the legend to the upper left corner</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;top_left&#39;</span>
+
+<span class="c1"># Show the plot</span>
+<span class="n">show</span><span class="p">(</span><span class="n">east_fig</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/celtics_v_raptors.86506516532b.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/celtics_v_raptors.86506516532b.png" width="1234" height="614" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/celtics_v_raptors.86506516532b.png&amp;w=308&amp;sig=0b25b106cab3b4644089ab16c8efe1263f06a79b 308w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/celtics_v_raptors.86506516532b.png&amp;w=617&amp;sig=e085b8c819e25f57dd8156120bf1584c10f2c048 617w, https://files.realpython.com/media/celtics_v_raptors.86506516532b.png 1234w" sizes="75vw" alt="Celtics vs. Raptors" /></a></p>
+<p>The <code>ColumnDataSource</code> was able to isolate the relevant data within a 5,040-by-39 <code>DataFrame</code> without breaking a sweat, saving a few lines of Pandas code in the process. </p>
+<p>Looking at the visualization, you can see that the Eastern Conference race was no slouch. After the Celtics roared out of the gate, the Raptors clawed all the way back to overtake their division rival and finish the regular season with five more wins. </p>
+<p>With our two visualizations ready, it&rsquo;s time to put them together.</p>
+<p>Similar to the functionality of <a href="https://realpython.com/python-matplotlib-guide/#understanding-pltsubplots-notation">Matplotlib&rsquo;s <code>subplot</code></a>, Bokeh offers the <code>column</code>, <code>row</code>, and <code>gridplot</code> functions in its <code>bokeh.layouts</code> module. These functions can more generally be classified as <strong>layouts</strong>.</p>
+<p>The usage is very straightforward. If you want to put two visualizations in a vertical configuration, you can do so with the following:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh library</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">column</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;east-west-top-2-standings-race.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Conference Top 2 Teams Wins Race&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot the two visualizations in a vertical configuration</span>
+<span class="n">show</span><span class="p">(</span><span class="n">column</span><span class="p">(</span><span class="n">west_fig</span><span class="p">,</span> <span class="n">east_fig</span><span class="p">))</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/column_layout.db1f023f726b.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/column_layout.db1f023f726b.png" width="1240" height="1240" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/column_layout.db1f023f726b.png&amp;w=310&amp;sig=4a6a34adc7113709b5dc8264e87d06fa46a7caa6 310w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/column_layout.db1f023f726b.png&amp;w=620&amp;sig=2d5b5b147c7a520bd6188ffe4e395bb9d263972e 620w, https://files.realpython.com/media/column_layout.db1f023f726b.png 1240w" sizes="75vw" alt="Column Layout" /></a></p>
+<p>I&rsquo;ll save you the two lines of code, but rest assured that swapping <code>column</code> for <code>row</code> in the snippet above will similarly configure the two plots in a horizontal configuration.</p>
+<div class="alert alert-primary" role="alert">
+<p><strong>Note:</strong> If you&rsquo;re trying out the code snippets as you go through the tutorial, I want to take a quick detour to address an error you may see accessing <code>west_fig</code> and <code>east_fig</code> in the following examples. In doing so, you may receive an error like this:</p>
+<div class="highlight sh"><pre><span></span><span class="go">WARNING:bokeh.core.validation.check:W-1004 (BOTH_CHILD_AND_ROOT): Models should not be a document root...</span>
+</pre></div>
+<p>This is one of many errors that are part of Bokeh&rsquo;s <a href="https://bokeh.pydata.org/en/latest/docs/reference/core/validation.html">validation module</a>, where <code>w-1004</code> in particular is warning about the re-use of <code>west_fig</code> and <code>east_fig</code> in a new layout. </p>
+<p>To avoid this error as you test the examples, preface the code snippet illustrating each layout with the following:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CDSView</span><span class="p">,</span> <span class="n">GroupFilter</span>
+
+<span class="c1"># Create a ColumnDataSource</span>
+<span class="n">standings_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">standings</span><span class="p">)</span>
+
+<span class="c1"># Create the views for each team</span>
+<span class="n">celtics_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> 
+                                           <span class="n">group</span><span class="o">=</span><span class="s1">&#39;BOS&#39;</span><span class="p">)])</span>
+
+<span class="n">raptors_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> 
+                                           <span class="n">group</span><span class="o">=</span><span class="s1">&#39;TOR&#39;</span><span class="p">)])</span>
+
+<span class="n">rockets_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> 
+                                           <span class="n">group</span><span class="o">=</span><span class="s1">&#39;HOU&#39;</span><span class="p">)])</span>
+<span class="n">warriors_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">,</span> 
+                                           <span class="n">group</span><span class="o">=</span><span class="s1">&#39;GS&#39;</span><span class="p">)])</span>
+
+<span class="c1"># Create and configure the figure</span>
+<span class="n">east_fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                  <span class="n">plot_height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                  <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span>
+                  <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Wins&#39;</span><span class="p">,</span>
+                  <span class="n">toolbar_location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="n">west_fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">x_axis_type</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                  <span class="n">plot_height</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                  <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span>
+                  <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Wins&#39;</span><span class="p">,</span>
+                  <span class="n">toolbar_location</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Configure the figures for each conference</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> 
+              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#007A33&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Celtics&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">celtics_view</span><span class="p">)</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> 
+              <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#CE1141&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Raptors&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">raptors_view</span><span class="p">)</span>
+
+<span class="n">west_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#CE1141&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Rockets&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">rockets_view</span><span class="p">)</span>
+<span class="n">west_fig</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s1">&#39;stDate&#39;</span><span class="p">,</span> <span class="s1">&#39;gameWon&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#006BB6&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="s1">&#39;Warriors&#39;</span><span class="p">,</span>
+              <span class="n">source</span><span class="o">=</span><span class="n">standings_cds</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="n">warriors_view</span><span class="p">)</span>
+
+<span class="c1"># Move the legend to the upper left corner</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;top_left&#39;</span>
+<span class="n">west_fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;top_left&#39;</span>
+
+<span class="c1"># Layout code snippet goes here!</span>
+</pre></div>
+<p>Doing so will renew the relevant components to render the visualization, ensuring that no warning is needed.</p>
+</div>
+<p>Instead of using <code>column</code> or <code>row</code>, you may want to use a <code>gridplot</code> instead. </p>
+<p>One key difference of <code>gridplot</code> is that it will automatically consolidate the toolbar across all of its children figures. The two visualizations above do not have a toolbar, but if they did, then each figure would have its own when using <code>column</code> or <code>row</code>. With that, it also has its own <code>toolbar_location</code> property, seen below set to <code>'right'</code>.</p>
+<p>Syntactically, you&rsquo;ll also notice below that <code>gridplot</code> differs in that, instead of being passed a tuple as input, it requires a list of lists, where each sub-list represents a row in the grid:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">gridplot</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;east-west-top-2-gridplot.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Conference Top 2 Teams Wins Race&#39;</span><span class="p">)</span>
+
+<span class="c1"># Reduce the width of both figures</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">plot_width</span> <span class="o">=</span> <span class="n">west_fig</span><span class="o">.</span><span class="n">plot_width</span> <span class="o">=</span> <span class="mi">300</span>
+
+<span class="c1"># Edit the titles</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Eastern Conference&#39;</span>
+<span class="n">west_fig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Western Conference&#39;</span>
+
+<span class="c1"># Configure the gridplot</span>
+<span class="n">east_west_gridplot</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">([[</span><span class="n">west_fig</span><span class="p">,</span> <span class="n">east_fig</span><span class="p">]],</span> 
+                              <span class="n">toolbar_location</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot the two visualizations in a horizontal configuration</span>
+<span class="n">show</span><span class="p">(</span><span class="n">east_west_gridplot</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/gridplot_layout.c7eb7b37803d.png" target="_blank"><img class="img-fluid mx-auto d-block " src="https://files.realpython.com/media/gridplot_layout.c7eb7b37803d.png" width="1290" height="642" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gridplot_layout.c7eb7b37803d.png&amp;w=322&amp;sig=577265911375bca2a017bc7d80e82c655d50bac2 322w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gridplot_layout.c7eb7b37803d.png&amp;w=645&amp;sig=0e06e577ab7f78237cebffedb0bd835120225c24 645w, https://files.realpython.com/media/gridplot_layout.c7eb7b37803d.png 1290w" sizes="75vw" alt="Gridplot Layout" /></a></p>
+<p>Lastly, <code>gridplot</code> allows the passing of <code>None</code> values, which are interpreted as blank subplots. Therefore, if you wanted to leave a placeholder for two additional plots, then you could do something like this:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">gridplot</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;east-west-top-2-gridplot.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Conference Top 2 Teams Wins Race&#39;</span><span class="p">)</span>
+
+<span class="c1"># Reduce the width of both figures</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">plot_width</span> <span class="o">=</span> <span class="n">west_fig</span><span class="o">.</span><span class="n">plot_width</span> <span class="o">=</span> <span class="mi">300</span>
+
+<span class="c1"># Edit the titles</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Eastern Conference&#39;</span>
+<span class="n">west_fig</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Western Conference&#39;</span>
+
+<span class="c1"># Plot the two visualizations with placeholders</span>
+<span class="n">east_west_gridplot</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">([[</span><span class="n">west_fig</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">east_fig</span><span class="p">]],</span> 
+                              <span class="n">toolbar_location</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot the two visualizations in a horizontal configuration</span>
+<span class="n">show</span><span class="p">(</span><span class="n">east_west_gridplot</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/gridplot_with_nones.cc7feb66a672.png" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/gridplot_with_nones.cc7feb66a672.png" width="1290" height="1218" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gridplot_with_nones.cc7feb66a672.png&amp;w=322&amp;sig=de0bc38732951f57159a1cd540f6d039acdb0542 322w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gridplot_with_nones.cc7feb66a672.png&amp;w=645&amp;sig=aaa9d0d57d270394a1a4a3a8b78b7f116d038662 645w, https://files.realpython.com/media/gridplot_with_nones.cc7feb66a672.png 1290w" sizes="75vw" alt="Gridplot with Nones" /></a></p>
+<p>If you&rsquo;d rather toggle between both visualizations at their full size without having to squash them down to fit next to or on top of each other, a good option is a tabbed layout.</p>
+<p>A tabbed layout consists of two Bokeh widget functions: <code>Tab()</code> and <code>Panel()</code> from the <code>bokeh.models.widgets</code> sub-module. Like using <code>gridplot()</code>, making a tabbed layout is pretty straightforward:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Library</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models.widgets</span> <span class="k">import</span> <span class="n">Tabs</span><span class="p">,</span> <span class="n">Panel</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;east-west-top-2-tabbed_layout.html&#39;</span><span class="p">,</span> 
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Conference Top 2 Teams Wins Race&#39;</span><span class="p">)</span>
+
+<span class="c1"># Increase the plot widths</span>
+<span class="n">east_fig</span><span class="o">.</span><span class="n">plot_width</span> <span class="o">=</span> <span class="n">west_fig</span><span class="o">.</span><span class="n">plot_width</span> <span class="o">=</span> <span class="mi">800</span>
+
+<span class="c1"># Create two panels, one for each conference</span>
+<span class="n">east_panel</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span><span class="n">child</span><span class="o">=</span><span class="n">east_fig</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Eastern Conference&#39;</span><span class="p">)</span>
+<span class="n">west_panel</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span><span class="n">child</span><span class="o">=</span><span class="n">west_fig</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Western Conference&#39;</span><span class="p">)</span>
+
+<span class="c1"># Assign the panels to Tabs</span>
+<span class="n">tabs</span> <span class="o">=</span> <span class="n">Tabs</span><span class="p">(</span><span class="n">tabs</span><span class="o">=</span><span class="p">[</span><span class="n">west_panel</span><span class="p">,</span> <span class="n">east_panel</span><span class="p">])</span>
+
+<span class="c1"># Show the tabbed layout</span>
+<span class="n">show</span><span class="p">(</span><span class="n">tabs</span><span class="p">)</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/tabbed_layout.2566a4615fcf.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/tabbed_layout.2566a4615fcf.gif" width="822" height="354" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/tabbed_layout.2566a4615fcf.gif&amp;w=205&amp;sig=09a3a48fb9293e908024de1af6e036190b9245ad 205w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/tabbed_layout.2566a4615fcf.gif&amp;w=411&amp;sig=050739cbe326ac19a9637853e7a14e813807d075 411w, https://files.realpython.com/media/tabbed_layout.2566a4615fcf.gif 822w" sizes="75vw" alt="Tabbed Layout GIF" /></a></p>
+<p>The first step is to create a <code>Panel()</code> for each tab. That may sound a little confusing, but think of the <code>Tabs()</code> function as the mechanism that organizes the individual tabs created with <code>Panel()</code>.</p>
+<p>Each <code>Panel()</code> takes as input a child, which can either be a single <code>figure()</code> or a layout. (Remember that a layout is a general name for a <code>column</code>, <code>row</code>, or <code>gridplot</code>.) Once your panels are assembled, they can be passed as input to <code>Tabs()</code> in a list.</p>
+<p>Now that you understand how to access, draw, and organize your data, it&rsquo;s time to move on to the real magic of Bokeh: interaction! As always, check out Bokeh&rsquo;s User Guide for more information on <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/layout.html">layouts</a>.</p>
+<h2 id="adding-interaction">Adding Interaction</h2>
+<p>The feature that sets Bokeh apart is its ability to easily implement interactivity in your visualization. Bokeh even goes as far as describing itself as an <strong>interactive visualization library</strong>:</p>
+<blockquote>
+<p>Bokeh is an interactive visualization library that targets modern web browsers for presentation. (<a href="https://bokeh.pydata.org/en/latest/docs/user_guide/quickstart.html#userguide-quickstart">Source</a>)</p>
+</blockquote>
+<p>In this section, we&rsquo;ll touch on five ways that you can add interactivity:</p>
+<ul>
+<li>Configuring the toolbar</li>
+<li>Selecting data points</li>
+<li>Adding hover actions</li>
+<li>Linking axes and selections</li>
+<li>Highlighting data using the legend</li>
+</ul>
+<p>Implementing these interactive elements open up possibilities for exploring your data that static visualizations just can&rsquo;t do by themselves. </p>
+<h3 id="configuring-the-toolbar">Configuring the Toolbar</h3>
+<p>As you saw all the way back in <a href="#generating-your-first-figure">Generating Your First Figure</a>, the default Bokeh <code>figure()</code> comes with a toolbar right out of the box. The default toolbar comes with the following tools (from left to right):</p>
+<ul>
+<li>Pan</li>
+<li>Box Zoom</li>
+<li>Wheel Zoom</li>
+<li>Save</li>
+<li>Reset</li>
+<li>A link to <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/tools.html#built-in-tools"><strong>Bokeh&rsquo;s user guide for Configuring Plot Tools</strong></a></li>
+<li>A link to the <a href="https://bokeh.pydata.org/en/latest/"><strong>Bokeh homepage</strong></a></li>
+</ul>
+<p>The toolbar can be removed by passing <code>toolbar_location=None</code> when instantiating a <code>figure()</code> object, or relocated by passing any of <code>'above'</code>, <code>'below'</code>, <code>'left'</code>, or <code>'right'</code>.</p>
+<p>Additionally, the toolbar can be configured to include any combination of tools you desire. Bokeh offers 18 specific tools across five categories: </p>
+<ul>
+<li><strong>Pan/Drag</strong>: <code>box_select</code>, <code>box_zoom</code>, <code>lasso_select</code>, <code>pan</code>, <code>xpan</code>, <code>ypan</code>, <code>resize_select</code></li>
+<li><strong>Click/Tap</strong>: <code>poly_select</code>, <code>tap</code></li>
+<li><strong>Scroll/Pinch</strong>: <code>wheel_zoom</code>, <code>xwheel_zoom</code>, <code>ywheel_zoom</code></li>
+<li><strong>Actions</strong>: <code>undo</code>, <code>redo</code>, <code>reset</code>, <code>save</code></li>
+<li><strong>Inspectors</strong>: <code>crosshair</code>, <code>hover</code></li>
+</ul>
+<p>To geek out on tools , make sure to visit <a href="http://bokeh.pydata.org/en/0.11.1/docs/user_guide/tools.html#specifying-tools">Specifying Tools</a>. Otherwise, they&rsquo;ll be illustrated in covering the various interactions covered herein.</p>
+<h3 id="selecting-data-points">Selecting Data Points</h3>
+<p>Implementing selection behavior is as easy as adding a few specific keywords when declaring your glyphs. </p>
+<p>The next example will create a scatter plot that relates a player&rsquo;s total number of three-point shot attempts to the percentage made (for players with at least 100 three-point shot attempts). </p>
+<p>The data can be aggregated from the <code>player_stats</code> DataFrame:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Find players who took at least 1 three-point shot during the season</span>
+<span class="n">three_takers</span> <span class="o">=</span> <span class="n">player_stats</span><span class="p">[</span><span class="n">player_stats</span><span class="p">[</span><span class="s1">&#39;play3PA&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Clean up the player names, placing them in a single column</span>
+<span class="n">three_takers</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{p[&quot;playFNm&quot;]}</span><span class="s1"> </span><span class="si">{p[&quot;playLNm&quot;]}</span><span class="s1">&#39;</span> 
+                        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">three_takers</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()]</span>
+
+<span class="c1"># Aggregate the total three-point attempts and makes for each player</span>
+<span class="n">three_takers</span> <span class="o">=</span> <span class="p">(</span><span class="n">three_takers</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                            <span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s1">&#39;play3PA&#39;</span><span class="p">,</span> <span class="s1">&#39;play3PM&#39;</span><span class="p">]]</span>
+                            <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;play3PA&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+<span class="c1"># Filter out anyone who didn&#39;t take at least 100 three-point shots</span>
+<span class="n">three_takers</span> <span class="o">=</span> <span class="n">three_takers</span><span class="p">[</span><span class="n">three_takers</span><span class="p">[</span><span class="s1">&#39;play3PA&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+<span class="c1"># Add a column with a calculated three-point percentage (made/attempted)</span>
+<span class="n">three_takers</span><span class="p">[</span><span class="s1">&#39;pct3PM&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">three_takers</span><span class="p">[</span><span class="s1">&#39;play3PM&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">three_takers</span><span class="p">[</span><span class="s1">&#39;play3PA&#39;</span><span class="p">]</span>
+</pre></div>
+<p>Here&rsquo;s a sample of the resulting <code>DataFrame</code>:</p>
+<div class="highlight python"><span class="repl-toggle" title="Toggle REPL prompts and output">&gt;&gt;&gt;</span><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">three_takers</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">                   name  play3PA  play3PM    pct3PM</span>
+<span class="go">229        Corey Brewer      110       31  0.281818</span>
+<span class="go">78           Marc Gasol      320      109  0.340625</span>
+<span class="go">126      Raymond Felton      230       81  0.352174</span>
+<span class="go">127  Kristaps Porziņģis      229       90  0.393013</span>
+<span class="go">66      Josh Richardson      336      127  0.377976</span>
+</pre></div>
+<p>Let&rsquo;s say you want to select a groups of players in the distribution, and in doing so mute the color of the glyphs representing the non-selected players:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">NumeralTickFormatter</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;three-point-att-vs-pct.html&#39;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Three-Point Attempts vs. Percentage&#39;</span><span class="p">)</span>
+
+<span class="c1"># Store the data in a ColumnDataSource</span>
+<span class="n">three_takers_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">three_takers</span><span class="p">)</span>
+
+<span class="c1"># Specify the selection tools to be made available</span>
+<span class="n">select_tools</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;box_select&#39;</span><span class="p">,</span> <span class="s1">&#39;lasso_select&#39;</span><span class="p">,</span> <span class="s1">&#39;poly_select&#39;</span><span class="p">,</span> <span class="s1">&#39;tap&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">]</span>
+
+<span class="c1"># Create the figure</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">plot_height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+             <span class="n">plot_width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+             <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Three-Point Shots Attempted&#39;</span><span class="p">,</span>
+             <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Percentage Made&#39;</span><span class="p">,</span>
+             <span class="n">title</span><span class="o">=</span><span class="s1">&#39;3PT Shots Attempted vs. Percentage Made (min. 100 3PA), 2017-18&#39;</span><span class="p">,</span>
+             <span class="n">toolbar_location</span><span class="o">=</span><span class="s1">&#39;below&#39;</span><span class="p">,</span>
+             <span class="n">tools</span><span class="o">=</span><span class="n">select_tools</span><span class="p">)</span>
+
+<span class="c1"># Format the y-axis tick labels as percentages</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">yaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">NumeralTickFormatter</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;00.0%&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add square representing each player</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;play3PA&#39;</span><span class="p">,</span>
+           <span class="n">y</span><span class="o">=</span><span class="s1">&#39;pct3PM&#39;</span><span class="p">,</span>
+           <span class="n">source</span><span class="o">=</span><span class="n">three_takers_cds</span><span class="p">,</span>
+           <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span>
+           <span class="n">selection_color</span><span class="o">=</span><span class="s1">&#39;deepskyblue&#39;</span><span class="p">,</span>
+           <span class="n">nonselection_color</span><span class="o">=</span><span class="s1">&#39;lightgray&#39;</span><span class="p">,</span>
+           <span class="n">nonselection_alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p>First, specify the selection tools you want to make available. In the example above, <code>'box_select'</code>, <code>'lasso_select'</code>, <code>'poly_select'</code>, and <code>'tap'</code> (plus a reset button) were specified in a list called <code>select_tools</code>. When the figure is instantiated, the toolbar is positioned <code>'below'</code> the plot, and the list is passed to <code>tools</code> to make the tools selected above available.</p>
+<p>Each player is initially represented by a royal blue square glyph, but the following configurations are set for when a player or group of players is selected:</p>
+<ul>
+<li>Turn the selected player(s) to <code>deepskyblue</code></li>
+<li>Change all non-selected players&rsquo; glyphs to a <code>lightgray</code> color with <code>0.3</code> opacity </li>
+</ul>
+<p>That&rsquo;s it! With just a few quick additions, the visualization now looks like this:</p>
+<p><a href="https://files.realpython.com/media/selection_example.d9ac1d0c8987.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/selection_example.d9ac1d0c8987.gif" width="628" height="402" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/selection_example.d9ac1d0c8987.gif&amp;w=157&amp;sig=45a12e3f806023b39fc16363b2965cca880055b6 157w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/selection_example.d9ac1d0c8987.gif&amp;w=314&amp;sig=bd392edbd47121819860dc95a4b5bd4f2651aadc 314w, https://files.realpython.com/media/selection_example.d9ac1d0c8987.gif 628w" sizes="75vw" alt="Selection Example GIF" /></a></p>
+<p>For even more information about what you can do upon selection, check out <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#selected-and-unselected-glyphs">Selected and Unselected Glyphs</a>.</p>
+<h3 id="adding-hover-actions">Adding Hover Actions</h3>
+<p>So the ability to select specific player data points that seem of interest in my scatter plot is implemented, but what if you want to quickly see what individual players a glyph represents? One option is to use Bokeh&rsquo;s <code>HoverTool()</code> to show a tooltip when the cursor crosses paths with a glyph. All you need to do is append the following to the code snippet above:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Library</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">HoverTool</span>
+
+<span class="c1"># Format the tooltip</span>
+<span class="n">tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;Player&#39;</span><span class="p">,</span><span class="s1">&#39;@name&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Three-Pointers Made&#39;</span><span class="p">,</span> <span class="s1">&#39;@play3PM&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Three-Pointers Attempted&#39;</span><span class="p">,</span> <span class="s1">&#39;@play3PA&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Three-Point Percentage&#39;</span><span class="p">,</span><span class="s1">&#39;@pct3PM{00.0%}&#39;</span><span class="p">),</span>
+           <span class="p">]</span>
+
+<span class="c1"># Add the HoverTool to the figure</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_tools</span><span class="p">(</span><span class="n">HoverTool</span><span class="p">(</span><span class="n">tooltips</span><span class="o">=</span><span class="n">tooltips</span><span class="p">))</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p>The <code>HoverTool()</code> is slightly different than the selection tools you saw above in that it has properties, specifically <code>tooltips</code>.</p>
+<p>First, you can configure a formatted tooltip by creating a list of tuples containing a description and reference to the <code>ColumnDataSource</code>. This list was passed as input to the <code>HoverTool()</code> and then simply added to the figure using <code>add_tools()</code>. Here&rsquo;s what happened:</p>
+<p><a href="https://files.realpython.com/media/hover_tooltip_example.ff00e6668f0b.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/hover_tooltip_example.ff00e6668f0b.gif" width="628" height="400" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/hover_tooltip_example.ff00e6668f0b.gif&amp;w=157&amp;sig=44ea402b5cccba0ac011d3e2d97cc2b80779db63 157w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/hover_tooltip_example.ff00e6668f0b.gif&amp;w=314&amp;sig=ca8bb84a91008772d34c10aa02d0da64ef982a46 314w, https://files.realpython.com/media/hover_tooltip_example.ff00e6668f0b.gif 628w" sizes="75vw" alt="Hover Tooltip Example GIF" /></a></p>
+<p>Notice the addition of the <em>Hover</em> button to the toolbar, which can be toggled on and off.</p>
+<p>If you want to even further emphasize the players on hover, Bokeh makes that possible with hover inspections. Here is a slightly modified version of the code snippet that added the tooltip:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Format the tooltip</span>
+<span class="n">tooltips</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;Player&#39;</span><span class="p">,</span><span class="s1">&#39;@name&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Three-Pointers Made&#39;</span><span class="p">,</span> <span class="s1">&#39;@play3PM&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Three-Pointers Attempted&#39;</span><span class="p">,</span> <span class="s1">&#39;@play3PA&#39;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Three-Point Percentage&#39;</span><span class="p">,</span><span class="s1">&#39;@pct3PM{00.0%}&#39;</span><span class="p">),</span>
+           <span class="p">]</span>
+
+<span class="c1"># Configure a renderer to be used upon hover</span>
+<span class="n">hover_glyph</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;play3PA&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;pct3PM&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">three_takers_cds</span><span class="p">,</span>
+                         <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="n">hover_fill_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">hover_alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Add the HoverTool to the figure</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">add_tools</span><span class="p">(</span><span class="n">HoverTool</span><span class="p">(</span><span class="n">tooltips</span><span class="o">=</span><span class="n">tooltips</span><span class="p">,</span> <span class="n">renderers</span><span class="o">=</span><span class="p">[</span><span class="n">hover_glyph</span><span class="p">]))</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">show</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<p>This is done by creating a completely new glyph, in this case circles instead of squares, and assigning it to <code>hover_glyph</code>. Note that the initial opacity is set to zero so that it is invisible until the cursor is touching it. The properties that appear upon hover are captured by setting <code>hover_alpha</code> to <code>0.5</code> along with the <code>hover_fill_color</code>. </p>
+<p>Now you will see a small black circle appear over the original square when hovering over the various markers:</p>
+<p><a href="https://files.realpython.com/media/hover_inspection.6670d76e3ded.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/hover_inspection.6670d76e3ded.gif" width="628" height="400" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/hover_inspection.6670d76e3ded.gif&amp;w=157&amp;sig=c409af5cd8102543a208206f4a55ae0717944ed1 157w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/hover_inspection.6670d76e3ded.gif&amp;w=314&amp;sig=d1c5b2b78cf8a32fac1918826f93a6c00324fff0 314w, https://files.realpython.com/media/hover_inspection.6670d76e3ded.gif 628w" sizes="75vw" alt="Hover Inspection GIF" /></a></p>
+<p>To further explore the capabilities of the <code>HoverTool()</code>, see the <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/tools.html#hovertool">HoverTool</a> and <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/styling.html#hover-inspections">Hover Inspections</a> guides.</p>
+<h3 id="linking-axes-and-selections">Linking Axes and Selections</h3>
+<p>Linking is the process of syncing elements of different visualizations within a layout. For instance, maybe you want to link the axes of multiple plots to ensure that if you zoom in on one it is reflected on another. Let&rsquo;s see how it is done.</p>
+<p>For this example, the visualization will be able to pan to different segments of a team&rsquo;s schedule and examine various game stats. Each stat will be represented by its own plot in a two-by-two <code>gridplot()</code> .</p>
+<p>The data can be collected from the <code>team_stats</code> DataFrame, selecting the Philadelphia 76ers as the team of interest:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Isolate relevant data</span>
+<span class="n">phi_gm_stats</span> <span class="o">=</span> <span class="p">(</span><span class="n">team_stats</span><span class="p">[(</span><span class="n">team_stats</span><span class="p">[</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;PHI&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
+                           <span class="p">(</span><span class="n">team_stats</span><span class="p">[</span><span class="s1">&#39;seasTyp&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Regular&#39;</span><span class="p">)]</span>
+                <span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;gmDate&#39;</span><span class="p">,</span> 
+                         <span class="s1">&#39;teamPTS&#39;</span><span class="p">,</span> 
+                         <span class="s1">&#39;teamTRB&#39;</span><span class="p">,</span> 
+                         <span class="s1">&#39;teamAST&#39;</span><span class="p">,</span> 
+                         <span class="s1">&#39;teamTO&#39;</span><span class="p">,</span> 
+                         <span class="s1">&#39;opptPTS&#39;</span><span class="p">,]]</span>
+                <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;gmDate&#39;</span><span class="p">))</span>
+
+<span class="c1"># Add game number</span>
+<span class="n">phi_gm_stats</span><span class="p">[</span><span class="s1">&#39;game_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">phi_gm_stats</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Derive a win_loss column</span>
+<span class="n">win_loss</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">phi_gm_stats</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+
+    <span class="c1"># If the 76ers score more points, it&#39;s a win</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;teamPTS&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;opptPTS&#39;</span><span class="p">]:</span>
+        <span class="n">win_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">win_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add the win_loss data to the DataFrame</span>
+<span class="n">phi_gm_stats</span><span class="p">[</span><span class="s1">&#39;winLoss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">win_loss</span>
+</pre></div>
+<p>Here are the results of the 76ers&rsquo; first 5 games:</p>
+<div class="highlight python"><span class="repl-toggle" title="Toggle REPL prompts and output">&gt;&gt;&gt;</span><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phi_gm_stats</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">        gmDate  teamPTS  teamTRB  teamAST  teamTO  opptPTS  game_num winLoss</span>
+<span class="go">10  2017-10-18      115       48       25      17      120         1       L</span>
+<span class="go">39  2017-10-20       92       47       20      17      102         2       L</span>
+<span class="go">52  2017-10-21       94       41       18      20      128         3       L</span>
+<span class="go">80  2017-10-23       97       49       25      21       86         4       W</span>
+<span class="go">113 2017-10-25      104       43       29      16      105         5       L</span>
+</pre></div>
+<p>Start by importing the necessary Bokeh libraries, specifying the output parameters, and reading the data into a <code>ColumnDataSource</code>:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CategoricalColorMapper</span><span class="p">,</span> <span class="n">Div</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">gridplot</span><span class="p">,</span> <span class="n">column</span>
+
+<span class="c1"># Output to file</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;phi-gm-linked-stats.html&#39;</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s1">&#39;76ers Game Log&#39;</span><span class="p">)</span>
+
+<span class="c1"># Store the data in a ColumnDataSource</span>
+<span class="n">gm_stats_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">phi_gm_stats</span><span class="p">)</span>
+</pre></div>
+<p>Each game is represented by a column, and will be colored green if the result was a win and red for a loss. To accomplish this, Bokeh&rsquo;s <code>CategoricalColorMapper</code> can be used to map the data values to specified colors:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Create a CategoricalColorMapper that assigns a color to wins and losses</span>
+<span class="n">win_loss_mapper</span> <span class="o">=</span> <span class="n">CategoricalColorMapper</span><span class="p">(</span><span class="n">factors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">],</span> 
+                                         <span class="n">palette</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">])</span>
+</pre></div>
+<p>For this use case, a list specifying the categorical data values to be mapped is passed to <code>factors</code> and a list with the intended colors to <code>palette</code>. For more on the <code>CategoricalColorMapper</code>, see the <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/categorical.html#colors">Colors</a> section of <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/categorical.html#handling-categorical-data">Handling Categorical Data</a> on Bokeh&rsquo;s User Guide.</p>
+<p>There are four stats to visualize in the two-by-two <code>gridplot</code>: points, assists, rebounds, and turnovers. In creating the four figures and configuring their respective charts, there is a lot of redundancy in the properties. So to streamline the code a <code>for</code> loop can be used:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Create a dict with the stat name and its corresponding column in the data</span>
+<span class="n">stat_names</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Points&#39;</span><span class="p">:</span> <span class="s1">&#39;teamPTS&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Assists&#39;</span><span class="p">:</span> <span class="s1">&#39;teamAST&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Rebounds&#39;</span><span class="p">:</span> <span class="s1">&#39;teamTRB&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Turnovers&#39;</span><span class="p">:</span> <span class="s1">&#39;teamTO&#39;</span><span class="p">,}</span>
+
+<span class="c1"># The figure for each stat will be held in this dict</span>
+<span class="n">stat_figs</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># For each stat in the dict</span>
+<span class="k">for</span> <span class="n">stat_label</span><span class="p">,</span> <span class="n">stat_col</span> <span class="ow">in</span> <span class="n">stat_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+    <span class="c1"># Create a figure</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">y_axis_label</span><span class="o">=</span><span class="n">stat_label</span><span class="p">,</span> 
+                 <span class="n">plot_height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+                 <span class="n">x_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;xpan&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Configure vbar</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">vbar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;game_num&#39;</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">stat_col</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">gm_stats_cds</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> 
+             <span class="n">color</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;winLoss&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">win_loss_mapper</span><span class="p">))</span>
+
+    <span class="c1"># Add the figure to stat_figs dict</span>
+    <span class="n">stat_figs</span><span class="p">[</span><span class="n">stat_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
+</pre></div>
+<p>As you can see, the only parameters that needed to be adjusted were the <code>y-axis-label</code> of the figure and the data that will dictate <code>top</code> in the <code>vbar</code>. These values were easily stored in a <code>dict</code> that was iterated through to create the figures for each stat.</p>
+<p>You can also see the implementation of the <code>CategoricalColorMapper</code> in the configuration of the <code>vbar</code> glyph. The <code>color</code> property is passed a <code>dict</code> with the field in the <code>ColumnDataSource</code> to be mapped and the name of the <code>CategoricalColorMapper</code> created above.</p>
+<p>The initial view will only show the first 10 games of the 76ers&rsquo; season, so there needs to be a way to pan horizontally to navigate through the rest of the games in the season. Thus configuring the toolbar to have an <code>xpan</code> tool allows panning throughout the plot without having to worry about accidentally skewing the view along the vertical axis.</p>
+<p>Now that the figures are created, <code>gridplot</code> can be setup by referencing the figures from the <code>dict</code> created above:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Create layout</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">([[</span><span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Points&#39;</span><span class="p">],</span> <span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Assists&#39;</span><span class="p">]],</span> 
+                <span class="p">[</span><span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Rebounds&#39;</span><span class="p">],</span> <span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Turnovers&#39;</span><span class="p">]]])</span>
+</pre></div>
+<p>Linking the axes of the four plots is as simple as setting the <code>x_range</code> of each figure equal to one another:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Link together the x-axes</span>
+<span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Points&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x_range</span> <span class="o">=</span> \
+    <span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Assists&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x_range</span> <span class="o">=</span> \
+    <span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Rebounds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x_range</span> <span class="o">=</span> \
+    <span class="n">stat_figs</span><span class="p">[</span><span class="s1">&#39;Turnovers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">x_range</span>
+</pre></div>
+<p>To add a title bar to the visualization, you could have tried to do this on the points figure, but it would have been limited to the space of that figure. Therefore, a nice trick is to use Bokeh&rsquo;s ability to interpret HTML to insert a <code>Div</code> element that contains the title information. Once that is created, simply combine that with the <code>gridplot()</code> in a <code>column</code> layout:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Add a title for the entire visualization using Div</span>
+<span class="n">html</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;h3&gt;Philadelphia 76ers Game Log&lt;/h3&gt;</span>
+<span class="s2">&lt;b&gt;&lt;i&gt;2017-18 Regular Season&lt;/i&gt;</span>
+<span class="s2">&lt;br&gt;</span>
+<span class="s2">&lt;/b&gt;&lt;i&gt;Wins in green, losses in red&lt;/i&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">sup_title</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">html</span><span class="p">)</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">show</span><span class="p">(</span><span class="n">column</span><span class="p">(</span><span class="n">sup_title</span><span class="p">,</span> <span class="n">grid</span><span class="p">))</span>
+</pre></div>
+<p>Putting all the pieces together results in the following: </p>
+<p><a href="https://files.realpython.com/media/linked_axes.597d060fb6eb.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/linked_axes.597d060fb6eb.gif" width="884" height="502" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/linked_axes.597d060fb6eb.gif&amp;w=221&amp;sig=055e6e5afa7b64bf7c2cc0249b981436aa268ac6 221w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/linked_axes.597d060fb6eb.gif&amp;w=442&amp;sig=95039045a70f0680e6675064c3c2daf98f59310c 442w, https://files.realpython.com/media/linked_axes.597d060fb6eb.gif 884w" sizes="75vw" alt="Linked Axes GIF" /></a></p>
+<p>Similarly you can easily implement linked selections, where a selection on one plot will be reflected on others.</p>
+<p>To see how this works, the next visualization will contain two scatter plots: one that shows the 76ers&rsquo; two-point versus three-point field goal percentage and the other showing the 76ers&rsquo; team points versus opponent points on a game-by-game basis.</p>
+<p>The goal is to be able to select data points on the left-side scatter plot and quickly be able to recognize if the corresponding datapoint on the right scatter plot is a win or loss. </p>
+<p>The DataFrame for this visualization is very similar to that from the first example:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Isolate relevant data</span>
+<span class="n">phi_gm_stats_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">team_stats</span><span class="p">[(</span><span class="n">team_stats</span><span class="p">[</span><span class="s1">&#39;teamAbbr&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;PHI&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
+                             <span class="p">(</span><span class="n">team_stats</span><span class="p">[</span><span class="s1">&#39;seasTyp&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Regular&#39;</span><span class="p">)]</span>
+                  <span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;gmDate&#39;</span><span class="p">,</span> 
+                           <span class="s1">&#39;team2P%&#39;</span><span class="p">,</span> 
+                           <span class="s1">&#39;team3P%&#39;</span><span class="p">,</span> 
+                           <span class="s1">&#39;teamPTS&#39;</span><span class="p">,</span> 
+                           <span class="s1">&#39;opptPTS&#39;</span><span class="p">]]</span>
+                  <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;gmDate&#39;</span><span class="p">))</span>
+
+<span class="c1"># Add game number</span>
+<span class="n">phi_gm_stats_2</span><span class="p">[</span><span class="s1">&#39;game_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">phi_gm_stats_2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Derive a win_loss column</span>
+<span class="n">win_loss</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">phi_gm_stats_2</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+
+    <span class="c1"># If the 76ers score more points, it&#39;s a win</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;teamPTS&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;opptPTS&#39;</span><span class="p">]:</span>
+        <span class="n">win_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">win_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add the win_loss data to the DataFrame</span>
+<span class="n">phi_gm_stats_2</span><span class="p">[</span><span class="s1">&#39;winLoss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">win_loss</span>
+</pre></div>
+<p>Here&rsquo;s what the data looks like:</p>
+<div class="highlight python"><span class="repl-toggle" title="Toggle REPL prompts and output">&gt;&gt;&gt;</span><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phi_gm_stats_2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="go">        gmDate  team2P%  team3P%  teamPTS  opptPTS  game_num winLoss</span>
+<span class="go">10  2017-10-18   0.4746   0.4286      115      120         1       L</span>
+<span class="go">39  2017-10-20   0.4167   0.3125       92      102         2       L</span>
+<span class="go">52  2017-10-21   0.4138   0.3333       94      128         3       L</span>
+<span class="go">80  2017-10-23   0.5098   0.3750       97       86         4       W</span>
+<span class="go">113 2017-10-25   0.5082   0.3333      104      105         5       L</span>
+</pre></div>
+<p>The code to create the visualization is as follows: </p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CategoricalColorMapper</span><span class="p">,</span> <span class="n">NumeralTickFormatter</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">gridplot</span>
+
+<span class="c1"># Output inline in the notebook</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;phi-gm-linked-selections.html&#39;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;76ers Percentages vs. Win-Loss&#39;</span><span class="p">)</span>
+
+<span class="c1"># Store the data in a ColumnDataSource</span>
+<span class="n">gm_stats_cds</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">phi_gm_stats_2</span><span class="p">)</span>
+
+<span class="c1"># Create a CategoricalColorMapper that assigns specific colors to wins and losses</span>
+<span class="n">win_loss_mapper</span> <span class="o">=</span> <span class="n">CategoricalColorMapper</span><span class="p">(</span><span class="n">factors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Green&#39;</span><span class="p">,</span> <span class="s1">&#39;Red&#39;</span><span class="p">])</span>
+
+<span class="c1"># Specify the tools</span>
+<span class="n">toolList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;lasso_select&#39;</span><span class="p">,</span> <span class="s1">&#39;tap&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">]</span>
+
+<span class="c1"># Create a figure relating the percentages</span>
+<span class="n">pctFig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;2PT FG % vs 3PT FG %, 2017-18 Regular Season&#39;</span><span class="p">,</span>
+                <span class="n">plot_height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">toolList</span><span class="p">,</span>
+                <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;2PT FG%&#39;</span><span class="p">,</span> <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;3PT FG%&#39;</span><span class="p">)</span>
+
+<span class="c1"># Draw with circle markers</span>
+<span class="n">pctFig</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;team2P%&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;team3P%&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">gm_stats_cds</span><span class="p">,</span> 
+              <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+<span class="c1"># Format the y-axis tick labels as percenages</span>
+<span class="n">pctFig</span><span class="o">.</span><span class="n">xaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">NumeralTickFormatter</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;00.0%&#39;</span><span class="p">)</span>
+<span class="n">pctFig</span><span class="o">.</span><span class="n">yaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">NumeralTickFormatter</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;00.0%&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create a figure relating the totals</span>
+<span class="n">totFig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Team Points vs Opponent Points, 2017-18 Regular Season&#39;</span><span class="p">,</span>
+                <span class="n">plot_height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plot_width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">toolList</span><span class="p">,</span>
+                <span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;Team Points&#39;</span><span class="p">,</span> <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Opponent Points&#39;</span><span class="p">)</span>
+
+<span class="c1"># Draw with square markers</span>
+<span class="n">totFig</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;teamPTS&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;opptPTS&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">gm_stats_cds</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+              <span class="n">color</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">field</span><span class="o">=</span><span class="s1">&#39;winLoss&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">win_loss_mapper</span><span class="p">))</span>
+
+<span class="c1"># Create layout</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">gridplot</span><span class="p">([[</span><span class="n">pctFig</span><span class="p">,</span> <span class="n">totFig</span><span class="p">]])</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">show</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+</pre></div>
+<p>This is a great illustration of the power in using a <code>ColumnDataSource</code>. As long as the glyph renderers (in this case, the <code>circle</code> glyphs for the percentages, and <code>square</code> glyphs for the wins and losses) share the same <code>ColumnDataSource</code>, then the selections will be linked by default. </p>
+<p>Here&rsquo;s how it looks in action, where you can see selections made on either figure will be reflected on the other:</p>
+<p><a href="https://files.realpython.com/media/linked_selection.70bd761944f3.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/linked_selection.70bd761944f3.gif" width="844" height="444" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/linked_selection.70bd761944f3.gif&amp;w=211&amp;sig=e03aa395c2649ce845cab64003640674a1667ef6 211w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/linked_selection.70bd761944f3.gif&amp;w=422&amp;sig=9ca4b33b07636f7074340a026ed29627df40b0e7 422w, https://files.realpython.com/media/linked_selection.70bd761944f3.gif 844w" sizes="75vw" alt="Linked Selection GIF" /></a></p>
+<p>By selecting a random sample of data points in the upper right quadrant of the left scatter plot, those corresponding to both high two-point and three-point field goal percentage, the data points on the right scatter plot are highlighted. </p>
+<p>Similarly, selecting data points on the right scatter plot that correspond to losses tend to be further to the lower left, lower shooting percentages, on the left scatter plot. </p>
+<p>All the details on linking plots can be found at <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/interaction/linking.html">Linking Plots</a> in the Bokeh User Guide.</p>
+<h3 id="highlighting-data-using-the-legend">Highlighting Data Using the Legend</h3>
+<p>That brings us to the final interactivity example in this tutorial: interactive legends.</p>
+<p>In the <a href="#drawing-data-with-glyphs">Drawing Data With Glyphs</a> section, you saw how easy it is to implement a legend when creating your plot. With the legend in place, adding interactivity is merely a matter of assigning a <code>click_policy</code>. Using a single line of code, you can quickly add the ability to either <code>hide</code> or <code>mute</code> data using the legend.</p>
+<p>In this example, you&rsquo;ll see two identical scatter plots comparing the game-by-game points and rebounds of LeBron James and Kevin Durant. The only difference will be that one will use a <code>hide</code> as its <code>click_policy</code>, while the other uses <code>mute</code>.</p>
+<p>The first step is to configure the output and set up the data, creating a view for each player from the <code>player_stats</code> DataFrame:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Bokeh Libraries</span>
+<span class="kn">from</span> <span class="nn">bokeh.plotting</span> <span class="k">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">bokeh.io</span> <span class="k">import</span> <span class="n">output_file</span>
+<span class="kn">from</span> <span class="nn">bokeh.models</span> <span class="k">import</span> <span class="n">ColumnDataSource</span><span class="p">,</span> <span class="n">CDSView</span><span class="p">,</span> <span class="n">GroupFilter</span>
+<span class="kn">from</span> <span class="nn">bokeh.layouts</span> <span class="k">import</span> <span class="n">row</span>
+
+<span class="c1"># Output inline in the notebook</span>
+<span class="n">output_file</span><span class="p">(</span><span class="s1">&#39;lebron-vs-durant.html&#39;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;LeBron James vs. Kevin Durant&#39;</span><span class="p">)</span>
+
+<span class="c1"># Store the data in a ColumnDataSource</span>
+<span class="n">player_gm_stats</span> <span class="o">=</span> <span class="n">ColumnDataSource</span><span class="p">(</span><span class="n">player_stats</span><span class="p">)</span>
+
+<span class="c1"># Create a view for each player</span>
+<span class="n">lebron_filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;playFNm&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;LeBron&#39;</span><span class="p">),</span>
+                  <span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;playLNm&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;James&#39;</span><span class="p">)]</span>
+<span class="n">lebron_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">player_gm_stats</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="n">lebron_filters</span><span class="p">)</span>
+
+<span class="n">durant_filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;playFNm&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;Kevin&#39;</span><span class="p">),</span>
+                  <span class="n">GroupFilter</span><span class="p">(</span><span class="n">column_name</span><span class="o">=</span><span class="s1">&#39;playLNm&#39;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;Durant&#39;</span><span class="p">)]</span>
+<span class="n">durant_view</span> <span class="o">=</span> <span class="n">CDSView</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">player_gm_stats</span><span class="p">,</span>
+                      <span class="n">filters</span><span class="o">=</span><span class="n">durant_filters</span><span class="p">)</span>
+</pre></div>
+<p>Before creating the figures, the common parameters across the figure, markers, and data can be consolidated into dictionaries and reused. Not only does this save redundancy in the next step, but it provides an easy way to tweak these parameters later if need be:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Consolidate the common keyword arguments in dicts</span>
+<span class="n">common_figure_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;plot_width&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+    <span class="s1">&#39;x_axis_label&#39;</span><span class="p">:</span> <span class="s1">&#39;Points&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;toolbar_location&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">common_circle_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="s1">&#39;playPTS&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="s1">&#39;playTRB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="n">player_gm_stats</span><span class="p">,</span>
+    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">common_lebron_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="n">lebron_view</span><span class="p">,</span>
+    <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#002859&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;legend&#39;</span><span class="p">:</span> <span class="s1">&#39;LeBron James&#39;</span>
+<span class="p">}</span>
+<span class="n">common_durant_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;view&#39;</span><span class="p">:</span> <span class="n">durant_view</span><span class="p">,</span>
+    <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#FFC324&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;legend&#39;</span><span class="p">:</span> <span class="s1">&#39;Kevin Durant&#39;</span>
+<span class="p">}</span>
+</pre></div>
+<p>Now that the various properties are set, the two scatter plots can be built in a much more concise fashion:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Create the two figures and draw the data</span>
+<span class="n">hide_fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="o">**</span><span class="n">common_figure_kwargs</span><span class="p">,</span>
+                  <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Click Legend to HIDE Data&#39;</span><span class="p">,</span> 
+                  <span class="n">y_axis_label</span><span class="o">=</span><span class="s1">&#39;Rebounds&#39;</span><span class="p">)</span>
+<span class="n">hide_fig</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="o">**</span><span class="n">common_circle_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">common_lebron_kwargs</span><span class="p">)</span>
+<span class="n">hide_fig</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="o">**</span><span class="n">common_circle_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">common_durant_kwargs</span><span class="p">)</span>
+
+<span class="n">mute_fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">(</span><span class="o">**</span><span class="n">common_figure_kwargs</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Click Legend to MUTE Data&#39;</span><span class="p">)</span>
+<span class="n">mute_fig</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="o">**</span><span class="n">common_circle_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">common_lebron_kwargs</span><span class="p">,</span>
+                <span class="n">muted_alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mute_fig</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="o">**</span><span class="n">common_circle_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">common_durant_kwargs</span><span class="p">,</span>
+                <span class="n">muted_alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+<p>Note that <code>mute_fig</code> has an extra parameter called <code>muted_alpha</code>. This parameter controls the opacity of the markers when <code>mute</code> is used as the <code>click_policy</code>.</p>
+<p>Finally, the <code>click_policy</code> for each figure is set, and they are shown in a horizontal configuration:</p>
+<div class="highlight python"><pre><span></span><span class="c1"># Add interactivity to the legend</span>
+<span class="n">hide_fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">click_policy</span> <span class="o">=</span> <span class="s1">&#39;hide&#39;</span>
+<span class="n">mute_fig</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">click_policy</span> <span class="o">=</span> <span class="s1">&#39;mute&#39;</span>
+
+<span class="c1"># Visualize</span>
+<span class="n">show</span><span class="p">(</span><span class="n">row</span><span class="p">(</span><span class="n">hide_fig</span><span class="p">,</span> <span class="n">mute_fig</span><span class="p">))</span>
+</pre></div>
+<p><a href="https://files.realpython.com/media/interactive_legend.8ab895366ef2.gif" target="_blank"><img class="img-fluid mx-auto d-block border " src="https://files.realpython.com/media/interactive_legend.8ab895366ef2.gif" width="878" height="604" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/interactive_legend.8ab895366ef2.gif&amp;w=219&amp;sig=3f462cc02756cdcb5abd641e4ec56dab9cb9ac03 219w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/interactive_legend.8ab895366ef2.gif&amp;w=439&amp;sig=1401b43e34884a042f3b4911e17aa882a3515e42 439w, https://files.realpython.com/media/interactive_legend.8ab895366ef2.gif 878w" sizes="75vw" alt="Interactive Legend GIF" /></a></p>
+<p>Once the legend is in place, all you have to do is assign either <code>hide</code> or <code>mute</code> to the figure&rsquo;s <code>click_policy</code> property. This will automatically turn your basic legend into an interactive legend.</p>
+<p>Also note that, specifically for <code>mute</code>, the additional property of <code>muted_alpha</code> was set in the respective <code>circle</code> glyphs for LeBron James and Kevin Durant. This dictates the visual effect driven by the legend interaction.</p>
+<p>For more on all things interaction in Bokeh, <a href="https://bokeh.pydata.org/en/latest/docs/user_guide/interaction.html">Adding Interactions</a> in the Bokeh User Guide is a great place to start.</p>
+<h2 id="summary-and-next-steps">Summary and Next Steps</h2>
+<p>Congratulations! You&rsquo;ve made it to the end of this tutorial.</p>
+<p>You should now have a great set of tools to start turning your data into beautiful interactive visualizations using Bokeh.</p>
+<p>You learned how to:</p>
+<ul>
+<li>Configure your script to render to either a static HTML file or Jupyter Notebook</li>
+<li>Instantiate and customize the <code>figure()</code> object</li>
+<li>Build your visualization using glyphs</li>
+<li>Access and filter your data with the <code>ColumnDataSource</code></li>
+<li>Organize multiple plots in grid and tabbed layouts</li>
+<li>Add different forms of interaction, including selections, hover actions, linking, and interactive legends</li>
+</ul>
+<p>To explore even more of what Bokeh is capable of, the official <a href="https://bokeh.pydata.org/en/latest/docs/user_guide.html">Bokeh User Guide</a> is an excellent place to dig into some more advanced topics. I&rsquo;d also recommend checking out <a href="https://bokeh.pydata.org/en/latest/docs/gallery.html">Bokeh&rsquo;s Gallery</a> for tons of examples and inspiration.</p>
+</div>
+<div class="card mt-4 mb-4 bg-secondary">
+<p class="card-header h3 text-center bg-light">🐍 Python Tricks 💌</p>
+<div class="card-body">
+<div class="container">
+<div class="row">
+<div class="col-xs-12 col-sm-7">
+<p>Get a short &amp; sweet <strong>Python Trick</strong> delivered to your inbox every couple of days. No spam ever. Unsubscribe any time. Curated by the Real Python team.</p>
+</div>
+<div class="col-xs-12 col-sm-5">
+<img class="img-fluid rounded mb-3" src="/static/pytrick-dict-merge.4201a0125a5e.png" width="738" height="490" alt="Python Tricks Dictionary Merge">
+</div>
+</div>
+<div class="row mb-3">
+<form class="col-12" action="/optins/process/" method="post">
+<input type="hidden" name="csrfmiddlewaretoken" value="4nl6eMoQYAb0Mk4SQ3EgkH0QdCGAn2vtX78Q5M07ysZ52IqAEkk79VoKqx46nHaF">
+<input type="hidden" name="slug" value="static-python-tricks-footer">
+<div class="form-group">
+<input name="email" type="email" class="form-control form-control-lg" placeholder="Email Address" required>
+</div>
+<button name="submit" type="submit" class="btn btn-primary btn-lg btn-block">Send Me Python Tricks »</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<div class="card mt-4" id="author">
+<p class="card-header h3">About <strong>Leon D&#39;Angio</strong></p>
+<div class="card-body">
+<div class="container">
+<div class="row">
+<div class="col-12 col-md-3 align-self-center">
+<a href="/team/ldangio/"><img src="https://files.realpython.com/media/LeonHead.a43099eb1fff.JPG" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/LeonHead.a43099eb1fff.JPG&amp;w=85&amp;sig=1d3874420eb42736e130c1c44ae75d2ccf2cf0d6 85w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/LeonHead.a43099eb1fff.JPG&amp;w=170&amp;sig=8ff74742a3333c0e76ab9a58d1f5e010a200b4ec 170w, https://files.realpython.com/media/LeonHead.a43099eb1fff.JPG 341w" class="rounded-circle img-fluid w-100 mb-0" alt="Leon D&#39;Angio" sizes="25vw"></a>
+</div>
+<div class="col mt-3">
+<p>Leon is a data scientist at Apple, self-taught Pythonista, and contributor to Real Python.</p>
+<a href="/team/ldangio/" class="card-link">» More about Leon</a>
+</div>
+</div>
+</div>
+</div>
+<hr class="my-0">
+<div class="card-body pb-0">
+<div class="container">
+<div class="row">
+<p><em>Each tutorial at Real Python is created by a team of developers so that it meets our high quality standards. The team members who worked on this tutorial are:</em></p>
+</div>
+<div class="row align-items-center w-100 mx-auto">
+<div class="col-4 col-sm-2 align-self-center">
+<a href="/team/gahjelle/"><img src="https://files.realpython.com/media/gahjelle.470149ee709e.jpg" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gahjelle.470149ee709e.jpg&amp;w=200&amp;sig=5f5c996c1ae71bd7f2f89f547a334d508de2f4bb 200w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gahjelle.470149ee709e.jpg&amp;w=400&amp;sig=0e74ccf912d97528bda85e7b9e9e5064d69a1169 400w, https://files.realpython.com/media/gahjelle.470149ee709e.jpg 800w" sizes="10vw" class="rounded-circle img-fluid w-100" alt="Geir Arne Hjelle"></a>
+</div>
+<div class="col pl-0 d-none d-sm-block">
+<a href="/team/gahjelle/" class="card-link"><p>Geir Arne</p></a>
+</div>
+<div class="col-4 col-sm-2 align-self-center">
+<a href="/team/jjablonski/"><img src="https://files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg&amp;w=200&amp;sig=d779dbceba743afb659648000525a6a71656ae98 200w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg&amp;w=400&amp;sig=99ce401a9a219f6b406309e90925252be1900dfc 400w, https://files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg 800w" sizes="10vw" class="rounded-circle img-fluid w-100" alt="Joanna Jablonski"></a>
+</div>
+<div class="col pl-0 d-none d-sm-block">
+<a href="/team/jjablonski/" class="card-link"><p>Joanna</p></a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sidebar-module sidebar-module-inset p-0 my-4" style="overflow:hidden;">
+<div style="display:block;position:relative;">
+<div style="display:block;width:100%;padding-top:25%;"></div>
+<div class="rpad" data-unit="4x1" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;"></div>
+</div>
+</div>
+<div class="card mt-4" id="comments">
+<p class="card-header h3">What Do You Think?</p>
+<div class="card-body">
+<div class="alert alert-dark">
+<p class="mb-0"><strong>Real Python Comment Policy:</strong> The most useful comments are those written with the goal of learning from or helping out other readers—after reading the whole article and all the earlier comments. Complaints and insults generally won’t make the cut here.</p>
+</div>
+<div class="mb-4" id="disqus_thread"></div>
+</div>
+</div>
+<div class="card mt-4 mb-4">
+ <p class="card-header h3">Keep Reading</p>
+<div class="card-body">
+<a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
+<a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
+</div>
+</div>
+</div>
+<aside class="col-md-7 col-lg-4">
+<div class="card mb-3 bg-secondary">
+<form class="card-body" action="/optins/process/" method="post">
+<div class="form-group">
+<p class="h5 text-muted text-center">— FREE Email Series —</p>
+<p class="h3 text-center">🐍 Python Tricks 💌</p>
+<p><img class="img-fluid rounded" src="/static/pytrick-dict-merge.4201a0125a5e.png" width="738" height="490" alt="Python Tricks Dictionary Merge"></p>
+</div>
+<div class="form-group">
+<input type="hidden" name="csrfmiddlewaretoken" value="4nl6eMoQYAb0Mk4SQ3EgkH0QdCGAn2vtX78Q5M07ysZ52IqAEkk79VoKqx46nHaF">
+<input type="hidden" name="slug" value="static-python-tricks-sidebar">
+<input type="email" class="form-control form-control-md" name="email" placeholder="Email&hellip;" required>
+</div>
+<button type="submit" name="submit" class="btn btn-primary btn-md btn-block">Get Python Tricks »</button>
+<p class="mb-0 mt-2 text-muted text-center">🔒 No spam. Unsubscribe any time.</p>
+</form>
+</div>
+<div class="sidebar-module sidebar-module-inset border">
+<p class="h4">All Tutorial Topics</p>
+<a href="/tutorials/advanced/" class="badge badge-light text-muted">advanced</a>
+<a href="/tutorials/api/" class="badge badge-light text-muted">api</a>
+<a href="/tutorials/basics/" class="badge badge-light text-muted">basics</a>
+<a href="/tutorials/best-practices/" class="badge badge-light text-muted">best-practices</a>
+<a href="/tutorials/community/" class="badge badge-light text-muted">community</a>
+<a href="/tutorials/databases/" class="badge badge-light text-muted">databases</a>
+<a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
+<a href="/tutorials/devops/" class="badge badge-light text-muted">devops</a>
+<a href="/tutorials/django/" class="badge badge-light text-muted">django</a>
+<a href="/tutorials/docker/" class="badge badge-light text-muted">docker</a>
+<a href="/tutorials/flask/" class="badge badge-light text-muted">flask</a>
+<a href="/tutorials/front-end/" class="badge badge-light text-muted">front-end</a>
+<a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
+<a href="/tutorials/machine-learning/" class="badge badge-light text-muted">machine-learning</a>
+<a href="/tutorials/python/" class="badge badge-light text-muted">python</a>
+<a href="/tutorials/testing/" class="badge badge-light text-muted">testing</a>
+<a href="/tutorials/tools/" class="badge badge-light text-muted">tools</a>
+<a href="/tutorials/web-dev/" class="badge badge-light text-muted">web-dev</a>
+<a href="/tutorials/web-scraping/" class="badge badge-light text-muted">web-scraping</a>
+</div>
+<div class="sidebar-module sidebar-module-inset p-0" style="overflow:hidden;">
+<div style="display:block;position:relative;">
+<div style="display:block;width:100%;padding-top:100%;"></div>
+<div class="rpad" data-unit="1x1" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;"></div>
+</div>
+</div>
+<div class="sidebar-sticky">
+<div class="sidebar-module sidebar-module-inset border">
+<p class="h4">Table of Contents</p>
+<div class="toc">
+<ul>
+<li><a href="#from-data-to-visualization">From Data to Visualization</a><ul>
+<li><a href="#prepare-the-data">Prepare the Data</a></li>
+<li><a href="#determine-where-the-visualization-will-be-rendered">Determine Where the Visualization Will Be Rendered</a></li>
+<li><a href="#set-up-the-figures">Set up the Figure(s)</a></li>
+<li><a href="#connect-to-and-draw-your-data">Connect to and Draw Your Data</a></li>
+<li><a href="#organize-the-layout">Organize the Layout</a></li>
+<li><a href="#preview-and-save-your-beautiful-data-creation">Preview and Save Your Beautiful Data Creation</a></li>
+</ul>
+</li>
+<li><a href="#generating-your-first-figure">Generating Your First Figure</a></li>
+<li><a href="#getting-your-figure-ready-for-data">Getting Your Figure Ready for Data</a></li>
+<li><a href="#drawing-data-with-glyphs">Drawing Data With Glyphs</a></li>
+<li><a href="#a-quick-aside-about-data">A Quick Aside About Data</a></li>
+<li><a href="#using-the-columndatasource-object">Using the ColumnDataSource Object</a></li>
+<li><a href="#organizing-multiple-visualizations-with-layouts">Organizing Multiple Visualizations With Layouts</a></li>
+<li><a href="#adding-interaction">Adding Interaction</a><ul>
+<li><a href="#configuring-the-toolbar">Configuring the Toolbar</a></li>
+<li><a href="#selecting-data-points">Selecting Data Points</a></li>
+<li><a href="#adding-hover-actions">Adding Hover Actions</a></li>
+<li><a href="#linking-axes-and-selections">Linking Axes and Selections</a></li>
+<li><a href="#highlighting-data-using-the-legend">Highlighting Data Using the Legend</a></li>
+</ul>
+</li>
+<li><a href="#summary-and-next-steps">Summary and Next Steps</a></li>
+</ul>
+</div>
+</div>
+<div class="sidebar-module sidebar-module-inset p-0" style="overflow:hidden;">
+<div style="display:block;position:relative;">
+<div style="display:block;width:100%;padding-top:25%;"></div>
+<div class="rpad" data-unit="4x1" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;"></div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<div class="modal fade" id="modal-python-tricks-sample" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-content">
+<div class="modal-header bg-light pt-3 pb-2">
+<div class="container-fluid">
+<div class="row">
+<div class="col-12">
+<div class="progress" style="height: .5rem;">
+<div class="progress-bar progress-bar-striped progress-bar-animated w-50" role="progressbar"></div>
+</div>
+</div>
+<div class="col-12">
+<p class="text-muted text-center mb-0 mt-2">Almost there! Complete this form and click the button below to gain instant access:</p>
+</div>
+</div>
+</div>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+<div class="modal-body m-4">
+<div class="container-fluid">
+<div class="row align-items-center">
+<div class="col-12 col-lg-4">
+<img class="img-fluid rounded w-100 mb-4" src="https://files.realpython.com/media/pytricks-book-mockup.e2bdf7273464.png">
+</div>
+<div class="col">
+<p class="text-center h3 mb-4">&quot;Python Tricks: The Book&quot; – Free Sample Chapter</p>
+<form class="col-12" action="/optins/process/" method="post">
+<input type="hidden" name="csrfmiddlewaretoken" value="4nl6eMoQYAb0Mk4SQ3EgkH0QdCGAn2vtX78Q5M07ysZ52IqAEkk79VoKqx46nHaF">
+<input type="hidden" name="slug" value="python-tricks-sample">
+<div class="form-group">
+<input type="email" name="email" class="form-control" placeholder="Email Address" required autofocus>
+</div>
+<button name="submit" type="submit" class="btn btn-primary btn-block text-wrap">Send My Sample Chapter »</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer class="footer">
+<div class="container">
+ <div id="waldo-tag-2168" class="w-100 my-3 text-center"></div>
+<p class="text-center text-muted">© 2012–2018 Real Python ⋅ <a href="/newsletter/">Newsletter</a> ⋅ <a href="https://www.youtube.com/realpython">YouTube</a> ⋅ <a href="https://twitter.com/realpython">Twitter</a> ⋅ <a href="https://facebook.com/LearnRealPython">Facebook</a> ⋅ <a href="https://www.instagram.com/realpython/">Instagram</a><br><a href="/">Python Tutorials</a> ⋅ <a href="/search">Search</a> ⋅ <a href="/privacy-policy/">Privacy Policy</a> ⋅ <a href="/sponsorships/">Advertise</a> ⋅ <a href="/contact/">Contact</a><br>❤️ Happy Pythoning!</p>
+</div>
+</footer>
+<script>
+      (function(document, history, location) {
+        var HISTORY_SUPPORT = !!(history && history.pushState);
+
+        var anchorScrolls = {
+          ANCHOR_REGEX: /^#[^ ]+$/,
+          OFFSET_HEIGHT_PX: 120,
+
+          /**
+           * Establish events, and fix initial scroll position if a hash is provided.
+           */
+          init: function() {
+            this.scrollToCurrent();
+            window.addEventListener('hashchange', this.scrollToCurrent.bind(this));
+            document.body.addEventListener('click', this.delegateAnchors.bind(this));
+          },
+
+          /**
+           * Return the offset amount to deduct from the normal scroll position.
+           * Modify as appropriate to allow for dynamic calculations
+           */
+          getFixedOffset: function() {
+            return this.OFFSET_HEIGHT_PX;
+          },
+
+          /**
+           * If the provided href is an anchor which resolves to an element on the
+           * page, scroll to it.
+           * @param  {String} href
+           * @return {Boolean} - Was the href an anchor.
+           */
+          scrollIfAnchor: function(href, pushToHistory) {
+            var match, rect, anchorOffset;
+
+            if(!this.ANCHOR_REGEX.test(href)) {
+              return false;
+            }
+
+            match = document.getElementById(href.slice(1));
+
+            if(match) {
+              rect = match.getBoundingClientRect();
+              anchorOffset = window.pageYOffset + rect.top - this.getFixedOffset();
+              window.scrollTo(window.pageXOffset, anchorOffset);
+
+              // Add the state to history as-per normal anchor links
+              if(HISTORY_SUPPORT && pushToHistory) {
+                history.pushState({}, document.title, location.pathname + href);
+              }
+            }
+
+            return !!match;
+          },
+
+          /**
+           * Attempt to scroll to the current location's hash.
+           */
+          scrollToCurrent: function() {
+            this.scrollIfAnchor(window.location.hash);
+          },
+
+          /**
+           * If the click event's target was an anchor, fix the scroll position.
+           */
+          delegateAnchors: function(e) {
+            var elem = e.target;
+
+            if(
+              elem.nodeName === 'A' &&
+              this.scrollIfAnchor(elem.getAttribute('href'), true)
+            ) {
+              e.preventDefault();
+            }
+          }
+        };
+
+        window.addEventListener(
+          'DOMContentLoaded', anchorScrolls.init.bind(anchorScrolls)
+        );
+      })(window.document, window.history, window.location);
+    </script>
+<script src="/static/jquery.min.a09e13ee94d5.js"></script>
+<script src="/static/popper.min.3eefbcee739d.js"></script>
+<script src="/static/bootstrap.min.67176c242e1b.js"></script>
+<script src="/static/repl-toggle.488df965d09a.js"></script>
+<script>window.rp_prop_id = '58946116052';</script>
+<script src="https://srv.realpython.net/tag.js" async></script>
+<script id="dsq-count-scr" src="https://realpython.disqus.com/count.js" async></script>
+<script>
+    var disqus_config = function () {
+      this.page.url = 'https://realpython.com/python-data-visualization-bokeh/';
+      this.page.identifier = 'https://realpython.com/python-data-visualization-bokeh/';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://realpython.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+  </script>
+<script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ab09986ea83ff7a" async></script>
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+<script>
+    var OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+      OneSignal.init({
+        appId: "c0081e20-a523-42bb-b0ac-04c5a9e8bf40"
+      });
+    });
+  </script>
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "headline": "Interactive Data Visualization in Python With Bokeh",
+    
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://files.realpython.com/media/Interactive-Visualization-w-Bokeh-Watermark.cf07569335d5.jpg",
+      "width": 1920,
+      "height": 1080
+    },
+    
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://realpython.com/python-data-visualization-bokeh/"
+    },
+    "datePublished": "2018-11-19T14:00:00+00:00",
+    "dateModified": "2018-11-26T23:42:14.407244+00:00",
+     "publisher": {
+      "@type": "Organization",
+      "name": "Real Python",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://realpython.com/static/real-python-logo-square-tiny.b2452b6d3823.png",
+        "width": 60,
+        "height": 60
+      }
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Real Python",
+      "url": "https://realpython.com",
+      "logo": "https://realpython.com/static/real-python-logo-square.28474fda9228.png"
+    },
+    "description": "This Python tutorial will get you up and running with Bokeh, using examples and a real-world dataset. You&#39;ll learn how to visualize your data, customize and organize your visualizations, and add interactivity."
+  }
+  </script>
+<script>
+  var _dcq = _dcq || [];
+  var _dcs = _dcs || {};
+  _dcs.account = '6214500';
+
+  (function() {
+    var dc = document.createElement('script');
+    dc.type = 'text/javascript'; dc.async = true;
+    dc.src = '//tag.getdrip.com/6214500.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(dc, s);
+  })();
+</script>
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '2220911568135371');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=2220911568135371&ev=PageView&noscript=1"
+/></noscript>
+</body>
+</html>

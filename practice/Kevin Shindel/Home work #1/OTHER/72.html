@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Three-Speed Logic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/theme/styles.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/theme/slicknav.css">
+    <script src="/theme/jquery.slicknav.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript"
+	    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
+    <![endif]-->
+<script>
+	$(function(){
+		$('#menu').slicknav({'label':''});
+	});
+</script>
+<link rel="icon" href="/theme/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
+<link rel="apple-touch-icon" sizes="114x114" href="/theme/apple-touch-icon-precomposed.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/theme/favicon152.png">
+<link rel="apple-touch-icon" sizes="196x196" href="/theme/favicon196.png">
+  </head>
+
+  <body>
+    <div id="wrapper">
+
+      <header>
+	<nav class="byline"><ul id="menu">
+            <li><a href="/">Home</a></li>
+            <li><a href="http://threespeed.atlassian.net/">Atlassian</a></li>
+            <li><a href="http://linkedin.com/company/threespeed/">LinkedIn</a></li>
+        </ul></nav><!-- /#menu -->
+        <div class="downloads">
+        </div>
+        <hgroup>
+          <h1>Tworoutines in Python</h1>
+  <footer class="article-footer">
+    <address class="vcard author">
+      By           <a class="url fn" href="http://threespeedlogic.com/author/graeme-smecher.html">Graeme Smecher</a>
+    </address>
+    <abbr class="published" title="2018-11-19T00:00:00-08:00">
+       on 19.11.2018
+    </abbr>
+  </footer><!-- /.post-info -->
+        </hgroup>
+  
+
+
+    <meta name="tags" contents="Python" />
+    <meta name="tags" contents="asyncio" />
+
+      </header>
+<section id="content" class="body article">
+  <div class="entry-content">
+    <div class="figure align-center">
+<img alt="" src="/images/tworoutine/tworoutine.png" />
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>This article describes a style of coding in Python that permits easy mixing of
+synchronous and asynchronous code. As part of the control software for large
+microwave telescopes (including the <a class="reference external" href="https://pole.uchicago.edu/spt/">South Pole Telescope</a>), we have been
+using this style of code under a Tornado / Python 2.x stack with success.</p>
+<p>Unfortunately, architectural changes in Python 3.7 conspire against the
+<cite>&#64;tworoutine</cite>.  In the hopes of contributing to a lively discussion about
+Python's asynchronous ecosystem, we describe why they have been so useful to
+us.</p>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id2">Introduction</a></li>
+<li><a class="reference internal" href="#coding-for-telescopes" id="id3">Coding for Telescopes</a></li>
+<li><a class="reference internal" href="#enter-the-tworoutine" id="id4">Enter the <cite>&#64;tworoutine</cite></a></li>
+<li><a class="reference internal" href="#a-lament-of-course-there-s-a-catch" id="id5">A Lament: Of Course There's A Catch</a></li>
+<li><a class="reference internal" href="#disclaimer" id="id6">Disclaimer</a></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id2">Introduction</a></h2>
+<p>Asynchronous coding in Python was pioneered by third-party libraries like
+<a class="reference external" href="https://twistedmatrix.com">Twisted</a>, <a class="reference external" href="https://tornadoweb.org">Tornado</a>, and <a class="reference external" href="https://gevent.org">gevent</a>. An &quot;official&quot; event-loop implementation
+landed in <a class="reference external" href="https://docs.python.org/3.4/library/asyncio-task.html">Python 3.4</a>, and was expanded
+significantly in <a class="reference external" href="https://docs.python.org/3/library/asyncio.html">Python 3.7</a>. A new breed of asynchronous
+libraries like <a class="reference external" href="http://github.com/dabaez/curio">curio</a> and <a class="reference external" href="http://trio.readthedocs.io">trio</a> continue to push the boundaries beyond
+what's &quot;normal&quot; in the space.</p>
+<p>There are also some excellent (and opinionated) articles about Python's
+asynchronous ecosystem. I don't always agree with them and I don't intend to
+recapitulate them.  To allow me to get the point, though, I will provide a few
+links that set the stage for what follows.</p>
+<ul class="simple">
+<li><a class="reference external" href="https://www.python.org/dev/peps/pep-3156/">PEP 3156 -- Asynchronous IO Support Rebooted: the &quot;asyncio&quot; Module</a></li>
+<li><a class="reference external" href="http://lucumr.pocoo.org/2016/10/30/i-dont-understand-asyncio/">I don't understand Python's Asyncio</a></li>
+<li><a class="reference external" href="https://snarky.ca/how-the-heck-does-async-await-work-in-python-3-5/">How the heck does async/await work in Python 3.5?</a></li>
+<li><a class="reference external" href="https://hackernoon.com/controlling-python-async-creep-ec0a0f4b79ba">Controlling Python Async Creep</a></li>
+</ul>
+<p>Of these, the last one is probably the most interesting because it identifies
+and attempts to address the same problem we run into when designing telescope
+tuning software: asynchronous and synchronous coding styles occupy different
+universes in Python, but it is exteremly useful to mix them freely.</p>
+<p>To motivate mixing synchronous and asynchronous code, here is a short
+description of the kind of code we write for tuning telescopes.</p>
+</div>
+<div class="section" id="coding-for-telescopes">
+<h2><a class="toc-backref" href="#id3">Coding for Telescopes</a></h2>
+<p>My day job includes work on CMB telescopes including the <a class="reference external" href="https://pole.uchicago.edu/spt/">South Pole
+Telescope</a> in <a class="reference external" href="https://goo.gl/maps/SNnrUyLcFkq">Antarctica</a> and the <a class="reference external" href="https://arxiv.org/abs/1512.07299">Simons
+Array</a> on Chile's Atacama Plateau.</p>
+<p>The <a class="reference external" href="https://arxiv.org/abs/1407.3161">readout electronics</a> in these
+telescopes is a large array of <a class="reference external" href="https://arxiv.org/pdf/1008.4587.pdf">software defined radios</a>, with many thousands of transmitters
+and receivers used to bias and measure the leftover signature of the Big Bang.
+These radios are implemented in hundreds of custom boards hosting <a class="reference external" href="https://www.xilinx.com/products/silicon-devices/fpga/kintex-7.html">FPGAs</a>
+installed in crates near the telescope, and controlled by a PC.  This PC gets
+the system up and running, controls cryogenic refrigerators, aims the
+telescope, and captures the torrent of data it produces.</p>
+<p>The entire tuning, control, and analysis stack makes very heavy use of Python,
+along with C, C++, and VHDL. (I am inexpressibly grateful to the many
+open-source communities we rely on, and it is a great privilege when I can give
+back in some capacity.)</p>
+<p>As you can imagine, we don't just deploy code straight onto the telescope.
+Along with the telescopes themselves are small-scale installations ranging from
+a circuit board or two on a benchtop, to crates of cryogenic equipments at
+university labs around the world. During development, code might be running
+in a <a class="reference external" href="http://jupyter.org/">Jupyter notebook</a> or an <a class="reference external" href="https://ipython.org/">IPython shell</a>, perhaps with a small crate of electronics or nothing
+at all. Here, interactive REPL sessions are used to prototype algorithms,
+explore data, and try out new tuning and analysis techniques.</p>
+<p>For an algorithm to be useful in deployment, however, it needs to run at scale.
+Here's where we use asynchronous code heavily: command interactions with many
+hundreds of circuit boards are a natural fit for asynchronous coding styles.
+This leads to the following workflow:</p>
+<div class="figure align-center">
+<img alt="" src="/images/tworoutine/separate_design_flow.png" />
+<p class="caption">Design flow, with separate asynchronous/synchronous implementations:</p>
+<div class="legend">
+<ul class="simple">
+<li>Prototype code, probably synchronous and focused on proofing out an
+algorithm or technique;</li>
+<li>Test for function on a small-scale deployment, likely in an interactive
+(ipython) environment;</li>
+<li><em>Re-code</em> the algorithm using an asynchronous style; and</li>
+<li>Integration testing, optimization, and deployment.</li>
+</ul>
+</div>
+</div>
+<p>This approach has advantages:</p>
+<ol class="arabic simple">
+<li>When developing a proof-of-concept, developers are able to ignore
+performance and focus on the problem (physics, instrumentation, cryogenics,
+electronics) that they are attempting to address.</li>
+<li>During prototyping, when interactive exploration is most useful, synchronous
+code promotes use of environments such as IPython or Jupyter.</li>
+</ol>
+<p>However, this workflow has three major disadvantages:</p>
+<ol class="arabic simple">
+<li>It's clumsy: it requires writing and testing a synchronous version, then
+shifting it wholesale to an asynchronous environment.  It is easy to imagine
+this workflow looping back on itself as bugs are discovered or introduced
+along the way.</li>
+<li>The synchronous version <em>never stops being useful</em>, despite not scaling to
+telescope-level performance. We would often much rather have the simpler
+semantics, more predictable control flow, and shorter error traces associated
+with a synchronous call when debugging or experimenting.  In addition, it can
+be conveniently invoked in a REPL environment -- invaluable if the telescope is
+operating and we need to do some quick hand-tuning.</li>
+<li>It's not composable. Over the years, we have build up libraries of useful
+tuning and control algorithms, and as long as synchronous and asynchronous
+code is kept distinct, we cannot meaningfully compose algorithms out of
+smaller pieces without two implementations of everything.</li>
+</ol>
+<p>Asking developers to maintaining two versions under different coding idioms
+(and expecting to keep the versions synchronized) is resolving a technical flaw
+by requiring skilled labourers to do menial work; this is often an expensive
+mistake.  (Interactive use of asynchronous code is getting easier in IPython
+7.0 due to the <a class="reference external" href="https://ipython.readthedocs.io/en/stable/interactive/autoawait.html">autoawait</a>
+functionality. This extension addresses the second but not the third point.)</p>
+<p>Instead, we are looking for a way to freely mix asynchronous and synchronous
+coding styles.</p>
+</div>
+<div class="section" id="enter-the-tworoutine">
+<h2><a class="toc-backref" href="#id4">Enter the <cite>&#64;tworoutine</cite></a></h2>
+<p>What's a <cite>&#64;tworoutine</cite>? It is a <em>synchronous</em> wrapper around an <em>asynchronous</em>
+function, allowing a single piece of code to be called in either idiom.</p>
+<p>(If you are following along at home, you will need the <a class="reference external" href="https://github.com/gsmecher/tworoutine">source code</a>. You will also need <a class="reference external" href="https://github.com/erdewit/nest_asyncio">nest_asyncio</a>.)</p>
+<pre class="code python literal-block">
+<span class="kn">import</span> <span class="nn">tworoutine</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="nd">&#64;tworoutine.tworoutine</span>
+<span class="n">async</span> <span class="k">def</span> <span class="nf">double_slowly</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span>
+</pre>
+<p>How can we call this function synchronously? Just call it!</p>
+<pre class="code python literal-block">
+<span class="o">&gt;&gt;&gt;</span> <span class="n">double_slowly</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2</span>
+</pre>
+<p>How did this work? The <cite>&#64;tworoutine</cite> decorator returns a class whose <cite>__call__</cite>
+method is a synchronous wrapper that obtains an event loop and invokes the
+asynchronous code, blocking until it's complete. Because we want synchronous
+calling to be convenient and carpal-tunnel-friendly, that's the default.</p>
+<p>If there's already an event loop running, this code is reasonably efficient
+(aside from being a blocking call, of course!) Any asynchronous events already
+queued in the event loop are allowed to proceed alongside this one. Only the
+current execution context is blocked until the coroutine completes.</p>
+<p>So much for synchronous calls. How can we call this function asynchronously? We
+first have to undo or &quot;invert&quot; the wrapper and obtain a reference back to the
+coroutine.</p>
+<pre class="code python literal-block">
+<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="o">~</span><span class="n">double_slowly</span><span class="p">)(</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">coroutine</span> <span class="nb">object</span> <span class="n">double_slowly</span> <span class="n">at</span> <span class="mh">0x7f5d494fd348</span><span class="o">&gt;</span>
+</pre>
+<p>With the exception of the invert operator around the function name, this is
+ordinary asynchronous code; there is no additional overhead except for the
+operator itself.  Here is a complete example showing mixed coding styles within
+an event loop:</p>
+<pre class="code python literal-block">
+<span class="n">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Run asynchronously</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">await</span> <span class="p">(</span><span class="o">~</span><span class="n">double_slowly</span><span class="p">)(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="c1"># Run synchronously within an event loop</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">double_slowly</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+
+<span class="c1"># try asynchronous entry</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre>
+<p>The obvious benefit, here, is the ability to call asynchronous code
+synchronously when we're too lazy to carry around an event loop or deal with
+the <a class="reference external" href="https://medium.com/&#64;davealexis/this-is-why-i-consider-the-async-await-pattern-to-be-like-a-virus-e029d95fcba1">turtles-all-the-way-down</a>
+nature of Python's asynchronous coding idiom.</p>
+<div class="figure align-center">
+<img alt="" src="/images/tworoutine/tworoutine_design_flow.png" />
+<p class="caption">Design flow with <cite>&#64;tworoutine</cite>. The synchronous and asynchronous
+implementations are replaced with a single implementation that can mix
+idioms.</p>
+</div>
+</div>
+<div class="section" id="a-lament-of-course-there-s-a-catch">
+<h2><a class="toc-backref" href="#id5">A Lament: Of Course There's A Catch</a></h2>
+<p><cite>&#64;tworoutine</cite>'s days are probably numbered. This style of coding has been
+implicitly but firmly rejected by Python developers:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://bugs.python.org/issue22239">Issue 22239: asyncio: nested event loop</a></li>
+</ul>
+<p>We have been using this approach (implemented on Python 2.7 and Tornado &lt;4.5)
+for several years now at the South Pole and elsewhere, and we will have to
+adapt.</p>
+<p>To complete a synchronous <cite>&#64;tworoutine</cite> call, we need to obtain an event loop,
+schedule the asynchronous (decorated) call, and block until it is complete.
+Currently there is no way to do that in Python 3.7 asyncio without patching it.
+Asynchronous code at any point in the call stack must be linked to the event
+loop via asynchronous calls only, all the way up.</p>
+<p>To work around this problem in the Python 3.7 code shown here, I have used the
+<a class="reference external" href="https://github.com/erdewit/nest_asyncio">nest_asyncio</a> monkey patch. It is a
+short and effective piece of code, but it runs against Python orthodoxy and
+adopting this kind of patch in production risks being stranded by changes to
+Python's core libraries.</p>
+<p>Without this patch, we are able to upgrade as far as Tornado 4.5 on Python 3.x,
+but <a class="reference external" href="https://github.com/jupyter/notebook/issues/3397">Tornado 5.0</a> moves to
+an asyncio event loop and we are suddenly unable to upgrade.</p>
+</div>
+<div class="section" id="disclaimer">
+<h2><a class="toc-backref" href="#id6">Disclaimer</a></h2>
+<p>The code examples here have been forward-ported from Python 2.7 and Tornado 4.5
+to Python 3.7 and &quot;pure&quot; asyncio. It's an experiment -- this is not
+production code!</p>
+</div>
+
+  </div><!-- /.entry-content -->
+  <div class="article-share-tags">
+  <div class="end-article-tags">
+      <i class="fa fa-tags"></i>
+      <a href="http://threespeedlogic.com/tag/python.html">Python</a>
+      <a href="http://threespeedlogic.com/tag/asyncio.html">asyncio</a>
+  </div>
+  <div class='article-share'>
+      share -
+  </div>
+  </div>
+</section>
+<div class="neighbors">
+</div>
+      <footer>
+	  <a href="http://threespeedlogic.com/pages/about.html" >About</a>
+	  <div class="right-footer">
+	  <a href="http://threespeedlogic.com/categories.html" >Categories</a>
+	  <a href="http://threespeedlogic.com/tags.html" >Tags</a>
+	  </div>
+      </footer>
+</body>
+</html>

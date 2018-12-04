@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Generating Fake Data for Python Unit Tests with Faker - Semaphore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" >
+
+    <link rel="stylesheet" media="all" href="https://d1dkupr86d302v.cloudfront.net/community/assets/application-f1833e47c84fdd83416c7f0f84e4b545fa35f384ad3e6b5d14ae6f0970c5852d.css" />
+
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="d5B2JM56gNaBZhmisSjsL78ppAMjDWg1FkqTgUwk/MmPFfQKYNNVvA9m65qscUXxfTZyIO5D3H8xKo4ah7K2jg==" />
+
+    <link rel="shortcut icon" href="/assets/favicons/favicon.ico" type="image/x-ico" />
+<link rel="apple-touch-icon" href="/assets/favicons/apple-touch-icon.png"/>
+
+<link rel="apple-touch-icon" sizes="57x57" href="/assets/favicons/apple-touch-icon-57x57.png"/>
+<link rel="apple-touch-icon" sizes="72x72" href="/assets/favicons/apple-touch-icon-72x72.png"/>
+<link rel="apple-touch-icon" sizes="76x76" href="/assets/favicons/apple-touch-icon-76x76.png"/>
+<link rel="apple-touch-icon" sizes="114x114" href="/assets/favicons/apple-touch-icon-114x114.png"/>
+<link rel="apple-touch-icon" sizes="120x120" href="/assets/favicons/apple-touch-icon-120x120.png"/>
+<link rel="apple-touch-icon" sizes="144x144" href="/assets/favicons/apple-touch-icon-144x144.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="/assets/favicons/apple-touch-icon-152x152.png"/>
+
+    <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+      _st('install','RbFV7fCCJRFrhxKo7XGr','2.0.0');
+</script>
+
+    <script type="text/javascript">(function(o){var b="https://api.autopilothq.com/anywhere/",t="97f43fa113a946748d0403c5d0434605d53b215536f54725b88a726884577eb2",a=window.AutopilotAnywhere={_runQueue:[],run:function(){this._runQueue.push(arguments);}},c=encodeURIComponent,s="SCRIPT",d=document,l=d.getElementsByTagName(s)[0],p="t="+c(d.title||"")+"&u="+c(d.location.href||"")+"&r="+c(d.referrer||""),j="text/javascript",z,y;if(!window.Autopilot) window.Autopilot=a;if(o.app) p="devmode=true&"+p;z=function(src,asy){var e=d.createElement(s);e.src=src;e.type=j;e.async=asy;l.parentNode.insertBefore(e,l);};y=function(){z(b+t+'?'+p,true);};if(window.attachEvent){window.attachEvent("onload",y);}else{window.addEventListener("load",y,false);}})({});</script>
+
+    <script type="text/javascript" id="SW-f2d9fed8-c40d-4927-a80a-808e1aa28603"></script><script> !function(){function a(){var a=document.createElement("script");a.type="text/javascript",a.async=1,a.src="//go.saleswingsapp.com/assets/javascripts/sw/f2d9fed8-c40d-4927-a80a-808e1aa28603?enableFormTracker=true";var b=document.getElementById("SW-f2d9fed8-c40d-4927-a80a-808e1aa28603");b.parentNode.insertBefore(a,b)}window.attachEvent?window.attachEvent("onload",a):window.addEventListener("load",a,0);window.attachEvent?window.attachEvent("onhashchange",a):window.addEventListener("hashchange",a,0);}();</script>
+
+      <!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-28072419-1', 'auto', {'cookieDomain': 'semaphoreci.com', 'legacyCookieDomain': 'semaphoreci.com'});
+ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+
+      <meta name="Description" CONTENT="Learn how to use Faker library to generate fake data sets in your Python unit tests.">
+
+  <meta property="og:url" content="https://semaphoreci.com/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker">
+  <meta property="og:title" content="Generating Fake Data for Python Unit Tests with Faker">
+  <meta property="og:description" content="Learn how to use Faker library to generate fake data sets in your Python unit tests.">
+    <meta property="og:image" content="https://d2l3jyjp24noqc.cloudfront.net/uploads/image/img/654/generating-fake-data-for-python-unit-tests-with-faker.png">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://d2l3jyjp24noqc.cloudfront.net/uploads/image/img/654/generating-fake-data-for-python-unit-tests-with-faker.png" />
+  <meta name="twitter:site" content="@semaphoreci" />
+  <meta name="twitter:title" content="Generating Fake Data for Python Unit Tests with Faker" />
+  <meta name="twitter:description" content="Learn how to use Faker library to generate fake data sets in your Python unit tests." />
+  <meta name="twitter:url" content="https://semaphoreci.com/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker" />
+
+  <link rel="alternate" type="application/atom+xml" title="Semaphore CI Community Tutorials" href="https://semaphoreci.com/community/tutorials.atom" />
+
+    <link rel="alternate" type="application/atom+xml" title="Semaphore CI Community Tutorials on Python" href="https://semaphoreci.com/community/tags/python.atom" />
+
+  
+<link rel='canonical' href='https://semaphoreci.com/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker' />
+  </head>
+
+  <body data-prefix="tutorial" data-signed-in="false" data-current-user-id="" data-root="https://semaphoreci.com/community" >
+    <header>
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/"><img width="140" height="35" alt="Semaphore - Continuous Integration, Deployment, TDD, DevOps tutorials" src="https://d1dkupr86d302v.cloudfront.net/community/assets/logo-semaphore-f219995f65abb14a7760cafb0c37f909b4241debca2c82ec16e25b9a9405c77b.svg" /></a>
+      </div>
+      <div class="collapse navbar-collapse" id="navbar-collapse-1">
+        
+
+        <ul class="nav navbar-nav navbar-right">
+          <li><a class="" href="/product">Product</a></li>
+          <li><a class="" href="/product/docker">Docker</a></li>
+          <li><a href="/pricing">Pricing</a></li>
+          <li><a href="/docs">Documentation</a></li>
+          <li><a href="/community/tutorials">Tutorials</a></li>
+          <li><a href="/blog">Blog</a></li>
+            <li><a href=/login?redirect_path=/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker>Sign In</a></li>
+            <li><span><a class="btn btn-primary navbar-button" href="/?from=community&amp;referer=community-tutorials-generating-fake-data-for-python-unit-tests-with-faker" role="button">Sign Up</a></span></li>
+        </ul>
+
+          <div class="subscription-header-container">
+  <div id="subscription-header" class="subscription-header">
+    <p>Get our next Python tutorial right in your inbox</p>
+    <form id="new-email-subscription-form" data-tag-name="Python">
+      <input type="text" id="email" placeholder="Enter your email…">
+      <button type="submit" id="new-email-subscribe">Subscribe</button>
+    </form>
+  </div>
+  <a href="#" id="subscribe-close" class="subscription-header-dismiss">×</a>
+</div>
+<script>
+  document.body.style.padding = "30px 0px 0px 0px";
+</script>
+
+
+
+      </div><!-- navbar -->
+    </div> <!-- container -->
+  </nav>
+</header>
+
+
+    
+
+
+<script>
+
+  var _newCommentPath = "/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker/comments";
+  var _comments = [{"id":645,"body":"\u003cp\u003eThanks for saving a good deal of my time\u003c/p\u003e","created_at":"Nov 20 2018 07:51 am","updated_at":"Nov 20 2018 07:51 am","user":{"id":62492,"username":"kepha-okari","avatar_url":"https://gravatar.com/avatar/9906ba9e5789ee6c6f3d3be4d4dcbcc7.png?s=44\u0026d=mm","profile_url":"/kepha-okari","deleted":false},"tutorial_author_id":17527,"comment_url":"/community/tutorials/146/comments/645"}];
+
+    var _tag = {"id":17,"name":"Python","type":"ActsAsTaggableOn::Tag","subscribed":null,"path":"/community/subscription"};
+  var _tutorial = {"id":146,"name":"Generating Fake Data for Python Unit Tests with Faker","type":"Tutorial","subscribed":null,"path":"/community/subscription"};
+
+  var _like = {"path":"/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker/likes","count":1,"liked":null};
+</script>
+
+
+
+<div class="page-illustration page-illustration-none">
+
+  <div class="container">
+    <nav class="navigation navigation-top">
+
+  <div class="navigation-group navigation-group--search">
+  <form class="search-form" role="search">
+    <input type="text" class="form-control search-input" placeholder="Search tutorials">
+  </form>
+</div>
+
+  <div class="navigation-group"><a class="explore tags" href="/community/tags">Explore tags</a></div>
+
+  <div class="navigation-group">
+  <a href="https://semaphoreci.com/community/tutorials.atom"><span class="icons-share icon-rss">RSS</span>RSS</a>
+</div>
+
+  <div class="navigation-group navigation-group-floated-oposite">
+  <a class="nav-link-back" href="/community/tutorials">All tutorials</a>
+</div>
+
+
+    <div class="navigation-group navigation-group-fluid">
+  <span class="earn">Earn up to $200</span>
+  <a class="btn btn-primary pull-right" href="/community/write-for-us">Write a tutorial</a>
+</div>
+
+
+</nav>
+
+  </div>
+
+  <div class="post-photo text-center">
+    <img class="img-responsive" width="1525" height="394" src="https://d2l3jyjp24noqc.cloudfront.net/uploads/image/img/654/generating-fake-data-for-python-unit-tests-with-faker.png" alt="Generating fake data for python unit tests with faker" />
+  </div> <!-- post-photo -->
+
+  <div ng-app="commentsApp"
+       ng-controller="CommentListController as commentListController"
+       class="container">
+
+
+    <div class="row">
+      <div class="col-md-offset-2 col-md-8">
+
+        <article class="single-item block-longform" itemscope itemtype="http://schema.org/Article">
+
+          <header class="post-header">
+            <div class="media">
+    <a class="media-left" itemprop="author" itescope="" itemtype="http://schema.org/Person" href="/community/authors/amos">
+      <img class="avatar" itemprop="image" itescope="" itemtype="http://schema.org/ImageObject" src="https://gravatar.com/avatar/01ac2dc4bd93a887d79220acfede4a3d.png?s=88&amp;d=mm" alt="01ac2dc4bd93a887d79220acfede4a3d" width="88" height="88" />
+</a>
+  <div class="media-body">
+    <ul class="list-inline post-info">
+        <li itemprop="author" itemscope itemtype="http://schema.org/Person"><a itemprop="name" href="/community/authors/amos">Amos Omondi</a></li>
+
+      <li itemprop="datePublished">May 3, 2017</li>
+
+
+      <li>
+        <a href="/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker#comments">
+          <span itemprop="commentCount">
+            <ng-pluralize count="commentListController.comments.length"
+              when="{'one': '1 comment', 'other': '{} comments'}">
+            </ng-pluralize>
+          </span>
+</a>      </li>
+
+      <li itemprop="keywords">
+        Tagged as
+          <a href="/community/tags/python">Python</a>
+          <a href="/community/tags/testing">Testing</a>
+      </li>
+    </ul>
+  </div>
+  <div class="media-right media-twitter">
+  <a class="twitter-share-button" href="https://twitter.com/share?text=Generating Fake Data for Python Unit Tests with Faker via @semaphoreci">Tweet</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+</div> 
+
+</div>
+
+          </header>
+
+          
+            <h1 class="page-title" itemprop="name">Generating Fake Data for Python Unit Tests with Faker</h1>
+
+            <p class="page-subtitle page-intro" itemprop="about">Learn how to use Faker library to generate fake data sets in your Python unit tests.</p>
+
+          <!--<div class="jumbotron post-meta block-subscribe-to-tag">
+  <img class="jumbotron_img" width="40" height="40" itemprop="image" title="Python" alt="Python" src="https://d1dkupr86d302v.cloudfront.net/community/assets/tag-icons/icon-tag-python-f21f822e2bac4c3252a60fefce5d5560ac71c9bc093b40c83f2fe4febebaa64d.svg" />
+  <span class="subscription-tag subscription-tag-top">
+  </span>
+  <div class="tutorial-like pull-right">
+  </div>
+</div>
+-->
+
+          
+            <section id="tutorial-content" class="block-center-img" itemprop="text" ng-non-bindable>
+              <h3>Introduction</h3>
+
+<p>When writing unit tests, you might come across a situation where you need to
+generate test data or use some dummy data in your tests. If you already have some data
+somewhere in a database, one solution you could employ is to generate a
+dump of that data and use that in your tests (i.e. fixtures).</p>
+
+<p>However, you could also use a package like <a href="http://faker.rtfd.org/"><code>faker</code></a> 
+to generate fake data for you very easily when you need to. This tutorial will 
+help you learn how to do so in your unit tests.</p>
+
+<h2>Prerequisites</h2>
+
+<p>For this tutorial, it is expected that you have Python 3.6 and Faker 0.7.11 
+installed.</p>
+
+<h2>Basic Examples in the Command Line</h2>
+
+<p>Let's see how this works first by trying out a few things in the shell.</p>
+
+<p>Before we start, go ahead and create a virtual environment and run it:</p>
+
+<pre lang="shell"><code>$ python3 -m venv faker
+</code></pre>
+
+<pre lang="shell"><code>$ source faker/bin/activate
+</code></pre>
+
+<p>Once in the environment, install <code>faker</code>.</p>
+
+<pre lang="shell"><code>$ pip install faker
+</code></pre>
+
+<p>After that, enter the Python REPL by typing the command <code>python</code> in your 
+terminal.</p>
+
+<p>Once in the Python REPL, start by importing <code>Faker</code> from <code>faker</code>:</p>
+
+<pre lang="shell"><code>Python 3.6.0 (default, Jan  4 2017, 15:38:35)
+[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; from faker import Faker
+&gt;&gt;&gt;
+</code></pre>
+
+<p>Then, we are going to use the Faker class to create a <code>myFactory</code> object whose 
+methods we will use to generate whatever fake data we need.</p>
+
+<pre lang="shell"><code>&gt;&gt;&gt; myFactory = Faker()
+</code></pre>
+
+<p>Let's generate a fake text:</p>
+
+<pre lang="shell"><code>&gt;&gt;&gt; myFactory.text()
+'Commodi quidem ipsam occaecati. Porro veritatis numquam nisi corrupti.'
+</code></pre>
+
+<p>As you can see some random text was generated. Yours will probably look very 
+different.</p>
+
+<p>Let us try a few more examples:</p>
+
+<pre lang="shell"><code>&gt;&gt;&gt; myFactory.words()
+['libero', 'commodi', 'deleniti']
+&gt;&gt;&gt; myFactory.name()
+'Joshua Wheeler'
+&gt;&gt;&gt; myFactory.month()
+'04'
+&gt;&gt;&gt; myFactory.sentence()
+'Iure expedita eaque at odit soluta repudiandae nam.'
+&gt;&gt;&gt; myFactory.state()
+'Michigan'
+&gt;&gt;&gt; myFactory.random_number()
+2950548
+</code></pre>
+
+<p>You can see how simple the Faker library is to use. Once you have created a 
+factory object, it is very easy to call the provider methods defined on it. You 
+should keep in mind that the output generated on your end will probably be 
+different from what you see in our example — random output.</p>
+
+<p>If you would like to try out some more methods, you can see a list of the 
+methods you can call on your <code>myFactory</code> object using <code>dir</code>.</p>
+
+<pre lang="shell"><code>&gt;&gt;&gt; dir(myFactory)
+</code></pre>
+
+<p>You can also find more things to play with in the <a href="https://faker.readthedocs.io/en/latest/">official docs</a>.</p>
+
+<h2>Integrating Faker with an Actual Unit Test</h2>
+
+<p>Let's now use what we have learnt in an actual test.</p>
+
+<p>If you are still in the Python REPL, exit by hitting <code>CTRL+D</code>.
+Do not exit the <code>virtualenv</code> instance we created and installed Faker to it in 
+the previous section since we will be using it going forward.</p>
+
+<p>Now, create two files, <code>example.py</code> and <code>test.py</code>, in a folder of your choice. 
+Our code will live in the example file and our tests in the test file.</p>
+
+<p>Look at this code sample:</p>
+
+<div class="highlight highlight-python"><pre><span></span><span class="c1"># example.py</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">first_name</span> <span class="o">=</span> <span class="n">first_name</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">last_name</span> <span class="o">=</span> <span class="n">last_name</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">job</span> <span class="o">=</span> <span class="n">job</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">user_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_name</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_name</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">user_job</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_name</span> <span class="o">+</span> <span class="s2">" is a "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">job</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">user_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_name</span> <span class="o">+</span> <span class="s2">" lives at "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+</pre></div>
+
+<p>This code defines a User class which has a constructor which sets attributes 
+<code>first_name</code>, <code>last_name</code>, <code>job</code> and <code>address</code> upon object creation.</p>
+
+<p>It also defines class properties <code>user_name</code>, <code>user_job</code> and <code>user_address</code> 
+which we can use to get a particular user object's properties.</p>
+
+<p>In our test cases, we can easily use Faker to generate all the required data 
+when creating test user objects.</p>
+
+<div class="highlight highlight-python"><pre><span></span><span class="c1"># test.py</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Faker</span>
+
+<span class="kn">from</span> <span class="nn">example</span> <span class="kn">import</span> <span class="n">User</span>
+
+<span class="k">class</span> <span class="nc">TestUser</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fake</span> <span class="o">=</span> <span class="n">Faker</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span>
+            <span class="n">first_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">first_name</span><span class="p">(),</span>
+            <span class="n">last_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">last_name</span><span class="p">(),</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">job</span><span class="p">(),</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">address</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_user_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_user_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">expected_username</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">first_name</span> <span class="o">+</span> <span class="s2">" "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">last_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">user_name</span><span class="p">)</span>
+</pre></div>
+
+<p>You can see that we are creating a new User object in the <code>setUp</code> function. 
+Python calls the <code>setUp</code> function before each test case is run so we can be sure 
+that our user is available in each test case.</p>
+
+<p>The user object is populated with values directly generated by Faker. We do not 
+need to worry about coming up with data to create user objects. Faker 
+automatically does that for us.</p>
+
+<p>We can then go ahead and make assertions on our User object, without worrying about the data generated at all.</p>
+
+<p>You can run the example test case with this command:</p>
+
+<pre lang="shell"><code>$ python -m unittest
+</code></pre>
+
+<p>At the moment, we have two test cases, one testing that the user object created is actually an instance of the <code>User</code> class and one testing that the user object's username was constructed properly. Try adding a few more assertions.</p>
+
+<h2>Localization</h2>
+
+<p>Faker comes with a way of returning localized fake data using some built-in providers. Some built-in location providers include <code>English (United States)</code>, <code>Japanese</code>, <code>Italian</code>, and <code>Russian</code> to name a few.</p>
+
+<p>Let's change our locale to to Russia so that we can generate Russian names:</p>
+
+<div class="highlight highlight-python"><pre><span></span><span class="c1"># example.py</span>
+
+<span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Factory</span>
+
+<span class="n">myGenerator</span> <span class="o">=</span> <span class="n">Factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">'ru_RU'</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">myGenerator</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+</pre></div>
+
+<p>In this case, running this code gives us the following output:</p>
+
+<pre lang="shell"><code>&gt; python example.py
+Мельникова Прасковья Андреевна
+</code></pre>
+
+<h2>Providers</h2>
+
+<p>Providers are just classes which define the methods we call on <code>Faker</code> objects to generate fake data. In the localization example above, the <code>name</code> method we called on the <code>myGenerator</code> object is defined in a provider somewhere. You can see the default included providers <a href="https://faker.readthedocs.io/en/latest/providers.html">here</a>.</p>
+
+<p>Let's create our own provider to test this out.</p>
+
+<div class="highlight highlight-python"><pre><span></span><span class="c1"># example.py</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Faker</span>
+<span class="kn">from</span> <span class="nn">faker.providers</span> <span class="kn">import</span> <span class="n">BaseProvider</span>
+
+<span class="n">fake</span> <span class="o">=</span> <span class="n">Faker</span><span class="p">()</span>
+
+<span class="c1"># Our custom provider inherits from the BaseProvider</span>
+<span class="k">class</span> <span class="nc">TravelProvider</span><span class="p">(</span><span class="n">BaseProvider</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">destination</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'NY'</span><span class="p">,</span> <span class="s1">'CO'</span><span class="p">,</span> <span class="s1">'CA'</span><span class="p">,</span> <span class="s1">'TX'</span><span class="p">,</span> <span class="s1">'RI'</span><span class="p">]</span>
+
+        <span class="c1"># We select a random destination from the list and return it</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">destinations</span><span class="p">)</span>
+
+<span class="c1"># Add the TravelProvider to our faker object</span>
+<span class="n">fake</span><span class="o">.</span><span class="n">add_provider</span><span class="p">(</span><span class="n">TravelProvider</span><span class="p">)</span>
+
+<span class="c1"># We can now use the destination method:</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fake</span><span class="o">.</span><span class="n">destination</span><span class="p">())</span>
+</pre></div>
+
+<p>To define a provider, you need to create a class that inherits from the <code>BaseProvider</code>. That class can then define as many methods as you want. Our <code>TravelProvider</code> example only has one method but more can be added.</p>
+
+<p>Once your provider is ready, add it to your Faker instance like we have done here:</p>
+
+<div class="highlight highlight-python"><pre><span></span><span class="n">fake</span><span class="o">.</span><span class="n">add_provider</span><span class="p">(</span><span class="n">TravelProvider</span><span class="p">)</span>
+</pre></div>
+
+<p>Here is what happens when we run the above example:</p>
+
+<pre lang="shell"><code>$ python example.py
+CA
+</code></pre>
+
+<p>Of course, you output might differ. Try running the script a couple times more 
+to see what happens.</p>
+
+<h2>Seeds</h2>
+
+<p>Sometimes, you may want to generate the same fake data output every time your 
+code is run. In that case, you need to seed the fake generator.</p>
+
+<p>You can use any random number as a seed.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-python"><pre><span></span><span class="c1"># example.py</span>
+
+<span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Faker</span>
+
+<span class="n">myGenerator</span> <span class="o">=</span> <span class="n">Faker</span><span class="p">()</span>
+
+<span class="n">myGenerator</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">5467</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">myGenerator</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+</pre></div>
+
+<p>Running this code twice generates the same 10 random names:</p>
+
+<pre lang="shell"><code>&gt; python example.py
+Denise Reed
+Megan Douglas
+Philip Obrien
+William Howell
+Michael Williamson
+Cheryl Jackson
+Janet Bruce
+Colton Martin
+David Melton
+Paula Ingram
+&gt; python example.py
+Denise Reed
+Megan Douglas
+Philip Obrien
+William Howell
+Michael Williamson
+Cheryl Jackson
+Janet Bruce
+Colton Martin
+David Melton
+Paula Ingram
+</code></pre>
+
+<p>If you want to change the output to a different set of random output, you can change the seed given to the generator.</p>
+
+<h2>Using Faker on Semaphore</h2>
+
+<p>To use Faker on <a href="https://semaphoreci.com/">Semaphore</a>, make sure that your project has a <code>requirements.txt</code> file which has <code>faker</code> listed as a dependency.
+If you used <code>pip</code> to install Faker, you can easily generate the <code>requirements.txt</code> file by running
+the command <code>pip freeze &gt; requirements.txt</code>. This will output a list of all the dependencies installed in your <code>virtualenv</code>
+and their respective version numbers into a <code>requirements.txt</code> file.</p>
+
+<p>After pushing your code to git, you can add the project to Semaphore, and then configure your build settings to install Faker
+and any other dependencies by running <code>pip install -r requirements.txt</code>. That command simply tells Semaphore to read the
+<code>requirements.txt</code> file and add whatever dependencies it defines into the test environment.</p>
+
+<p>After that, executing your tests will be straightforward by using <code>python -m unittest discover</code>.</p>
+
+<h2>Conclusion</h2>
+
+<p>In this tutorial, you have learnt how to use Faker's built-in providers to generate fake data for your tests, how to use the included location providers to change your locale, and even how to write your own providers.</p>
+
+<p>We also covered how to seed the generator to generate a particular fake data set every time your code is run.</p>
+
+<p>Lastly, we covered how to use Semaphore's platform for Continuous Integration.</p>
+
+<p>Feel free to leave any comments or questions you might have in the comment section below.</p>
+            </section>
+
+        </article>
+
+        <section class="page-block text-center block-author">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2 author-bio">
+      <div class="title-image"><img class="img-circle" src="https://gravatar.com/avatar/01ac2dc4bd93a887d79220acfede4a3d.png?s=88&amp;d=mm" alt="01ac2dc4bd93a887d79220acfede4a3d" /></div>
+      <strong>Amos Omondi</strong>
+      <p><p>Amos is a full stack Python/Django and Angular developer. You can find him on Twitter using the handle <a href="https://twitter.com/amos_omondi">@amos_omondi</a>.</p></p>
+    </div>
+  </div>
+</section>
+
+
+        
+          
+          <div class="jumbotron post-meta block-subscribe-to-tag">
+  <img class="jumbotron_img" width="40" height="40" itemprop="image" title="Python" alt="Python" src="https://d1dkupr86d302v.cloudfront.net/community/assets/tag-icons/icon-tag-python-f21f822e2bac4c3252a60fefce5d5560ac71c9bc093b40c83f2fe4febebaa64d.svg" />
+  <span class="subscription-tag subscription-tag-old">
+  </span>
+  <div class="tutorial-like likes">
+  </div>
+</div>
+
+
+        
+
+        <div class="row">
+  <div class="col-xs-12 text-center">
+    <div class="banner-funnel block-longform">
+      <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+          <h3>Set up continuous integration and delivery for your project in a minute.</h3>
+          <p>Fast. Scalable. Easy to use.</p>
+        </div> <!-- col-sm-8 col-sm-offset-2 -->
+      </div> <!-- row -->
+      <a id="semaphore-try-for-free" class="btn btn-success btn-lg" href="/?from=community&amp;referer=community-tutorials-generating-fake-data-for-python-unit-tests-with-faker">Try Semaphore for Free</a>
+    </div>
+  </div>
+</div>
+
+
+        <div class="row c-related-articles">
+  <div class="col-xs-12">
+    <h3 class="h4 c-related-articles_headline"><strong>You May Also Like</strong></h3>
+    <ul class="list-unstyled">
+        <li class="listing-item--related"><a class="c-related-articles_link community-related-article" href="/community/tutorials/a-practical-guide-to-test-doubles-in-elixir">A Practical Guide to Test Doubles in Elixir</a></li>
+        <li class="listing-item--related"><a class="c-related-articles_link community-related-article" href="/community/tutorials/setting-up-a-bdd-stack-on-a-rails-5-application">Setting up a BDD Stack on a Rails 5 Application</a></li>
+        <li class="listing-item--related"><a class="c-related-articles_link community-related-article" href="/community/tutorials/testing-middleware-in-laravel-with-phpunit">Testing Middleware in Laravel with PHPUnit</a></li>
+    </ul>
+  </div>
+</div>
+
+
+        <section class="comments">
+
+  <div class="comments-meta">
+    <div class="row">
+      <div class="col-xs-8 text-left">
+        <div class="comments-count">
+          <span itemprop="commentCount">
+            <ng-pluralize count="commentListController.comments.length"
+              when="{'one': '1 comment', 'other': '{} comments'}">
+            </ng-pluralize>
+          </span>
+          on this tutorial so far.
+          <span class="subscription-tutorial"><a href="#"></a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="media" id="comments">
+    <div ng-repeat="comment in commentListController.comments"
+         ng-controller="CommentController as commentController"
+         ng-init="commentController.init(comment)"
+         class="comment"
+         id="comment-{{comment.id}}"
+         itemprop="comment"
+         itemscope
+         itemtype="http://schema.org/Comment">
+
+      <div ng-show="commentController.shouldShowMenu()" class="dropdown pull-right">
+        <a href="#" class="btn btn-dropdown" data-toggle="dropdown" id="comment-menu-{{comment.id}}">
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a ng-click="commentController.editComment()" href>Edit</a></li>
+          <li><a ng-click="commentController.destroyComment()" href>Delete</a></li>
+        </ul>
+      </div>
+
+      <a class="media-left" ng-href="{{comment.user.profileUrl}}">
+        <img alt="" ng-src="{{comment.user.avatarUrl}}" class="avatar" height="44" width="44">
+      </a>
+
+      <div class="media-body">
+        <div class="comment-meta">
+          <span ng-if="comment.user.deleted"><span class="bug">User deleted</span></span>
+          <span ng-switch="comment.userHasPage()"
+                class="comment-author">
+            <a ng-switch-when="true" ng-href="{{comment.user.profileUrl}}" itemprop="author" itemscope itemtype="http://schema.org/Person">
+              <span itemprop="name">{{comment.user.username}}</span>
+            </a>
+            <span ng-switch-when="false" itemprop="author">
+              {{comment.user.username}}
+            </span>
+            <span class="bug bug-author" ng-show={{comment.isByAuthor()}}>author</span>
+          </span>
+          <span class="comment-date" itemprop="dateCreated">{{comment.createdAt}}</span>
+        </div>
+
+        <div class="comment-view">
+          <div class="comment-content">
+            <div ng-bind-html="comment.bodyHtml() | emoji" itemprop="text"></div>
+            <p class="comment-meta" ng-show="comment.isEdited()" itemprop="dateModified">Edited on {{comment.updatedAt}}</p>
+          </div>
+        </div>
+
+        <div ng-show="commentController.editing" class="comment-edit">
+          <form id="comment-form" class="comment-form">
+            <textarea ng-model="commentController.newBody" class="form-control noscrollbars" id="comment_body" onkeyup="autoGrow(this);"></textarea>
+            <a ng-click="commentController.cancelEditComment()" class="btn btn-link btn-sm pull-right" href>Cancel</a>
+            <button ng-click="commentController.updateComment()" class="btn btn-primary">Save</button>
+            <div ng-show="commentController.updating" class="spinner margin-left-sm fade in"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>
+          </form>
+
+          <br/>
+        </div> <!-- .comment-edit -->
+      </div>
+    </div><!-- ng-repeat -->
+  </div>
+
+
+
+    <div class="well">
+  <a href="#modal-log-in-comment" class="btn btn-primary btn-xs pull-right" data-toggle="modal">Sign In</a>
+  You must be logged in to comment.
+</div>
+
+
+</section>
+
+
+        
+  <div class="block-creative-commons text-center">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" rel="license" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+    <p>This work is licensed under a <span itemprop="license"><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a></span>
+  </div>
+
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="modal-log-in-comment">
+  <div class="modal-dialog modal-dialog-prompt modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="media">
+          <figure class="media-left">
+            <img alt="" width="44" height="44" src="https://d1dkupr86d302v.cloudfront.net/community/assets/icon-alert.svg" />
+          </figure>
+          <div class="media-body">
+            <h3 class="media-heading">To comment you need to have a Semaphore account.</h3>
+
+            <p>With a Semaphore account you can also test and deploy your open source and private projects for free.</p>
+          </div>
+        </div>
+        <div class="modal-dialog-prompt-actions">
+          <div class="row">
+            <div class="col-sm-6">
+              <a class="btn btn-primary btn-lg-alt btn-block community-create-account" href="/?from=community&amp;referer=community-tutorials-generating-fake-data-for-python-unit-tests-with-faker&amp;redirect_path=/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker">Create Account</a>
+            </div>
+            <div class="col-sm-6">
+              <a class="btn btn-default btn-lg-alt btn-block community-sign-in" href="/login?redirect_path=/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker">Sign In</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modal-log-in-like">
+  <div class="modal-dialog modal-dialog-prompt modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="media">
+          <figure class="media-left">
+            <img alt="" width="44" height="44" src="https://d1dkupr86d302v.cloudfront.net/community/assets/icon-alert.svg" />
+          </figure>
+          <div class="media-body">
+            <h3 class="media-heading">To like a tutorial you need to have a Semaphore account.</h3>
+
+            <p>With a Semaphore account you can also test and deploy your open source and private projects for free.</p>
+          </div>
+        </div>
+        <div class="modal-dialog-prompt-actions">
+          <div class="row">
+            <div class="col-sm-6">
+              <a class="btn btn-primary btn-lg-alt btn-block community-create-account" href="/?from=community&amp;referer=community-tutorials-generating-fake-data-for-python-unit-tests-with-faker&amp;redirect_path=/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker">Create Account</a>
+            </div>
+            <div class="col-sm-6">
+              <a class="btn btn-default btn-lg-alt btn-block community-sign-in" href="/login?redirect_path=/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker">Sign In</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modal-log-in-subscribe">
+  <div class="modal-dialog modal-dialog-prompt modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="media">
+          <figure class="media-left">
+            <img alt="" width="44" height="44" src="https://d1dkupr86d302v.cloudfront.net/community/assets/icon-alert.svg" />
+          </figure>
+          <div class="media-body">
+            <h3 class="media-heading">To subscribe you need to have a Semaphore account.</h3>
+
+            <p>With a Semaphore account you can also test and deploy your open source and private projects for free.</p>
+          </div>
+        </div>
+        <div class="modal-dialog-prompt-actions">
+          <div class="row">
+            <div class="col-sm-6">
+              <a class="btn btn-primary btn-lg-alt btn-block community-create-account" href="/?from=community&amp;referer=community-tutorials-generating-fake-data-for-python-unit-tests-with-faker&amp;redirect_path=/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker">Create Account</a>
+            </div>
+            <div class="col-sm-6">
+              <a class="btn btn-default btn-lg-alt btn-block community-sign-in" href="/login?redirect_path=/community/tutorials/generating-fake-data-for-python-unit-tests-with-faker">Sign In</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+    <footer class="c-footer u-mb-xs-20 u-mb-60">
+  <div class="container">
+    <div class="row">
+      <div class="c-footer__border"></div>
+      <div class="col-xs-12 col-sm-6 col-md-5 col-lg-4">
+        <h4 class="u-text-normal text-uppercase">Subscribe to our newsletter</h4>
+
+        <form role="newsletter" class="" action="http://semaphoreapp.us5.list-manage.com/subscribe/post?u=72b30480e518914855ca55a85&amp;id=d442447559" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" target="_blank" novalidate="">
+          <div class="input-group u-mb-20 u-pt-5">
+            <input type="text" name="EMAIL" class="form-control" placeholder="Enter your email address">
+
+            <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+            <div style="position: absolute; left: -5000px;"><input type="text" name="b_72b30480e518914855ca55a85_d442447559" value=""></div>
+
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-semaphore-green" name="subscribe" id="mc-embedded-subscribe" onclick="
+                var _this = this;
+                ga('send', 'event', 'Community footer', 'Newsletter signup');
+                setTimeout(function() {$(_this).parents('form').submit()}, 150);
+                return false;">Subscribe</button>
+            </span>
+          </div>
+        </form>
+
+        <div class="btn-group u-mb-20" role="group" aria-label="...">
+          <a class="btn btn-muted" href="https://twitter.com/semaphoreci" role="button">
+            <img width="14" alt="Follow @semaphoreci on Twitter" src="https://d1dkupr86d302v.cloudfront.net/community/assets/social-twitter-0c64ec7805ca9a5862d8c8bd81bee01e80f456771f720e7ff6bbf6b215774936.svg" />
+          </a>
+          <a class="btn btn-muted" href="https://www.facebook.com/SemaphoreCI" role="button">
+            <img width="7" alt="Follow SemaphoreCI on Facebook" src="https://d1dkupr86d302v.cloudfront.net/community/assets/social-facebook-2a36f7c6cbdd15290491cd5ef703afe2e7b9fca6ec60a66514a9175dca8ab307.svg" />
+          </a>
+          <a class="btn btn-muted" href="/blog/feed.xml" role="button">
+            <img width="14" alt="Subscribe to blog RSS feed" src="https://d1dkupr86d302v.cloudfront.net/community/assets/social-rss-0703421fcbc17c514812d8e695b3e48e4aec67775882c48b914673765daad112.svg" />
+          </a>
+        </div>
+
+        <p class="hidden-xs">© 2009-2018 Rendered Text. All rights reserved.</p>
+      </div>
+
+      <div class="col-xs-4 col-sm-2 col-md-2 col-md-offset-1 col-lg-offset-2">
+        <h4 class="u-text-normal text-uppercase">Semaphore</h4>
+        <ul class="list-unstyled">
+          <li><a class="u-link-quiet" href="/">Homepage</a></li>
+          <li><a class="u-link-quiet" href="/product">Product</a></li>
+          <li><a class="u-link-quiet" href="/product/docker">CI/CD for Docker</a></li>
+          <li><a class="u-link-quiet" href="/customers">Customers</a></li>
+          <li><a class="u-link-quiet" href="/pricing">Pricing</a></li>
+          <li><a class="u-link-quiet" href="/renderedtext/semaphore/changelog">Changelog</a></li>
+        </ul>
+      </div>
+
+      <div class="col-xs-4 col-sm-2">
+        <h4 class="u-text-normal text-uppercase">Resources</h4>
+        <ul class="list-unstyled">
+          <li><a class="u-link-quiet" href="/contact">Contact us</a></li>
+          <li><a class="u-link-quiet" href="/docs">Documentation</a></li>
+          <li><a class="u-link-quiet" href="/community/tutorials">Tutorials</a></li>
+          <li><a class="u-link-quiet" href="/blog">Blog</a></li>
+          <li><a class="u-link-quiet" href="/docs/api-v2-overview.html">API</a></li>
+          <li><a class="u-link-quiet" href="http://status.semaphoreci.com" rel="nofollow">Status</a></li>
+        </ul>
+      </div>
+
+      <div class="col-xs-4 col-sm-2">
+        <h4 class="u-text-normal text-uppercase">About</h4>
+        <ul class="list-unstyled">
+          <li><a class="u-link-quiet" href="/about">Our story</a></li>
+          <li><a class="u-link-quiet" href="/about/careers">Careers</a></li>
+          <li><a class="u-link-quiet" href="http://renderedtext.com">Company</a></li>
+          <li><a class="u-link-quiet" href="/tos">Terms</a></li>
+          <li><a class="u-link-quiet" href="/privacy">Privacy</a></li>
+          <li><a class="u-link-quiet" href="/security">Security</a></li>
+        </ul>
+      </div>
+
+      <div class="col-xs-12 visible-xs u-mt-20">
+        <p>© 2009-2018 <a href="http://renderedtext.com/">Rendered Text</a>. All rights reserved.</p>
+      </div>
+
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.12/angular.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.12/angular-sanitize.min.js"></script>
+    
+      <script src="//use.typekit.net/huv6nfe.js"></script>
+      <script>try{Typekit.load();}catch(e){}</script>
+    
+    <script src="https://d1dkupr86d302v.cloudfront.net/community/assets/application-0c4b3f3fc059e1a8bb3eed1bebb72e876426b4cfd801d41e4dad6a9b05328d20.js"></script>
+  </body>
+</html>

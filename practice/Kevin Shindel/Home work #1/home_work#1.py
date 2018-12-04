@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 
 if not os.path.exists("OTHER"):
-	os.mkrir("OTHER")
+	os.mkdir("OTHER")
 	
 
 url='https://pythondigest.ru/'
