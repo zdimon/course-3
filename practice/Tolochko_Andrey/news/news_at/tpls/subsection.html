@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block categories %}
+		{%for i in category%}
+          <li class="nav-item">          
+            <a class="nav-link" href="/subsection/{{i}}">{{i}}</a>
+          </li>
+         {%endfor%}
+{% endblock categories %}
+
+
+
+
+{% block index %}
+	<div class="container">
+		<div class="row">
+		{%for i in news%}
+				<div class="col-md-4">
+					<h2>{{i.item_title}}</h2>
+					<p>{{i.item_short_descr}}</p>
+            		<p><a class="btn btn-secondary" href="/detail/{{i.id}}" role="button">View details &raquo;</a></p>
+				</div>
+		{%endfor%}
+		</div>
+	</div>
+{% endblock index %}
