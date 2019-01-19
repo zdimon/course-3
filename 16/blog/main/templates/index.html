@@ -1,0 +1,25 @@
+{% load i18n %}
+<h1>{% trans 'Hello World!!!' %}</h1>
+
+{% get_current_language as LANGUAGE_CODE %}
+
+<h2> {{ LANGUAGE_CODE }} </h2>
+
+{% if LANGUAGE_CODE == 'en' %}
+	<a href="{% url 'change_language' %}?language=ru&next={{request.get_full_path}}">
+	   {% trans 'RU' %}
+	</a>
+{% endif %}
+
+{% if LANGUAGE_CODE == 'ru' %}
+	   <a href="{% url 'change_language' %}?language=en&next={{request.get_full_path}}">
+		  {% trans 'EN' %}
+	   </a>
+{% endif %}	
+
+
+    <h3>{{ page.title }}</h3>
+    <p>{{ page.text }}</p>
+
+
+
